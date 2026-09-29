@@ -1,3 +1,12 @@
+## 0.1.0-alpha.3-studio.2
+
+- Add a macOS installer for the compiled bridge and portable KYNEM Codex plugin.
+- Install into a stable user directory and generate machine-local MCP paths.
+- Bootstrap a private, checksum-verified Node runtime when necessary.
+- Keep copies, session conflict protection, and existing-project review instructions.
+- Bundle production dependencies in the installer ZIP; no manual npm install for recipients.
+- Offline installer/package verification only; additional native Mac validation remains needed.
+
 # Changelog
 
 ## 0.1.0-alpha.3-studio.1 — local studio candidate

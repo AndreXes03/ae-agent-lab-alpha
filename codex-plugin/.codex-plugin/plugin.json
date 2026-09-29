@@ -1,0 +1,17 @@
+{
+  "name": "kynem",
+  "version": "0.1.0",
+  "description": "Activate the local KYNEM bridge and edit After Effects projects on a copy.",
+  "author": { "name": "KYNEM" },
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "KYNEM",
+    "shortDescription": "Edit After Effects projects on a safe copy.",
+    "longDescription": "Starts the installed KYNEM bridge, reads the selected project, and applies scoped edits to a copy while preserving the original.",
+    "developerName": "KYNEM",
+    "category": "Productivity",
+    "capabilities": ["Write"],
+    "brandColor": "#FF7417",
+    "defaultPrompt": ["Modify my After Effects project on a copy."]
+  }
+}

@@ -1,0 +1,7 @@
+interface:
+  display_name: "KYNEM"
+  short_description: "Modifica progetti After Effects su una copia"
+  brand_color: "#FF7417"
+  default_prompt: "Usa $kynem per modificare il mio progetto After Effects su una copia."
+policy:
+  allow_implicit_invocation: true

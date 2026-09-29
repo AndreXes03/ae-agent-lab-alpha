@@ -14,6 +14,7 @@
 AGENTS.md
 CHANGELOG.md
 CONTRIBUTING.md
+Install KYNEM.command
 LICENSE
 PROVENANCE.md
 README.md
@@ -21,6 +22,11 @@ RELEASE-FILES.txt
 Start Demo.command
 Start Project.command
 Stop Demo.command
+codex-plugin/.codex-plugin/plugin.json
+codex-plugin/README.md
+codex-plugin/scripts/bridge.mjs
+codex-plugin/skills/kynem/SKILL.md
+codex-plugin/skills/kynem/agents/openai.yaml
 demo/client-proof/README.md
 demo/client-proof/client-flash_sheet.png
 demo/warm-glow-heavy-grain.aep
@@ -33,6 +39,7 @@ docs/DEMO-SESSION.md
 docs/EXAMPLE-PROMPTS.md
 docs/FIRST-TESTER.md
 docs/FRIENDS-TUTORIAL.it.md
+docs/INSTALL.it.md
 docs/MOTION-QUALITY.md
 docs/RELEASE-CANDIDATE.md
 docs/STUDIO-TEST.it.md
@@ -67,6 +74,8 @@ scripts/finish-heavy-grain.mjs
 scripts/fix-crlf.pl
 scripts/generate-tools-doc.mjs
 scripts/heavy-grain-warm-glow.mjs
+scripts/install-kynem.mjs
+scripts/package-installer.py
 scripts/package-source.py
 scripts/refine-warm-glow.mjs
 scripts/render-motion.mjs
@@ -166,6 +175,7 @@ tests/helpers/lint-codegen.ts
 tests/helpers/lint-jsx.ts
 tests/helpers/null-transport.ts
 tests/inspect-ops.test.ts
+tests/installer-smoke.mjs
 tests/instance-launch-failure.test.ts
 tests/instance-ops.test.ts
 tests/instances.test.ts

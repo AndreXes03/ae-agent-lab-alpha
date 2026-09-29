@@ -1,3 +1,9 @@
+# Installed KYNEM plugin
+
+If you used `Install KYNEM.command`, ask KYNEM to save and stop only its own copied-project session first. Remove **kynem@kynem-local** in Codex’s plugin settings (or `codex plugin remove kynem@kynem-local`). This disconnects the plugin without deleting your project copies.
+
+Installed files and copied projects are under `~/Library/Application Support/KYNEM`. Keep this folder until you have recovered any copies and renders you need. Do not remove an AE startup script belonging to another bridge; inspect its actual target first. The source/manual installation instructions below apply only if you used the older launchers.
+
 # Disconnect the local demo
 
 The demo uses a named AE worker, a Codex MCP entry, and, when needed, a user-level AE startup stub. Stopping the demo leaves the Codex entry and startup stub in place so the local bridge can be used again. Remove either only when you no longer want that connection.

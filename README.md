@@ -1,16 +1,26 @@
-> **Studio test candidate — 0.1.0-alpha.3-studio.1.** Local test build after alpha.2, not a published release. This source ZIP has a macOS launcher, not a self-contained installer. Node.js 24+, npm, Codex CLI and After Effects are required; the first launch downloads locked dependencies. Start with [the studio guide](docs/STUDIO-TEST.it.md).
+> **KYNEM Mac installer — 0.1.0-alpha.3-studio.2.** The installer ZIP includes the compiled bridge and production dependencies, installs the KYNEM Codex plugin, and downloads a private Node runtime if needed. See [Install KYNEM](docs/INSTALL.it.md). Native behavior on other Macs still needs tester validation.
 
 # AE Agent Lab
 
 AE Agent Lab is an experimental local bridge between a **Codex chat** and Adobe After Effects. Codex uses MCP tools to inspect a project, make a scoped edit, and render frames for review. The bridge runs on your Mac. There is no After Effects panel or separate chat app.
 
-The public alpha is [v0.1.0-alpha.2](https://github.com/AndreXes03/ae-agent-lab-alpha/releases/tag/v0.1.0-alpha.2). Start with the included Warm Glow demo. The documented native proof covers **one Mac running After Effects 2026 (26.5)**; other setups and projects need their own validation.
+The previous public alpha [v0.1.0-alpha.2](https://github.com/AndreXes03/ae-agent-lab-alpha/releases/tag/v0.1.0-alpha.2) remains available. The new installer is distributed as a separate prerelease for testing on other Macs. The documented native proof covers **one Mac running After Effects 2026 (26.5)**; other setups and projects need their own validation.
 
 ![A frame rendered from the editable Warm Glow After Effects demo project](demo/warm-glow/heavy-grain-hero.png)
 
 *Native rendered example from the included [editable After Effects project](demo/warm-glow-heavy-grain.aep). A [motion preview](demo/warm-glow/heavy-grain-preview.mp4) is also included.*
 
-## What you need
+## Recommended: install KYNEM for Codex
+
+Use the **KYNEM-Mac ZIP asset**, not GitHub’s automatic source archive. Extract it and double-click `Install KYNEM.command`. After installation, open a new Codex chat, select KYNEM from `@`, attach or identify a saved `.aep`, and describe your edit. The skill starts the bridge on a project copy. `$kynem` is the skill invocation fallback if the plugin menu has not refreshed.
+
+Codex must already be installed and signed in; After Effects 2026 must be installed and initialized. macOS may require approval to open the unsigned launcher and control AE. Enable AE’s scripting file/network preference. The installer does not bypass these controls, start AE, or change your projects. On machines without a suitable Node runtime, installation needs internet; no manual npm setup is required for this ZIP.
+
+The installer uses a stable folder under `~/Library/Application Support/KYNEM`; the extracted ZIP can be removed after successful installation. The native bridge has been tested on one Mac; the installer and plugin configuration receive offline checks, not a claim of clean-machine native acceptance.
+
+## Developer / source installation
+
+### What you need
 
 - macOS with After Effects 2026 installed.
 - [Node.js 24 or newer](https://nodejs.org/en/download) and Codex CLI installed and configured.
