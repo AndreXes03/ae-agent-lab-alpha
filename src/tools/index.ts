@@ -11,6 +11,7 @@ import { contextTool } from "./context.js";
 import { doTool } from "./do.js";
 import { layerInfoTool } from "./layer-info.js";
 import { motionPlanTool } from "./motion-plan.js";
+import { workflowTool } from "./workflow.js";
 import { workflowPlanTool } from "./workflow-plan.js";
 import { projectExportTool } from "./project-export.js";
 import { projectImportTool } from "./project-import.js";
@@ -88,6 +89,7 @@ export const ALL_TOOLS: AnyTool[] = [
   catalogTool,
   motionPlanTool,
   workflowPlanTool,
+  workflowTool,
   doTool,
   contextTool,
 ].map((tool) => withInstanceParam(tool as AnyTool));

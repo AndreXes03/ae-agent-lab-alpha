@@ -58,6 +58,8 @@ interface RenderFramePayload {
   analysisWarning?: string;
   contactSheet?: ContactSheetReport;
   contactSheetWarning?: string;
+  previewFactor?: number;
+  previewWarning?: string;
 }
 
 interface ContactSheetArgs {
@@ -72,6 +74,7 @@ export const renderFrameTool = defineTool({
   description:
     "Render one or more frames to PNG. Use to visually verify edits. " +
     "The agent's 'eyes' — pair with mutations for a visual feedback loop. " +
+    "Experimental preview requests half or quarter resolution for up to 6 frames; inspect returned dimensions and warnings. " +
     "Headless and deterministic. Pass `time` for one frame, or `times` for several in ONE call " +
     "(motion checks): files land at <outPath stem>_<index>.png and are listed in `frames`. " +
     "`contactSheet` tiles every frame into one labelled PNG (<stem>_sheet.png) so a motion check is one image; " +
@@ -129,6 +132,12 @@ export const renderFrameTool = defineTool({
           "'off': raw legacy output (16-bit, untagged, working-space values — dark/wrong-looking in " +
           "color-managed projects).",
       ),
+    preview: z
+      .enum(["half", "quarter"])
+      .optional()
+      .describe(
+        "Experimental preview: temporarily request half or quarter resolution, then restore the setting. AE may return full-size PNGs; check dimensions/previewWarning. This can dirty the project. Use full resolution for fine-detail approval.",
+      ),
     analyze: z
       .boolean()
       .optional()
@@ -164,6 +173,15 @@ export const renderFrameTool = defineTool({
       return errorResult("INVALID_ARGS", "give exactly one of `time` or `times`", {
         hint: "`time: 1.5` renders one frame; `times: [0, 1, 2]` renders several in one call.",
       });
+    }
+    if (args.preview && (args.times?.length ?? 1) > 6) {
+      return errorResult("INVALID_ARGS", "preview supports at most 6 frames per call");
+    }
+    if (args.preview && readOnlyMode()) {
+      return errorResult(
+        "FORBIDDEN",
+        "preview changes the composition resolution temporarily and is unavailable in read-only mode",
+      );
     }
     const rejection = rejectedOutputPath(args.outPath);
     if (rejection !== null) {
@@ -268,6 +286,7 @@ async function nativeFlow(
     colorManaged?: "auto" | "off";
     analyze?: boolean;
     contactSheet?: ContactSheetArgs;
+    preview?: "half" | "quarter";
   },
   abs: string,
   transport: AeTransport,
@@ -286,6 +305,7 @@ async function nativeFlow(
   // Mutating (one undo group, self-cleaning), so read-only mode falls back
   // to the pure-math conversion below.
   const tryOcio = args.colorManaged !== "off" && !readOnlyMode();
+  const previewFactor = args.preview === "quarter" ? 4 : args.preview === "half" ? 2 : 1;
   const code = `
         ${RENDER_FRAME_FN}
         var _arg = ${jsxVal(args.compNameOrId)};
@@ -296,12 +316,33 @@ async function nativeFlow(
         var _paths = ${jsxVal(paths)};
         var _useDst = ${jsxVal(!!args.useDisplayStartTime)};
         var _useOcio = ${jsxVal(tryOcio)} && _ws !== "None" && _ws !== "";
+        var _previewFactor = ${jsxVal(previewFactor)};
+        var _previewRestoreError = null;
         var _frames = [];
         function _renderAll(kind) {
-            for (var _fi = 0; _fi < _times.length; _fi++) {
-                var _r = _renderFrame(comp, _times[_fi], _paths[_fi], _useDst);
-                _r.captureKind = kind;
-                _frames.push(_r);
+            var _oldResolution = null;
+            try {
+                if (_previewFactor > 1) {
+                    _oldResolution = [comp.resolutionFactor[0], comp.resolutionFactor[1]];
+                    comp.resolutionFactor = [_previewFactor, _previewFactor];
+                    var _now = comp.resolutionFactor;
+                    if (!_now || _now[0] !== _previewFactor || _now[1] !== _previewFactor) {
+                        _frames.push({ ok: false, error: "AE did not accept preview resolution" });
+                        return;
+                    }
+                }
+                for (var _fi = 0; _fi < _times.length; _fi++) {
+                    var _r = _renderFrame(comp, _times[_fi], _paths[_fi], _useDst);
+                    _r.captureKind = kind;
+                    _frames.push(_r);
+                }
+            } catch (ePreview) {
+                _frames.push({ ok: false, error: "preview render failed: " + AE.errText(ePreview) });
+            } finally {
+                if (_oldResolution !== null) {
+                    try { comp.resolutionFactor = _oldResolution; }
+                    catch (eRestore) { _previewRestoreError = AE.errText(eRestore); }
+                }
             }
         }
         if (_useOcio) {
@@ -334,7 +375,11 @@ async function nativeFlow(
             if (!_frames[_ci].ok) { _allOk = false; if (_firstError === null) _firstError = _frames[_ci].error; }
         }
         var _out = { ok: _allOk, frames: _frames, captureKind: _frames.length > 0 ? _frames[0].captureKind : null };
-        if (!_allOk) _out.error = _firstError;
+        if (_previewRestoreError !== null) {
+            _allOk = false;
+            _out.ok = false;
+            _out.error = "could not restore composition resolution: " + _previewRestoreError;
+        } else if (!_allOk) _out.error = _firstError;
         if (_allOk) {
             _out.compName = comp.name;
             _out.workingSpace = _ws;
@@ -366,6 +411,30 @@ async function nativeFlow(
   const written: string[] = (multi ? frames.map((f) => f.writtenTo) : [payload.writtenTo]).filter(
     (p): p is string => typeof p === "string",
   );
+  // saveFrameToPng does not document its handling of resolutionFactor.
+  // Report measured PNG dimensions and flag a preview that stayed full size.
+  if (previewFactor > 1) {
+    payload.previewFactor = previewFactor;
+    const nominalSize = frames[0]?.size;
+    try {
+      for (let i = 0; i < written.length; i++) {
+        const image = decodePng(await readFileSettled(written[i]));
+        if (multi) frames[i].size = [image.width, image.height];
+        else payload.size = [image.width, image.height];
+      }
+      const actualSize = multi ? frames[0]?.size : payload.size;
+      if (
+        actualSize &&
+        nominalSize &&
+        actualSize[0] >= nominalSize[0] &&
+        actualSize[1] >= nominalSize[1]
+      ) {
+        payload.previewWarning = "AE returned full-size PNG despite preview resolution setting";
+      }
+    } catch (err) {
+      payload.previewWarning = `could not measure preview dimensions: ${err instanceof Error ? err.message : String(err)}`;
+    }
+  }
   // Analysis first: it wants the raw capture, alpha channel included.
   if (args.analyze) await attachAnalysis(payload, frames, written, multi);
   if (args.colorManaged !== "off") {

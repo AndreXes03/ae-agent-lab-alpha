@@ -3,6 +3,8 @@
 - Select exact operation schemas with `ae_catalog.operations` or browse category summaries.
 - Add offline `ae_workflow_plan` for bounded multi-property retiming, with explicit live readback requirements and verification steps.
 - Update agent guidance to reduce repeated discovery and reuse deterministic plans.
+- Add local prepare/apply/status workflows for bounded retiming and isolated text/logo variants, with stale-state checks, recovery checkpoints and durable no-replay job claims.
+- Verify changed properties inside the edit call; keep visual previews optional and avoid automatic video exports.
 - These source changes are newer than the published alpha.3-studio.2 installer; offline checks do not establish native acceptance or credit savings.
 
 ## 0.1.0-alpha.3-studio.2
