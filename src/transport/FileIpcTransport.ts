@@ -214,6 +214,7 @@ export class FileIpcTransport implements AeTransport {
   }
 
   async execute(req: EvalRequest): Promise<EvalResult> {
+    const queuedAt = Date.now();
     // Serialize so our own concurrent tool calls queue here rather than inside AE.
     const prev = this.inflight;
     let release!: () => void;
@@ -222,7 +223,14 @@ export class FileIpcTransport implements AeTransport {
     });
     try {
       await prev;
-      return await this.executeOne(req);
+      const queueWaitMs = Date.now() - queuedAt;
+      const executionStarted = Date.now();
+      const result = await this.executeOne(req);
+      return {
+        ...result,
+        queueWaitMs,
+        executionMs: Date.now() - executionStarted,
+      };
     } catch (err) {
       // AeTransport contract: never throw — surface filesystem errors (e.g.
       // EPERM writing into the mailbox) as a normal failure result.

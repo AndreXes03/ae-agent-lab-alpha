@@ -52,6 +52,21 @@ describe("operations that drive the undo stack", () => {
 });
 
 describe("ae_do", () => {
+  it("can skip ambient context gathering for a known target", async () => {
+    const transport = nullTransport(OK_RESPONSE);
+    await doTool.handler(
+      {
+        operation: "property.get",
+        args: { comp: 1, layer: 1, property: ["ADBE Transform Group", "ADBE Opacity"] },
+        includeContext: false,
+      },
+      transport,
+    );
+    expect(transport.calls).toHaveLength(1);
+    expect(transport.calls[0].code).toContain("var _ctx = null;");
+    expect(transport.calls[0].code).not.toContain("selectedLayers");
+  });
+
   it("sends undoGroup:false for project.undo", async () => {
     const transport = nullTransport(OK_RESPONSE);
     await doTool.handler({ operation: "project.undo", args: { count: 2 } }, transport);

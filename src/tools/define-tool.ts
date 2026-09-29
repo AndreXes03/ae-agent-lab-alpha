@@ -88,5 +88,7 @@ export function toMcpResult(result: EvalResult): ToolResult {
     result: result.result,
     logs: result.logs,
     durationMs: result.durationMs,
+    ...(result.queueWaitMs === undefined ? {} : { queueWaitMs: result.queueWaitMs }),
+    ...(result.executionMs === undefined ? {} : { executionMs: result.executionMs }),
   });
 }

@@ -27,7 +27,7 @@ export interface WorkflowPublicStatus {
   result?: Record<string, unknown>;
 }
 
-interface Session {
+export interface Session {
   phase: string;
   worker: string;
   runtime: string;
@@ -128,6 +128,12 @@ export class WorkflowService {
         : ["project", "comp", "layer", "footage", "text"];
     if (allowed && required.some((category) => !allowed.has(category)))
       throw new Error(`Workflow requires allowed categories: ${required.join(", ")}`);
+  }
+
+  async validateSession(
+    copyPath: string,
+  ): Promise<{ session: Session; copy: string; runDir: string }> {
+    return this.session(copyPath);
   }
 
   private async session(

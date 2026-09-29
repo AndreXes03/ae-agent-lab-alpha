@@ -40,6 +40,21 @@ describe("instance argument", () => {
     expect(transport.calls[0].instance).toBeUndefined();
   });
 
+  it("requests compact session context by default", async () => {
+    const transport = nullTransport({ result: { project: {}, instance: null } });
+    await tool("ae_context").handler({}, transport);
+    expect(transport.calls[0].payload).toEqual({ compact: true });
+    expect(transport.calls[0].undoGroup).toBe(false);
+    expect(transport.calls[0].code).toContain("!compact && i <= Math.min(proj.numItems, 50)");
+  });
+
+  it("residentOnly refuses push or unknown transports before executing JSX", async () => {
+    const transport = nullTransport();
+    const res = await tool("ae_context").handler({ residentOnly: true }, transport);
+    expect(res.isError).toBe(true);
+    expect(transport.calls).toHaveLength(0);
+  });
+
   it("carries through ae_do without leaking into the operation's arguments", async () => {
     // batch.run with no children is the smallest operation that reaches the
     // transport; an unknown key in `args` would have been rejected before it.

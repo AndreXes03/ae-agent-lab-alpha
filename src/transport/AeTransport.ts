@@ -75,6 +75,10 @@ export interface EvalResult {
   logs: string[];
   /** Wall-clock duration in milliseconds for the transport round trip. */
   durationMs: number;
+  /** Time spent waiting behind an earlier call in this transport process. */
+  queueWaitMs?: number;
+  /** Time spent executing after the call left the local queue. */
+  executionMs?: number;
 }
 
 export interface AeTransport {

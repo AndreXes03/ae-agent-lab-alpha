@@ -9,6 +9,53 @@ KYNEM can reduce repeated context and mechanical planning work. Smaller tool res
 - Use layer summaries or omit property trees until a property is relevant. Full readback remains necessary to preserve keyframes, interpolation or expressions being edited.
 - Reuse documentation and stable IDs in the conversation. Reread mutable values before planning a dependent change; never use a stale cached project snapshot as mutation authority.
 
+## Fast interactive edits
+
+For a known target, prefer `ae_edit`. It accepts up to 12 supported typed operations in one request and performs current-value reads, recovery checkpoint, edits and post-edit readback in **one AE dispatch**. Supported operations include text changes, transforms, layer properties/timing, effect parameters through `property.set`, work-area changes and keyframe edits. Unsupported operations use the existing scoped tools; raw code, render, project switching and process management are excluded.
+
+At session start use `ae_context({detail:"compact",residentOnly:true})`. This confirms the selected resident worker actually answers. An unavailable resident fails before a push launch; return to the existing activation flow, preserving session conflicts. Keep that worker running and reuse it rather than restarting setup per edit.
+
+For follow-up edits, `ae_inspect_targets` reads up to 16 requested layer/property targets in one call and returns short `target:` references. Example property path:
+
+```json
+{
+  "compId": 42,
+  "targets": [
+    {
+      "layerIndex": 2,
+      "propertyPath": [{ "matchName": "ADBE Transform Group" }, { "matchName": "ADBE Opacity" }]
+    }
+  ]
+}
+```
+
+Use a returned reference in a fast edit:
+
+```json
+{
+  "request": {
+    "action": "edit",
+    "requestId": "4b0a4cd1-572d-4e82-9992-9ca6c584910a",
+    "copyPath": "/absolute/managed/run/copy.aep",
+    "edits": [
+      {
+        "operation": "property.set",
+        "targetRef": "target:<returned UUID>",
+        "args": { "value": 65 }
+      }
+    ]
+  }
+}
+```
+
+Generate a **new UUID for each intended edit**, not each network attempt. On retry or timeout, reuse the request ID or call `ae_edit({request:{action:"status",requestId:"<same UUID>"}})`. Status and repeated IDs do not dispatch a second edit. The stored result and checkpoint allow recovery; partial failure is not rolled back automatically.
+
+References preserve identity, not cached values: AE rechecks the project, comp, stable layer ID/order, and property identity inside the edit call. Reordered/deleted or ambiguous targets are rejected. Duplicate sibling property match names are unsupported for reusable property references even with an explicit index; inspect again or use a separately verified explicit edit. No claim of mutable-value caching is made.
+
+Responses are compact. `verification:"asserted"` means implemented postconditions passed; `readback_only` means the bridge read the result but did not assert every intended value. Neither establishes visual quality. The local receipt retains bounded readbacks; omitted values are explicitly marked as truncated. For existing fallback `ae_do` calls, `includeContext:false` skips redundant ambient context when identity is already established.
+
+Transport diagnostics separate `queueWaitMs` (local serialization wait) from `executionMs` (the entire transport call after dequeuing, including AE wait). These are not measurements of model reasoning. The fast-edit result also records AE-side elapsed time and call count. Current resident polling intervals are unchanged; first measure before tuning them.
+
 ## Local stateful edits
 
 Prefer `ae_workflow` for supported edits on the managed copied project. A retime request names only a numeric comp ID, layer indices, canonical property paths and the timing change. The bridge captures complete key state locally; the model does not need to copy key arrays back into a second tool call.

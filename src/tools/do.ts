@@ -46,6 +46,12 @@ export const doTool = defineTool({
       .describe(
         "Arguments for the operation. Validated against ae_catalog's declared params: missing required args, wrong types, and unknown keys are rejected before AE is contacted. Omit for zero-param operations.",
       ),
+    includeContext: z
+      .boolean()
+      .optional()
+      .describe(
+        "Include ambient project/selection context (default true). Set false for an already identified target to avoid repeated context gathering.",
+      ),
     timeoutMs: z
       .number()
       .int()
@@ -161,7 +167,7 @@ export const doTool = defineTool({
         var _opResult = (function() {
             ${userJsx}
         })();
-        ${AMBIENT_CONTEXT_JSX}
+        ${doArgs.includeContext === false ? "var _ctx = null;" : AMBIENT_CONTEXT_JSX}
         return { result: _opResult, context: _ctx };
     `;
     // Lines of wrapper ABOVE the operation code, for mapping the dispatcher's

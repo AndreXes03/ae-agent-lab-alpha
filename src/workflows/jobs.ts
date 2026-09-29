@@ -128,6 +128,12 @@ export class WorkflowJobs {
   }
 
   async create(payload: WorkflowJobPayload): Promise<WorkflowJob> {
+    return this.createWithId(randomUUID(), payload);
+  }
+
+  /** A client-supplied id keeps retries on the same durable claim. */
+  async createWithId(id: string, payload: WorkflowJobPayload): Promise<WorkflowJob> {
+    safeId(id);
     await this.ensureRoot();
     // Round trip freezes the submitted payload against later caller mutations and rejects
     // values that cannot be represented by the recovery file.
@@ -144,7 +150,6 @@ export class WorkflowJobs {
       !("summary" in copy)
     )
       throw new Error("Invalid workflow job payload");
-    const id = randomUUID();
     const now = new Date().toISOString();
     const job: WorkflowJob = {
       id,
@@ -154,8 +159,16 @@ export class WorkflowJobs {
       createdAt: now,
       updatedAt: now,
     };
-    await this.atomicWrite(this.jobPath(id), job, true);
-    return job;
+    try {
+      await this.atomicWrite(this.jobPath(id), job, true);
+      return job;
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code !== "EEXIST") throw error;
+      const existing = await this.get(id);
+      if (!existing || JSON.stringify(existing.payload) !== JSON.stringify(copy))
+        throw new Error("Request id already belongs to a different workflow");
+      return existing;
+    }
   }
 
   async get(id: string): Promise<WorkflowJob | null> {

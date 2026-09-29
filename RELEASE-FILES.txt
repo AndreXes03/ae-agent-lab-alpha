@@ -138,7 +138,9 @@ src/tools/comp-info.ts
 src/tools/context.ts
 src/tools/define-tool.ts
 src/tools/do.ts
+src/tools/edit.ts
 src/tools/index.ts
+src/tools/inspect-targets.ts
 src/tools/layer-info.ts
 src/tools/motion-plan.ts
 src/tools/project-export.ts
@@ -155,10 +157,12 @@ src/transport/FileIpcTransport.ts
 src/transport/instances.ts
 src/transport/launcher.ts
 src/validate.ts
+src/workflows/fast-edit.ts
 src/workflows/jobs.ts
 src/workflows/plan.ts
 src/workflows/retime.ts
 src/workflows/service.ts
+src/workflows/targets.ts
 src/workflows/variants.ts
 tests/agent-install.test.ts
 tests/batch.test.ts
@@ -177,6 +181,7 @@ tests/e2e/tools.test.ts
 tests/e2e/transport.test.ts
 tests/error-text.test.ts
 tests/errors.test.ts
+tests/fast-edit.test.ts
 tests/field-ops.test.ts
 tests/fixtures.test.ts
 tests/fixtures/bad-codegen.fixture.ts
@@ -203,6 +208,7 @@ tests/registry.test.ts
 tests/render-preview.test.ts
 tests/sheet.test.ts
 tests/synthetic.test.ts
+tests/target-refs.test.ts
 tests/tools-instance.test.ts
 tests/transport-offline.test.ts
 tests/transport-pull.test.ts

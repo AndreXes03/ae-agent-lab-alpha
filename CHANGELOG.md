@@ -1,4 +1,12 @@
-## Unreleased — efficient workflows
+## Unreleased — fast interactive editing
+
+- Add `ae_edit`: bounded registered edits, current-value reads, checkpoints and readback in one AE dispatch, without automatic rendering.
+- Reuse caller request IDs across retries; status reads durable receipts without replaying edits.
+- Add `ae_inspect_targets` for compact, reusable references validated inside the edit call.
+- Default session context to compact output and add resident-only readiness checks; skip redundant ambient context on explicit `ae_do` calls.
+- Measure local queue wait separately from transport elapsed time. These source changes have offline checks; no native speedup claim or updated published installer.
+
+## Earlier unreleased — efficient workflows
 
 - Select exact operation schemas with `ae_catalog.operations` or browse category summaries.
 - Add offline `ae_workflow_plan` for bounded multi-property retiming, with explicit live readback requirements and verification steps.

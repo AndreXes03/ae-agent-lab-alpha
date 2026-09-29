@@ -4,19 +4,20 @@ Generated from `src/tools/**` via `npm run docs:tools` — do not edit by hand. 
 
 `ae_do`'s operation registry (`layer.*`, `keyframe.*`, …) is discoverable at runtime via `ae_catalog` and is **not** listed in this file.
 
-14 tools across 4 groups.
+16 tools across 4 groups.
 
 ## Inspect
 
 Read-only project/comp/layer introspection.
 
-| Tool              | Description                                                                                                                                                  |
-| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `ae_project_info` | Project-level info: file path, dirty flag, all items with type/summary, active item.                                                                         |
-| `ae_comp_info`    | Detailed comp info: size, fps, duration, work area, motion blur, layer summaries.                                                                            |
-| `ae_layer_info`   | Full layer info: transform, effects, masks, text, shape contents, keyframes (incl.                                                                           |
-| `ae_version_info` | AE version, build, capabilities (saveFrameToPng, app.effects, Socket).                                                                                       |
-| `ae_context`      | Ambient context: project state, active comp, selected layers, item list, AE.\* helpers, ES3 rules, and the undo contract (every call = one auto undo group). |
+| Tool                 | Description                                                                           |
+| -------------------- | ------------------------------------------------------------------------------------- |
+| `ae_project_info`    | Project-level info: file path, dirty flag, all items with type/summary, active item.  |
+| `ae_comp_info`       | Detailed comp info: size, fps, duration, work area, motion blur, layer summaries.     |
+| `ae_layer_info`      | Full layer info: transform, effects, masks, text, shape contents, keyframes (incl.    |
+| `ae_version_info`    | AE version, build, capabilities (saveFrameToPng, app.effects, Socket).                |
+| `ae_inspect_targets` | Inspect up to 16 explicit layer or property targets in one read.                      |
+| `ae_context`         | Ambient context: project state, active comp, selected layers, and resident readiness. |
 
 ## Document
 
@@ -46,4 +47,5 @@ Atomic operation dispatch — discover with `ae_catalog`, execute with `ae_do`.
 | `ae_motion_plan`   | Offline motion planner for typography, panels, icons, and bars.                                                             |
 | `ae_workflow_plan` | Offline recipe for retiming several inspected property tracks in one AE batch.                                              |
 | `ae_workflow`      | Prepare a typed retime or text/logo variants recipe against an existing active managed .aep copy and persist a guarded job. |
+| `ae_edit`          | Apply up to 12 typed, registered edits to the active managed .aep copy in one AE call.                                      |
 | `ae_do`            | Execute an atomic operation by name (from ae_catalog).                                                                      |

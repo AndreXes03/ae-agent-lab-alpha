@@ -188,6 +188,8 @@ describe("pull path", () => {
     expect(res.ok, res.error ?? "").toBe(true);
     expect(res.result).toEqual({ echo: "return 41 + 1;", answer: 42 });
     expect(res.logs).toEqual([`served by ${agent.id}`]);
+    expect(res.queueWaitMs).toBeGreaterThanOrEqual(0);
+    expect(res.executionMs).toBeGreaterThanOrEqual(0);
     // Pull never spawns: nothing to collide with a script AE is running, and
     // no AfterFX.exe path is needed at all.
     expect(launcher.calls).toBe(0);
@@ -199,6 +201,22 @@ describe("pull path", () => {
     });
     expect(await listMail(agent.dir, REQUEST_PREFIX)).toEqual([]);
     expect(await listMail(agent.dir, RESPONSE_PREFIX)).toEqual([]);
+  });
+
+  it("reports local queue wait separately from execution time", async () => {
+    agent = new FakeAgent(null);
+    await agent.start();
+    const launcher = recordingSpawn(() => {});
+    const transport = new FileIpcTransport({ instance: agent.id, spawn: launcher.spawn });
+    const first = transport.execute({ code: "return 1;", timeoutMs: 350 });
+    const second = transport.execute({ code: "return 2;", timeoutMs: 350 });
+    const [a, b] = await Promise.all([first, second]);
+    expect(a.errorCode).toBe("TIMEOUT");
+    expect(b.errorCode).toBe("TIMEOUT");
+    expect(a.queueWaitMs).toBeLessThan(100);
+    expect(b.queueWaitMs).toBeGreaterThan(200);
+    expect(b.executionMs).toBeLessThan(700);
+    expect(launcher.calls).toBe(0);
   });
 
   it("finds the instance by the project it has open", async () => {

@@ -26,6 +26,20 @@ afterEach(async () => {
 });
 
 describe("workflow job journal", () => {
+  it("deduplicates a caller request id across concurrent clients and rejects different content", async () => {
+    const { jobs, dir } = await journal();
+    const id = "119793f6-bc72-4cda-a87c-1c6acd674103";
+    const attempts = await Promise.all(
+      Array.from({ length: 8 }, () => new WorkflowJobs(dir).createWithId(id, payload)),
+    );
+    expect(attempts.every((job) => job.id === id)).toBe(true);
+    await jobs.claim(id);
+    expect((await jobs.createWithId(id, payload)).state).toBe("running");
+    await expect(jobs.createWithId(id, { ...payload, spec: { offsetFrames: 9 } })).rejects.toThrow(
+      "different workflow",
+    );
+  });
+
   it("persists a private prepared payload and allows exactly one concurrent claim", async () => {
     const { jobs, dir } = await journal();
     const created = await jobs.create(payload);

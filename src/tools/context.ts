@@ -1,7 +1,10 @@
+import { z } from "zod";
+
 import { instanceLabel, listInstances } from "../transport/instances.js";
 import { defineTool, toMcpResult } from "./define-tool.js";
 
 const CODE = `
+    var compact = payload && payload.compact === true;
     var proj = app.project;
     var ai = proj.activeItem;
     // The resident agent (pull path) marks the instance that answered; null
@@ -21,7 +24,7 @@ const CODE = `
         } : null,
         activeComp: null,
         selectedLayers: [],
-        helpers: [
+        helpers: compact ? undefined : [
             "AE.findCompByNameOrId(nameOrId)",
             "AE.findComps(nameOrIdOrPattern) — '*' glob supported",
             "AE.findItemById(id)",
@@ -60,7 +63,7 @@ const CODE = `
             "AE.safeGet(fn, fallback)",
             "AE.valueToJson(val)"
         ],
-        es3Rules: [
+        es3Rules: compact ? undefined : [
             "var only (no let/const)",
             "function() {} only (no arrow =>)",
             "string concat only (no template literals)",
@@ -70,7 +73,7 @@ const CODE = `
             "log('msg') to push breadcrumbs",
             "return <JSON-serializable> at end"
         ],
-        tips: [
+        tips: compact ? undefined : [
             "reparenting a layer that has keyframes: use layer.set_parent with jump:true (no transform compensation) — plain parent assignment rewrites values and corrupts keys",
             "easing: keyframe.set_easing (op) or AE.setEase (eval) — both handle the spatial=1/per-dimension KeyframeEase bookkeeping",
             "auditing a comp: ae_layer_info layerIndex:'all' with detail:'summary' skips default-value properties and includes key ease (speed/influence)",
@@ -82,7 +85,7 @@ const CODE = `
             "verifying motion: ae_render_frame times + contactSheet tiles the frames into one labelled PNG; analyze reports edge bands / content bounds; comp.sample reads values at several times",
             "several After Effects instances (AfterFX.exe -m): each MCP server addresses ONE, chosen by AE_MCP_INSTANCE (instance id or open project file name); the response's instances[] lists what is live — if the project you need is open elsewhere, say so instead of editing the wrong one"
         ],
-        undoContract: [
+        undoContract: compact ? undefined : [
             "every ae_do / eval.run call is auto-wrapped in ONE undo group",
             "one Ctrl+Z (or project.undo) reverts the entire call; batch.run = one call = one undo step",
             "NEVER call app.beginUndoGroup/endUndoGroup in eval.run code — an unbalanced group corrupts undo for the session",
@@ -111,7 +114,7 @@ const CODE = `
     // chain this used to be labelled EVERY item "Folder": ExtendScript parses
     // a ? b : c ? d : e left-associatively.
     var items = [];
-    for (var i = 1; i <= Math.min(proj.numItems, 50); i++) {
+    for (var i = 1; !compact && i <= Math.min(proj.numItems, 50); i++) {
         var it = proj.item(i);
         items.push({
             id: it.id,
@@ -119,8 +122,10 @@ const CODE = `
             type: AE.itemTypeName(it)
         });
     }
-    ctx.items = items;
-    if (proj.numItems > 50) ctx.itemsTruncated = true;
+    if (!compact) {
+        ctx.items = items;
+        if (proj.numItems > 50) ctx.itemsTruncated = true;
+    }
     return ctx;
 `;
 
@@ -128,27 +133,70 @@ export const contextTool = defineTool({
   name: "ae_context",
   title: "Session context",
   description:
-    "Ambient context: project state, active comp, selected layers, item list, " +
-    "AE.* helpers, ES3 rules, and the undo contract (every call = one auto undo group). " +
-    "Call at session start; then rely on ae_do response context.",
+    "Ambient context: project state, active comp, selected layers, and resident readiness. " +
+    "Compact output is the default; request detail:'full' for the item list, AE.* helpers, " +
+    "ES3 rules, tips, and undo contract. Call at session start; then rely on ae_do response context.",
   group: "inspect",
   blockedInReadOnly: false,
   effect: "read",
-  inputShape: {},
-  handler: async (_args, transport) => {
-    const result = await transport.execute({ code: CODE, label: "context" });
+  inputShape: {
+    detail: z
+      .enum(["compact", "full"])
+      .optional()
+      .describe(
+        "compact (default) omits the repeated helper and guidance catalog; full includes it.",
+      ),
+    residentOnly: z
+      .boolean()
+      .optional()
+      .describe(
+        "Require an already registered resident agent. Fail before executing JSX when no resident target is available.",
+      ),
+  },
+  handler: async (args, transport) => {
+    const compact = args.detail !== "full";
+    const target = transport.describeTarget ? await transport.describeTarget() : null;
+    if (args.residentOnly && target?.mode !== "pull") {
+      const message =
+        target?.mode === "error"
+          ? target.message
+          : "No resident After Effects agent is available for this transport.";
+      return toMcpResult({
+        ok: false,
+        result: null,
+        error: message,
+        errorCode: "NO_INSTANCE",
+        stack: null,
+        logs: [],
+        durationMs: 0,
+      });
+    }
+    const result = await transport.execute({
+      code: CODE,
+      payload: { compact },
+      label: "context",
+      undoGroup: false,
+    });
     if (!result.ok) return toMcpResult(result);
     // Node-side view of the instance landscape: which AE instances have a
     // live agent, and how THIS server reaches its one. The JSX above can only
     // describe the instance that answered.
-    const [instances, target] = await Promise.all([
-      listInstances(),
-      transport.describeTarget ? transport.describeTarget() : Promise.resolve(null),
-    ]);
+    const instances = await listInstances();
     const base =
       result.result !== null && typeof result.result === "object" && !Array.isArray(result.result)
         ? (result.result as Record<string, unknown>)
         : { value: result.result };
+    const answeredInstance = (base.instance as { id?: unknown } | null)?.id;
+    const residentReady = target?.mode === "pull" && answeredInstance === target.instance.id;
+    if (target?.mode === "pull" && !residentReady) {
+      return toMcpResult({
+        ...result,
+        ok: false,
+        result: null,
+        error: `Resident identity mismatch: requested ${target.instance.id}, answered ${String(answeredInstance)}.`,
+        errorCode: "NO_INSTANCE",
+      });
+    }
     const merged = {
       ...base,
       transport:
@@ -159,6 +207,7 @@ export const contextTool = defineTool({
             : target.mode === "push"
               ? { mode: "push" }
               : { mode: "error", message: target.message },
+      residentReady,
       instances: instances.map((i) => ({
         label: instanceLabel(i),
         id: i.id,
