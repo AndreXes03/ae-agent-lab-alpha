@@ -2,6 +2,8 @@
 
 Use this workflow in a connected MCP client. Planning and image judgement belong to the model; the local bridge executes typed operations. A chat client must support viewing returned images for the visual review step. Text-only success messages do not establish visual quality.
 
+Read [efficient workflows](EFFICIENT-WORKFLOWS.md) to keep discovery scoped and reuse validated retiming plans.
+
 ## A small, reviewable edit
 
 1. **Identify.** Read the live project with `ae_project_info`. Confirm the exact project path and intended instance. Inspect the target composition and relevant layers. If the path differs from the agreed copy, stop before editing.

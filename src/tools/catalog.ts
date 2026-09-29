@@ -26,21 +26,34 @@ export const catalogTool = defineTool({
   title: "Operation catalog",
   description:
     "Discover available atomic operations for ae_do. Without args: all categories with their " +
-    "operation names. With a category: detailed params per operation. Only operations this " +
-    "server will actually execute are listed.",
+    "operation names. With a category: detailed params per operation. Use detail: summary " +
+    "to browse names and descriptions without params, or operations: [exact names] to " +
+    "fetch only the schemas needed. Only operations this server will execute are listed.",
   group: "operations",
   blockedInReadOnly: false,
   effect: "read",
   inputShape: {
     category: z
       .string()
+      .max(100)
       .optional()
       .describe(
         "Filter by category. Omit to list all categories with operation counts, then drill into a specific category.",
       ),
+    operations: z
+      .array(z.string().min(1).max(120))
+      .min(1)
+      .max(12)
+      .refine((names) => new Set(names).size === names.length, "Operation names must be unique")
+      .optional()
+      .describe("Fetch up to 12 exact operation names, with or without a category."),
+    detail: z
+      .enum(["full", "summary"])
+      .optional()
+      .describe("full (default) includes params; summary includes names and descriptions only."),
   },
   handler: async (args, _transport) => {
-    if (!args.category) {
+    if (!args.category && !args.operations) {
       const summary = visibleCategories().map((c) => ({
         category: c,
         operationCount: visibleOps(c).length,
@@ -59,7 +72,7 @@ export const catalogTool = defineTool({
       });
     }
     const ops = visibleOps(args.category);
-    if (ops.length === 0) {
+    if (args.category && ops.length === 0 && !args.operations) {
       const available = visibleCategories();
       const withheld = denyUnregisteredCategory(args.category);
       if (withheld) {
@@ -80,7 +93,19 @@ export const catalogTool = defineTool({
         },
       );
     }
-    const details = ops.map((op) => ({
+    // Check all requested names against the visible set, not the registry.
+    // Unknown and policy-withheld names share one response so this lookup
+    // cannot reveal whether a hidden operation exists.
+    const selected = args.operations
+      ? args.operations.map((name) => ops.find((op) => op.name === name))
+      : ops;
+    if (selected.some((op) => !op)) {
+      return errorResult(
+        "UNKNOWN_OPERATION",
+        "one or more requested operations are unavailable; use ae_catalog to list available names",
+      );
+    }
+    const details = (selected as Operation[]).map((op) => ({
       name: op.name,
       description: op.description,
       readOnly: op.readOnly === true,
@@ -88,15 +113,22 @@ export const catalogTool = defineTool({
       // confirm: true, which the caller may pass only on the user's explicit
       // request. The injected `confirm` param carries the same contract.
       ...(op.appConfig ? { appConfig: true } : {}),
-      params: op.params.map((p) => ({
-        name: p.name,
-        type: p.type,
-        required: p.required ?? false,
-        description: p.description,
-        ...(p.nullable ? { nullable: true } : {}),
-        ...(p.default !== undefined ? { default: p.default } : {}),
-      })),
+      ...(args.detail === "summary"
+        ? {}
+        : {
+            params: op.params.map((p) => ({
+              name: p.name,
+              type: p.type,
+              required: p.required ?? false,
+              description: p.description,
+              ...(p.nullable ? { nullable: true } : {}),
+              ...(p.default !== undefined ? { default: p.default } : {}),
+            })),
+          }),
     }));
-    return jsonResult({ category: args.category, operations: details });
+    return jsonResult({
+      ...(args.category ? { category: args.category } : {}),
+      operations: details,
+    });
   },
 });

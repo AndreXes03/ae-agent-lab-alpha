@@ -41,6 +41,8 @@ Try the included demo or a disposable copy of your own work, then [tell us what 
 <details>
 <summary>Developer setup and source demo</summary>
 
+Current `main` also includes [efficient workflow guidance](docs/EFFICIENT-WORKFLOWS.md), selective operation lookup and an offline retiming planner. These changes are newer than the linked installer and have offline verification only.
+
 The source route requires macOS, After Effects 2026, [Node.js 24+](https://nodejs.org/en/download), and a configured Codex CLI. Use the [source release](https://github.com/AndreXes03/ae-agent-lab-alpha/releases/tag/v0.1.0-alpha.3-studio.2), keep it in a stable folder, and double-click `Start Demo.command`. It installs locked dependencies, builds the MCP server, and starts a named AE worker with a fresh copy of the bundled project. Keep its Terminal window open and paste the session prompt into a new Codex chat. Finish with `Stop Demo.command`.
 
 ```bash

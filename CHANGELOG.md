@@ -1,3 +1,10 @@
+## Unreleased — efficient workflows
+
+- Select exact operation schemas with `ae_catalog.operations` or browse category summaries.
+- Add offline `ae_workflow_plan` for bounded multi-property retiming, with explicit live readback requirements and verification steps.
+- Update agent guidance to reduce repeated discovery and reuse deterministic plans.
+- These source changes are newer than the published alpha.3-studio.2 installer; offline checks do not establish native acceptance or credit savings.
+
 ## 0.1.0-alpha.3-studio.2
 
 - Add a macOS installer for the compiled bridge and portable KYNEM Codex plugin.

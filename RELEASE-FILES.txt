@@ -34,9 +34,9 @@ demo/warm-glow/heavy-grain-hero.png
 demo/warm-glow/heavy-grain-preview.mp4
 docs/AGENT-WORKFLOW.md
 docs/ALPHA-QUICKSTART.md
-docs/assets/kynem-banner.svg
 docs/CLIENT-DEMO-PROMPT.md
 docs/DEMO-SESSION.md
+docs/EFFICIENT-WORKFLOWS.md
 docs/EXAMPLE-PROMPTS.md
 docs/FIRST-TESTER.md
 docs/FRIENDS-TUTORIAL.it.md
@@ -46,6 +46,7 @@ docs/RELEASE-CANDIDATE.md
 docs/STUDIO-TEST.it.md
 docs/TOOLS.md
 docs/UNINSTALL.md
+docs/assets/kynem-banner.svg
 fixtures/empty.json
 fixtures/simple.json
 jsx/agent.jsx
@@ -147,13 +148,16 @@ src/tools/render-frame.ts
 src/tools/save-project.ts
 src/tools/types.ts
 src/tools/version-info.ts
+src/tools/workflow-plan.ts
 src/transport/AeTransport.ts
 src/transport/FileIpcTransport.ts
 src/transport/instances.ts
 src/transport/launcher.ts
 src/validate.ts
+src/workflows/plan.ts
 tests/agent-install.test.ts
 tests/batch.test.ts
+tests/catalog-efficiency.test.ts
 tests/color.test.ts
 tests/e2e/feedback-fixes.test.ts
 tests/e2e/field-ops.test.ts
@@ -198,6 +202,7 @@ tests/transport-offline.test.ts
 tests/transport-pull.test.ts
 tests/undo-group.test.ts
 tests/validate.test.ts
+tests/workflow-plan.test.ts
 tsconfig.json
 tsconfig.test.json
 vitest.config.ts

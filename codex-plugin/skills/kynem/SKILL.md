@@ -25,3 +25,7 @@ Resolve the plugin root two directories above this skill directory. Read `local-
 - After a timeout or partial batch, inspect state before retrying because the operation may have completed.
 - Verify changes in the actual main composition. Render and inspect representative frames; verify playback when timing changes. Report unverified aspects honestly.
 - End with the saved copy path, changed elements, and preview path. Leave AE available to the user.
+
+## Keep calls and context focused
+
+Read `docs/EFFICIENT-WORKFLOWS.md` in the configured checkout when available. Fetch only needed catalog schemas with `ae_catalog.operations`; use summary discovery for unrelated properties. Reuse schemas within a session but reread mutable target values before edits. If available, use `ae_workflow_plan` for its supported retiming recipe on verified live measurements, then apply the returned batch sequentially with stopOnError. Treat a partial failure as partial work, not an automatic rollback. Do not call tools unsupported by the loaded version; fall back to the existing scoped workflow. Review representative frames and playback as needed, then stop when the user's brief is met.
