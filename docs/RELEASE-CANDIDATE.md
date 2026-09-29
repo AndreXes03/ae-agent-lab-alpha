@@ -1,0 +1,11 @@
+# Prepare a public source release candidate
+
+Use this checkout of `AndreXes03/ae-agent-lab-alpha` for public fixes. The development checkout connected to the local AE worker is separate; do not move it or repoint the MCP configuration as part of a release. Do not copy the development tree wholesale into this checkout. Review individual source changes, keep internal notes outside this repository, and add each new public file deliberately to `RELEASE-FILES.txt`.
+
+1. Confirm the branch and remote: `git status --short --branch` and `git remote -v`. The candidate must come from a clean, committed public checkout. Check `package.json`, `README.md`, `CHANGELOG.md`, the Italian tutorial, and `PROVENANCE.md` for the intended version, links, scope and MIT notices.
+2. Run `npm ci --ignore-scripts`, `npm run build`, and the offline checks relevant to the change. Do not describe these as native AE acceptance.
+3. Review `git diff` and commit locally. Create the candidate with `python3 scripts/package-source.py --output /absolute/path/to/new-candidate.zip`. The command refuses tracked changes, unapproved tracked paths, symlinks and an existing output file. It adds `PACKAGE-MANIFEST.json` with the commit ID and file count.
+4. Inspect the ZIP with `unzip -t /absolute/path/to/new-candidate.zip` and `unzip -Z1 /absolute/path/to/new-candidate.zip`. Every entry must be an allowlisted file under `ae-agent-lab/`, apart from the generated package manifest. Confirm `LICENSE` and `PROVENANCE.md` are present; confirm `PROJECT.md`, internal notes, conversations, credentials, `runtime/`, `node_modules/`, `dist/`, and local paths are absent. Extract to a disposable folder, install locked dependencies and build there for a source-install check.
+5. Record the candidate path, commit, checksum and offline checks for review. Native AE acceptance requires a separate run against an identified disposable project and named AE instance, with readback and inspected rendered images. Leave GitHub push, tags and release asset publication for the publication checkpoint. Before citing a new public release URL, verify that the tag and downloadable asset actually exist on GitHub.
+
+The source ZIP is the distribution format; this project does not publish to npm. The allowlist covers the current public source and demo only. Keep the existing MIT attribution in derivatives.

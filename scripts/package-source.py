@@ -18,9 +18,12 @@ from pathlib import Path, PurePosixPath
 EXCLUDED_COMPONENTS = {".git", "node_modules", "dist", "runtime", "secrets"}
 EXCLUDED_NAMES = {"PROJECT.md", "MORNING-CHECKPOINT.md", "PUBLICATION-REVIEW.md", "ALPHA-CHECKPOINT.md", "PUBLICATION-STATUS.md", "NATIVE-RECOVERY.md", "RECORDING-SETUP.md", "RECORDING-SHOTLIST.md", "RELEASE-DRAFT.md", "ALPHA-RELEASE-CHECKLIST.md", "CLEAN-INSTALL.md", ".npmrc", ".pypirc", ".netrc", "id_rsa", "id_ed25519"}
 SANITIZED_JSON = "demo/client-proof/client-proof-evidence.json"
+ALLOWLIST_NAME = "RELEASE-FILES.txt"
 MANIFEST_NAME = "PACKAGE-MANIFEST.json"
 ARCHIVE_ROOT = "ae-agent-lab"
 LOCAL_PATH_RE = re.compile(r"(?<![\w])/(?:Users|home)/[^\s\"'<>`),;]+")
+SECRET_RE = re.compile(rb"-----BEGIN [A-Z ]*PRIVATE KEY-----|ghp_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{20,}|sk-[A-Za-z0-9]{20,}")
+PERSONAL_PATH_RE = re.compile(rb"/(?:Users|home)/(?!me(?:/|\b))[A-Za-z0-9._-]+/")
 
 
 def git(root: Path, *args: str) -> str:
@@ -41,6 +44,31 @@ def tracked_paths(root: Path) -> list[str]:
         ["git", "ls-files", "-z"], cwd=root, check=True, stdout=subprocess.PIPE
     ).stdout
     return [os.fsdecode(entry) for entry in raw.split(b"\0") if entry]
+
+
+def release_paths(root: Path) -> list[str]:
+    allowed = []
+    for raw in (root / ALLOWLIST_NAME).read_text(encoding="utf-8").splitlines():
+        relative = raw.strip()
+        if not relative or relative.startswith("#"):
+            continue
+        path = PurePosixPath(relative)
+        if path.is_absolute() or ".." in path.parts or path.as_posix() != relative:
+            raise RuntimeError(f"invalid release path: {relative}")
+        allowed.append(relative)
+    if len(allowed) != len(set(allowed)):
+        raise RuntimeError("duplicate path in release allowlist")
+    tracked = set(tracked_paths(root))
+    unexpected = sorted(tracked - set(allowed))
+    missing = sorted(set(allowed) - tracked)
+    if unexpected or missing:
+        raise RuntimeError(
+            f"release allowlist mismatch; unapproved tracked paths={unexpected}, missing tracked paths={missing}"
+        )
+    disallowed = [relative for relative in allowed if excluded(relative)]
+    if disallowed:
+        raise RuntimeError(f"private or runtime paths in release allowlist: {disallowed}")
+    return sorted(allowed)
 
 
 def excluded(relative: str) -> bool:
@@ -114,18 +142,18 @@ def main() -> int:
         return 2
 
     commit = git(root, "rev-parse", "HEAD").strip()
-    dirty = bool(git(root, "status", "--porcelain"))
+    dirty = bool(git(root, "status", "--porcelain", "--untracked-files=no"))
+    if dirty:
+        raise RuntimeError("commit tracked changes before creating a release candidate")
+    allowed = release_paths(root)
     entries: dict[str, tuple[bytes, int]] = {}
     sanitized: list[str] = []
-    for relative in tracked_paths(root):
-        normalized = PurePosixPath(relative).as_posix()
-        if excluded(normalized) or normalized == MANIFEST_NAME:
-            continue
+    for normalized in allowed:
         source = root / Path(*PurePosixPath(normalized).parts)
         if source.is_symlink():
             raise RuntimeError(f"tracked symlink is not packaged: {normalized}")
         if not source.exists():
-            continue  # A tracked deletion remains reflected by git_dirty.
+            raise RuntimeError(f"release file missing: {normalized}")
         source_stat = source.stat()
         if not stat.S_ISREG(source_stat.st_mode):
             continue
@@ -144,13 +172,16 @@ def main() -> int:
             else:
                 data = sanitize_text(root, data.decode("utf-8")).encode("utf-8")
             sanitized.append(normalized)
+        if SECRET_RE.search(data) or PERSONAL_PATH_RE.search(data):
+            raise RuntimeError(f"possible credential or personal path in release file: {normalized}")
         entries[normalized] = (data, stat.S_IMODE(source_stat.st_mode))
 
     manifest = {
-        "format": "tracked working-tree source snapshot",
+        "format": "committed allowlisted source snapshot",
         "createdAt": datetime.now(timezone.utc).isoformat(),
         "gitCommit": commit,
-        "gitDirty": dirty,
+        "gitDirty": False,
+        "allowlist": ALLOWLIST_NAME,
         "includedFileCount": len(entries) + 1,
         "excluded": [
             "runtime/", "node_modules/", "dist/", ".git/", "demo/runs/",
