@@ -1,0 +1,32 @@
+node_modules/
+dist/
+coverage/
+*.log
+*.tgz
+.DS_Store
+.vscode/
+.idea/
+.claude
+
+# Secrets. Nothing here today — the entry exists so the first .env someone
+# creates cannot be committed by accident.
+.env
+.env.*
+
+# Local MCP client wiring pointing at this checkout. Per-developer, and the
+# README tells users to write their own.
+.mcp.json
+
+# Ephemeral file-IPC state exchanged with After Effects (request/response
+# JSON, dispatcher log, test-time project backups) — never committed.
+runtime/
+
+# Reproducible native preview frames; keep the contact sheets and GIF.
+demo/evidence/motion-frames/
+
+demo/warm-glow/motion-frames/
+demo/warm-glow/textured-frames/
+demo/warm-glow/heavy-grain-frames/
+
+# Unique editable copies and captured local client sessions.
+demo/runs/

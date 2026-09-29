@@ -1,0 +1,26 @@
+name: Feature request
+description: Ask for a new tool, operation, parameter, or workflow to be supported.
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem are you trying to solve?
+      description: Describe the workflow or capability you're missing.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed tool / operation
+      description: |
+        Optional. Describe the typed MCP operation or workflow you need. Include a small example if useful. Avoid requests that depend on arbitrary code execution.
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives you've tried
+      description: Mention the typed tools or operations you tried and what blocked the workflow.
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context

@@ -1,0 +1,68 @@
+name: Bug report
+description: A tool behaves incorrectly, the dispatcher won't respond, or a crash happens.
+labels: [bug, triage]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        This is a experimental public alpha. Include only details safe to share; redact client names, project paths, and sensitive log content. Never attach a client project or secrets. See `docs/FIRST-TESTER.md` for safe setup and feedback guidance.
+  - type: input
+    id: ae-version
+    attributes:
+      label: After Effects version
+      placeholder: "e.g. 2026 (26.5)"
+    validations:
+      required: true
+  - type: input
+    id: os
+    attributes:
+      label: OS
+      placeholder: "e.g. macOS 15.x"
+    validations:
+      required: true
+  - type: input
+    id: node
+    attributes:
+      label: Node.js version
+      placeholder: "output of `node -v`"
+    validations:
+      required: true
+  - type: input
+    id: client
+    attributes:
+      label: MCP client
+      placeholder: "e.g. Codex CLI version"
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps to reproduce
+      description: Exact prompt and MCP operation/tool names. Include whether you used a disposable project copy.
+      placeholder: |
+        1. call `ae_do` with { operation: "keyframe.add", args: { ... } }
+        2. …
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+    validations:
+      required: true
+  - type: textarea
+    id: dispatcher-log
+    attributes:
+      label: Dispatcher log (relevant excerpt)
+      description: Relevant error/log excerpt only. Redact personal or client information; do not include credentials or project contents.
+      render: text
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context

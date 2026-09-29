@@ -1,0 +1,73 @@
+name: Tester feedback
+description: Share the result of trying an example or local workflow.
+labels: [tester-feedback]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        See `docs/FIRST-TESTER.md` for safe setup. Share only details safe to make public. Redact client names and paths; never attach client projects, credentials, or private footage.
+  - type: input
+    id: workflow
+    attributes:
+      label: Workflow or example tried
+      placeholder: "e.g. Exposure timing prompt"
+    validations:
+      required: true
+  - type: dropdown
+    id: result
+    attributes:
+      label: Result
+      options:
+        - Worked as expected
+        - Partly worked
+        - Failed
+        - Could not complete
+    validations:
+      required: true
+  - type: input
+    id: ae-version
+    attributes:
+      label: After Effects version
+      placeholder: "e.g. 2026 (26.5)"
+    validations:
+      required: true
+  - type: input
+    id: macos
+    attributes:
+      label: macOS version
+      placeholder: "e.g. macOS 15.x"
+    validations:
+      required: true
+  - type: input
+    id: node
+    attributes:
+      label: Node.js version
+      placeholder: "output of node -v"
+    validations:
+      required: true
+  - type: input
+    id: client
+    attributes:
+      label: Codex client
+      placeholder: "e.g. Codex CLI version"
+    validations:
+      required: true
+  - type: textarea
+    id: prompt
+    attributes:
+      label: Prompt and operation names
+      description: Include the exact prompt and MCP tool/operation names, with sensitive details removed.
+    validations:
+      required: true
+  - type: textarea
+    id: outcome
+    attributes:
+      label: Expected and observed result
+      description: Include useful project-copy/render paths only if safe to share. Never attach a client project.
+    validations:
+      required: true
+  - type: textarea
+    id: errors
+    attributes:
+      label: Errors or notes
+      description: Include a redacted error excerpt if relevant; omit private paths and credentials.
