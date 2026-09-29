@@ -6,4 +6,4 @@ Install dependencies with `npm ci --ignore-scripts` and build with `npm run buil
 
 Open an issue or pull request with a small reproducible brief, expected and observed results, and redacted errors. Do not upload client projects, private footage, or credentials. The runtime derives from an MIT-licensed kumo.productions project: retain the inherited copyright and [LICENSE](LICENSE) notices and describe new capabilities accurately.
 
-Distribution is through GitHub source and the [v0.1.0-alpha.1 release ZIP](https://github.com/AndreXes03/ae-agent-lab-alpha/releases/tag/v0.1.0-alpha.1). There is no npm, MCP Registry, or automated publish workflow.
+Distribution is through GitHub source and the [v0.1.0-alpha.2 release ZIP](https://github.com/AndreXes03/ae-agent-lab-alpha/releases/tag/v0.1.0-alpha.2). There is no npm, MCP Registry, or automated publish workflow.

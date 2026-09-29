@@ -2,7 +2,7 @@
 
 AE Agent Lab is an experimental local bridge between a **Codex chat** and Adobe After Effects. Codex uses MCP tools to inspect a project, make a scoped edit, and render frames for review. The bridge runs on your Mac. There is no After Effects panel or separate chat app.
 
-The public alpha is [v0.1.0-alpha.1](https://github.com/AndreXes03/ae-agent-lab-alpha/releases/tag/v0.1.0-alpha.1). Start with the included Warm Glow demo. The documented native proof covers **one Mac running After Effects 2026 (26.5)**; other setups and projects need their own validation.
+The public alpha is [v0.1.0-alpha.2](https://github.com/AndreXes03/ae-agent-lab-alpha/releases/tag/v0.1.0-alpha.2). Start with the included Warm Glow demo. The documented native proof covers **one Mac running After Effects 2026 (26.5)**; other setups and projects need their own validation.
 
 ![A frame rendered from the editable Warm Glow After Effects demo project](demo/warm-glow/heavy-grain-hero.png)
 
@@ -14,7 +14,7 @@ The public alpha is [v0.1.0-alpha.1](https://github.com/AndreXes03/ae-agent-lab-
 - [Node.js 24 or newer](https://nodejs.org/en/download) and Codex CLI installed and configured.
 - In After Effects, enable **Preferences → Scripting & Expressions → Allow Scripts to Write Files and Access Network**. macOS may ask for Automation access.
 
-Download the complete source ZIP from the [alpha release](https://github.com/AndreXes03/ae-agent-lab-alpha/releases/tag/v0.1.0-alpha.1), unpack it in a stable folder, and keep that folder in place while using the demo.
+Download the complete source ZIP from the [alpha release](https://github.com/AndreXes03/ae-agent-lab-alpha/releases/tag/v0.1.0-alpha.2), unpack it in a stable folder, and keep that folder in place while using the demo.
 
 ## Start the demo
 
