@@ -1,3 +1,5 @@
+> **Studio test candidate — 0.1.0-alpha.3-studio.1.** Local test build after alpha.2, not a published release. This source ZIP has a macOS launcher, not a self-contained installer. Node.js 24+, npm, Codex CLI and After Effects are required; the first launch downloads locked dependencies. Start with [the studio guide](docs/STUDIO-TEST.it.md).
+
 # AE Agent Lab
 
 AE Agent Lab is an experimental local bridge between a **Codex chat** and Adobe After Effects. Codex uses MCP tools to inspect a project, make a scoped edit, and render frames for review. The bridge runs on your Mac. There is no After Effects panel or separate chat app.
@@ -44,6 +46,7 @@ The included [project](demo/warm-glow-heavy-grain.aep) and [rendered proof](demo
 - [Quickstart and connection help](docs/ALPHA-QUICKSTART.md)
 - [First tester tasks and feedback](docs/FIRST-TESTER.md)
 - [Example prompts](docs/EXAMPLE-PROMPTS.md) and [agent workflow](docs/AGENT-WORKFLOW.md)
+- [Motion reveal planner and verification workflow](docs/MOTION-QUALITY.md)
 - [Disconnect and uninstall](docs/UNINSTALL.md)
 
 The runtime derives from the MIT-licensed kumo.productions MCP After Effects project. Its copyright and license notices are retained in [LICENSE](LICENSE).

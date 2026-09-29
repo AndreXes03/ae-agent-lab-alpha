@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.1.0-alpha.3-studio.1 — local studio candidate
+
+Not published. Intended for a controlled macOS test on copied projects.
+
+- Added offline motion planning and read-only camera Position/Scale auditing; neither applies changes automatically.
+- Added fresh-layer and duplicate-target checks, two-phase pivot preparation/readback, and frame-order validation.
+- Added a macOS project file picker launcher delegating to the existing isolated-copy workflow.
+- Agent guidance now verifies the delivery master, scopes effects to intended components, and separates technical checks from visual judgement.
+- Build and focused offline tests verified locally; no new native AE acceptance on another Mac or external project.
+
 ## 0.1.0-alpha.2 — 2026-09-29
 
 Distribution process update; no new After Effects operations or interface.

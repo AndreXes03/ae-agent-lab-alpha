@@ -10,6 +10,7 @@ import { compInfoTool } from "./comp-info.js";
 import { contextTool } from "./context.js";
 import { doTool } from "./do.js";
 import { layerInfoTool } from "./layer-info.js";
+import { motionPlanTool } from "./motion-plan.js";
 import { projectExportTool } from "./project-export.js";
 import { projectImportTool } from "./project-import.js";
 import { projectInfoTool } from "./project-info.js";
@@ -45,7 +46,7 @@ export const INSTANCE_PARAM = z
   );
 
 /** Tools that never contact After Effects have no instance to pick. */
-const INSTANCE_FREE_TOOLS = new Set(["ae_catalog"]);
+const INSTANCE_FREE_TOOLS = new Set(["ae_catalog", "ae_motion_plan"]);
 
 /**
  * A view of `transport` whose calls go to `instance` unless a call names one
@@ -84,6 +85,7 @@ export const ALL_TOOLS: AnyTool[] = [
   projectImportTool,
   versionInfoTool,
   catalogTool,
+  motionPlanTool,
   doTool,
   contextTool,
 ].map((tool) => withInstanceParam(tool as AnyTool));

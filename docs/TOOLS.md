@@ -4,7 +4,7 @@ Generated from `src/tools/**` via `npm run docs:tools` — do not edit by hand. 
 
 `ae_do`'s operation registry (`layer.*`, `keyframe.*`, …) is discoverable at runtime via `ae_catalog` and is **not** listed in this file.
 
-11 tools across 4 groups.
+12 tools across 4 groups.
 
 ## Inspect
 
@@ -40,7 +40,8 @@ Single-frame rendering for visual verification.
 
 Atomic operation dispatch — discover with `ae_catalog`, execute with `ae_do`.
 
-| Tool         | Description                                            |
-| ------------ | ------------------------------------------------------ |
-| `ae_catalog` | Discover available atomic operations for ae_do.        |
-| `ae_do`      | Execute an atomic operation by name (from ae_catalog). |
+| Tool             | Description                                                     |
+| ---------------- | --------------------------------------------------------------- |
+| `ae_catalog`     | Discover available atomic operations for ae_do.                 |
+| `ae_motion_plan` | Offline motion planner for typography, panels, icons, and bars. |
+| `ae_do`          | Execute an atomic operation by name (from ae_catalog).          |

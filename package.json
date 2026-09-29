@@ -1,6 +1,6 @@
 {
   "name": "ae-agent-lab",
-  "version": "0.1.0-alpha.2",
+  "version": "0.1.0-alpha.3-studio.1",
   "private": true,
   "description": "Experimental local After Effects agent bridge derived from kumo.productions' MIT runtime.",
   "keywords": [

@@ -122,11 +122,12 @@ function show(session, live) {
 
 function showReadyPrompt(session) {
   console.log("\nReady-to-paste prompt:");
+  console.log(`Read the local workflow at '${join(root, "docs", "AGENT-WORKFLOW.md")}' before editing. Validate the actual delivery/main composition and preserve existing animation outside my brief; use offline motion audit only on measured data. If my brief is already provided, proceed with that scoped edit without asking for it again.`);
   if (session.customSource) {
-    console.log(`Use only the After Effects worker '${worker}' and copied project '${session.project}'. Inspect and confirm the project path, composition, layers, and any missing footage. Tell me what you found, then ask for my specific edit brief before changing anything. Once I give the brief, save a new variant inside '${session.runDir}' before editing, use typed MCP operations, render representative frames and inspect the images, then save and report the actual paths. Do not open or modify the original '${session.input}' or any other AE instance. Do not use arbitrary ExtendScript.`);
+    console.log(`Use only the After Effects worker '${worker}' and copied project '${session.project}'. Inspect and confirm the project path, composition, layers, and any missing footage. Tell me what you found; if I have not supplied a specific edit brief, ask for it before changing anything. For the supplied brief, save a new variant inside '${session.runDir}' before editing, use typed MCP operations, render representative frames and inspect the images, then save and report the actual paths. Do not open or modify the original '${session.input}' or any other AE instance. Do not use arbitrary ExtendScript.`);
     return;
   }
-  console.log(`Use only the After Effects worker '${worker}' and project '${session.project}'. Inspect the project and layers, confirm this exact copied project, and report what you found. Wait for my edit brief before changing anything. For the requested edit, save a new variant inside the session run folder first, use typed MCP operations, read back the result, render representative frames and inspect them, then save and report all output paths. Do not touch any other AE instance or project.`);
+  console.log(`Use only the After Effects worker '${worker}' and project '${session.project}'. Inspect the project and layers, confirm this exact copied project, and report what you found. If I have not supplied an edit brief, wait for it before changing anything. For the requested edit, save a new variant inside the session run folder first, use typed MCP operations, read back the result, render representative frames and inspect them, then save and report all output paths. Do not touch any other AE instance or project.`);
 }
 
 function projectInRun(session, file) {

@@ -53,5 +53,5 @@ printf 'Compilo il server locale…\n'
 npm run build
 
 node scripts/connect-codex.mjs
-node scripts/demo-session.mjs start
+node scripts/demo-session.mjs start "$@"
 printf '\nDemo pronta. Segui il prompt mostrato sopra in Codex.\n'
