@@ -34,6 +34,7 @@ demo/warm-glow/heavy-grain-hero.png
 demo/warm-glow/heavy-grain-preview.mp4
 docs/AGENT-WORKFLOW.md
 docs/ALPHA-QUICKSTART.md
+docs/assets/kynem-banner.svg
 docs/CLIENT-DEMO-PROMPT.md
 docs/DEMO-SESSION.md
 docs/EXAMPLE-PROMPTS.md

@@ -1,22 +1,22 @@
-name: Tester feedback
-description: Share the result of trying an example or local workflow.
+name: Tried KYNEM? Tell us how it went
+description: Share what worked, where you got stuck, or what would make KYNEM more useful.
 labels: [tester-feedback]
 body:
   - type: markdown
     attributes:
       value: |
-        See `docs/FIRST-TESTER.md` for safe setup. Share only details safe to make public. Redact client names and paths; never attach client projects, credentials, or private footage.
+        Thanks for trying KYNEM. A few sentences are enough. Issues are public: please redact client names, private paths, and credentials. You do not need to upload a project or footage.
   - type: input
     id: workflow
     attributes:
-      label: Workflow or example tried
-      placeholder: "e.g. Exposure timing prompt"
+      label: What did you try?
+      placeholder: "e.g. Installed KYNEM, then asked it to retime a title on a copied project"
     validations:
       required: true
   - type: dropdown
     id: result
     attributes:
-      label: Result
+      label: How did it go?
       options:
         - Worked as expected
         - Partly worked
@@ -25,49 +25,25 @@ body:
     validations:
       required: true
   - type: input
-    id: ae-version
+    id: setup
     attributes:
-      label: After Effects version
-      placeholder: "e.g. 2026 (26.5)"
-    validations:
-      required: true
-  - type: input
-    id: macos
-    attributes:
-      label: macOS version
-      placeholder: "e.g. macOS 15.x"
-    validations:
-      required: true
-  - type: input
-    id: node
-    attributes:
-      label: Node.js version
-      placeholder: "output of node -v"
-    validations:
-      required: true
-  - type: input
-    id: client
-    attributes:
-      label: Codex client
-      placeholder: "e.g. Codex CLI version"
-    validations:
-      required: true
+      label: Your setup
+      description: macOS and After Effects versions help us reproduce issues.
+      placeholder: "e.g. macOS 15, After Effects 2026, Codex desktop"
   - type: textarea
     id: prompt
     attributes:
-      label: Prompt and operation names
-      description: Include the exact prompt and MCP tool/operation names, with sensitive details removed.
-    validations:
-      required: true
+      label: Prompt, if useful
+      description: Share the wording or operation names only if they help explain the result. Remove sensitive details.
   - type: textarea
     id: outcome
     attributes:
-      label: Expected and observed result
-      description: Include useful project-copy/render paths only if safe to share. Never attach a client project.
+      label: What happened, and what would you improve?
+      description: Tell us what you expected and what you saw. A suggestion or rough edge is welcome too.
     validations:
       required: true
   - type: textarea
     id: errors
     attributes:
-      label: Errors or notes
-      description: Include a redacted error excerpt if relevant; omit private paths and credentials.
+      label: Error or screenshot, if useful
+      description: Include only redacted details safe to share publicly.

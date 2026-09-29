@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 520" role="img" aria-labelledby="title desc">
+  <title id="title">KYNEM</title>
+  <desc id="desc">KYNEM wordmark on a dark field, with an orange motion arc and the line Motion starts with a conversation.</desc>
+  <rect width="1600" height="520" fill="#171714"/>
+  <path d="M0 404H1600M0 405H1600" stroke="#514537" stroke-width="1"/>
+  <path d="M1190 -90C1010 44 1087 325 1450 406M1244 -90C1064 44 1141 325 1504 406M1298 -90C1118 44 1195 325 1558 406" fill="none" stroke="#D86835" stroke-width="2" opacity=".68"/>
+  <circle cx="1190" cy="165" r="101" fill="#D86835" opacity=".12"/>
+  <circle cx="1190" cy="165" r="9" fill="#EB8048"/>
+  <path d="M1190 147v-55m0 146v-55m18-18h55m-146 0h55" stroke="#EB8048" stroke-width="1.5" opacity=".8"/>
+  <text x="96" y="71" fill="#E97843" font-family="Arial,Helvetica,sans-serif" font-size="20" font-weight="700" letter-spacing="5">K / 001</text>
+  <text x="94" y="307" fill="#F2E8D6" font-family="Arial,Helvetica,sans-serif" font-size="181" font-weight="700" letter-spacing="-10">KYNEM</text>
+  <text x="99" y="367" fill="#D7C8B3" font-family="Arial,Helvetica,sans-serif" font-size="29" letter-spacing="1.1">Motion starts with a conversation.</text>
+  <text x="98" y="466" fill="#AFA290" font-family="Arial,Helvetica,sans-serif" font-size="18" letter-spacing="3">CODEX  ×  AFTER EFFECTS</text>
+  <text x="1432" y="466" fill="#AFA290" font-family="Arial,Helvetica,sans-serif" font-size="18" letter-spacing="3">ALPHA</text>
+</svg>
