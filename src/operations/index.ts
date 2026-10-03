@@ -20,6 +20,7 @@ import "./batch.js";
 import "./timeline.js";
 import "./layer-advanced.js";
 import "./render.js";
+import "./review.js";
 import "./inspect.js";
 import "./footage.js";
 import "./item.js";

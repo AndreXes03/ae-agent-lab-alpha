@@ -49,28 +49,103 @@ async function op(operation, args) {
 
 try {
   await client.connect(transport);
-  const info=await call("ae_comp_info",{nameOrId:comp},"read saved scene and layer structure");
-  for(const name of ["Orange atmosphere","Solar core","Eclipse","Headline"]) {
-    if(!info.layers.some(l=>l.name===name)) throw new Error("Missing scene layer: "+name);
+  const info = await call(
+    "ae_comp_info",
+    { nameOrId: comp },
+    "read saved scene and layer structure",
+  );
+  for (const name of ["Orange atmosphere", "Solar core", "Eclipse", "Headline"]) {
+    if (!info.layers.some((l) => l.name === name)) throw new Error("Missing scene layer: " + name);
   }
-  await call("ae_save_project",{path:project},"save animated copy");
+  await call("ae_save_project", { path: project }, "save animated copy");
   // Render review: first pass had an abrupt halo boundary and clipped yellow.
-  await op("effect.add",{comp,layer:"Orange atmosphere",matchName:"ADBE GROW BOUNDS"});
-  await op("effect.set_property",{comp,layer:"Orange atmosphere",effectIndex:2,property:[1],value:350});
-  await op("effect.move",{comp,layer:"Orange atmosphere",effectIndex:2,toIndex:1});
-  await op("effect.set_property",{comp,layer:"Solar core",effectIndex:2,property:[3],value:100});
-  await op("effect.set_property",{comp,layer:"Solar core",effectIndex:2,property:[4],value:0.25});
-  await op("effect.set_property",{comp,layer:"Solar core",effectIndex:1,property:[2],value:[1,0.76,0.30,1]});
-  const key=async(layer,property,keys)=>op("keyframe.apply",{comp,layer,property:["Transform",property],keys:keys.map(([time,value])=>({time,value,interp:"ease"})),replace:true});
-  await key("Eclipse","Position",[[0,[1120,450]],[0.6,[1120,450]],[1.8,[1082,402]],[2.8,[1090,411]],[4,[1082,402]]]);
-  await key("Orange atmosphere","Opacity",[[0,0],[0.5,5],[1.8,48],[2.6,38],[4,48]]);
-  await key("Orange atmosphere","Scale",[[0,[80,80]],[1.8,[108,108]],[2.6,[100,100]],[4,[108,108]]]);
-  for(const [layer,y,delay] of [["Headline",365,0.15],["Caption",630,0.4]]) {
-    await key(layer,"Position",[[delay,[layer==="Headline"?100:108,y+45]],[delay+0.9,[layer==="Headline"?100:108,y]]]);
-    await key(layer,"Opacity",[[delay,0],[delay+0.65,100]]);
+  await op("effect.add", { comp, layer: "Orange atmosphere", matchName: "ADBE GROW BOUNDS" });
+  await op("effect.set_property", {
+    comp,
+    layer: "Orange atmosphere",
+    effectIndex: 2,
+    property: [1],
+    value: 350,
+  });
+  await op("effect.move", { comp, layer: "Orange atmosphere", effectIndex: 2, toIndex: 1 });
+  await op("effect.set_property", {
+    comp,
+    layer: "Solar core",
+    effectIndex: 2,
+    property: [3],
+    value: 100,
+  });
+  await op("effect.set_property", {
+    comp,
+    layer: "Solar core",
+    effectIndex: 2,
+    property: [4],
+    value: 0.25,
+  });
+  await op("effect.set_property", {
+    comp,
+    layer: "Solar core",
+    effectIndex: 1,
+    property: [2],
+    value: [1, 0.76, 0.3, 1],
+  });
+  const key = async (layer, property, keys) =>
+    op("keyframe.apply", {
+      comp,
+      layer,
+      property: ["Transform", property],
+      keys: keys.map(([time, value]) => ({ time, value, interp: "ease" })),
+      replace: true,
+    });
+  await key("Eclipse", "Position", [
+    [0, [1120, 450]],
+    [0.6, [1120, 450]],
+    [1.8, [1082, 402]],
+    [2.8, [1090, 411]],
+    [4, [1082, 402]],
+  ]);
+  await key("Orange atmosphere", "Opacity", [
+    [0, 0],
+    [0.5, 5],
+    [1.8, 48],
+    [2.6, 38],
+    [4, 48],
+  ]);
+  await key("Orange atmosphere", "Scale", [
+    [0, [80, 80]],
+    [1.8, [108, 108]],
+    [2.6, [100, 100]],
+    [4, [108, 108]],
+  ]);
+  for (const [layer, y, delay] of [
+    ["Headline", 365, 0.15],
+    ["Caption", 630, 0.4],
+  ]) {
+    await key(layer, "Position", [
+      [delay, [layer === "Headline" ? 100 : 108, y + 45]],
+      [delay + 0.9, [layer === "Headline" ? 100 : 108, y]],
+    ]);
+    await key(layer, "Opacity", [
+      [delay, 0],
+      [delay + 0.65, 100],
+    ]);
   }
-  await call("ae_save_project",{},"save revised motion");
-  await call("ae_render_frame",{compNameOrId:comp,times:[0,0.5,1,1.8,2.6,3.8],outPath:join(evidence,"after.png"),contactSheet:{},analyze:true},"render motion review");
+  await call("ae_save_project", {}, "save revised motion");
+  await call(
+    "ae_render_frame",
+    {
+      compNameOrId: comp,
+      times: [0, 0.5, 1, 1.8, 2.6, 3.8],
+      outPath: join(evidence, "after.png"),
+      contactSheet: {},
+      analyze: true,
+    },
+    "render motion review",
+  );
   console.log("Animated scene ready");
-} catch(error) { console.error(error); process.exitCode=1; }
-finally { await client.close().catch(()=>{}); }
+} catch (error) {
+  console.error(error);
+  process.exitCode = 1;
+} finally {
+  await client.close().catch(() => {});
+}

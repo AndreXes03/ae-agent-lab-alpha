@@ -15,7 +15,7 @@ export const motionPlanTool = defineTool({
   name: "ae_motion_plan",
   title: "Plan motion reveals",
   description:
-    "Offline motion planner for typography, panels, icons, and bars. Prepare pivots, reread positions, then request reveal ops. Audit phase checks camera samples without proposing edits. It never contacts After Effects or applies edits. Supply real readback and render before/after.",
+    "Offline motion planner with per-layer timing, easing, Position speeds and anticipation/overshoot waypoints. Prepare pivots, reread positions, then request reveal ops. Audit phase checks camera samples without proposing edits. It never contacts After Effects or applies edits. Supply real readback and render before/after.",
   group: "operations",
   blockedInReadOnly: false,
   effect: "read",
@@ -33,6 +33,31 @@ export const motionPlanTool = defineTool({
         items: z
           .array(
             z.object({
+              motion: z
+                .strictObject({
+                  startFrame: frame.optional(),
+                  durationFrames: z.number().int().min(2).optional(),
+                  positionOffset: vec2.optional(),
+                  scaleFrom: vec2.optional(),
+                  outInfluence: z.number().min(0.1).max(100).optional(),
+                  inInfluence: z.number().min(0.1).max(100).optional(),
+                  positionStartSpeed: z.number().finite().nonnegative().optional(),
+                  positionEndSpeed: z.number().finite().nonnegative().optional(),
+                  positionWaypoints: z
+                    .array(
+                      z.strictObject({
+                        frameOffset: frame,
+                        offset: vec2,
+                        speed: z.number().finite().nonnegative().optional(),
+                      }),
+                    )
+                    .max(8)
+                    .optional(),
+                })
+                .optional()
+                .describe(
+                  "Shot-specific timing/curves. Position speeds in px/s; waypoints relative to target. Preserves fresh-layer guards; never apply to existing animation.",
+                ),
               layer: layerRef,
               preset: z.enum(["typography", "panel", "icon", "bar"]),
               targetPosition: vec2,

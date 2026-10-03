@@ -8,7 +8,6 @@ import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js"
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const instance = process.argv[2] || "ae-heavy-grain";
 const comp = "Warm Glow";
-const project = join(root, "demo", "warm-glow-textured.aep");
 const evidence = join(root, "demo", "warm-glow");
 const client = new Client({ name: "ae-agent-lab-edit", version: "0.0.0" }, { capabilities: {} });
 const transport = new StdioClientTransport({
@@ -48,11 +47,43 @@ async function op(operation, args) {
 }
 
 try {
- await client.connect(transport);
- const state=await call("ae_project_info",{},"verify heavy grain copy");
- if(!state.file?.endsWith("warm-glow-heavy-grain.aep")) throw new Error("Wrong project");
- await op("keyframe.apply",{comp,layer:"Finish - exposure bloom",property:["Effects","ADBE Exposure2","ADBE Exposure2-0003"],keys:[{time:0,value:0,interp:"ease"},{time:1.2,value:0.5,interp:"ease"},{time:1.8,value:2.5,interp:"ease"},{time:2.6,value:0.6,interp:"ease"},{time:4,value:1.5,interp:"ease"}],replace:true});
- for(const [index,value] of [[11,2.4],[12,1.5],[34,0.12]]) await op("effect.set_property",{comp,layer:"Finish - heavy film grain",effectIndex:1,property:[index],value});
- await call("ae_save_project",{},"save heavy grain and exposure");
- await call("ae_render_frame",{compNameOrId:comp,time:1.8,outPath:join(evidence,"heavy-grain-hero.png")},"render photographic finish");
-} catch(error) {console.error(error);process.exitCode=1;} finally {await client.close().catch(()=>{});}
+  await client.connect(transport);
+  const state = await call("ae_project_info", {}, "verify heavy grain copy");
+  if (!state.file?.endsWith("warm-glow-heavy-grain.aep")) throw new Error("Wrong project");
+  await op("keyframe.apply", {
+    comp,
+    layer: "Finish - exposure bloom",
+    property: ["Effects", "ADBE Exposure2", "ADBE Exposure2-0003"],
+    keys: [
+      { time: 0, value: 0, interp: "ease" },
+      { time: 1.2, value: 0.5, interp: "ease" },
+      { time: 1.8, value: 2.5, interp: "ease" },
+      { time: 2.6, value: 0.6, interp: "ease" },
+      { time: 4, value: 1.5, interp: "ease" },
+    ],
+    replace: true,
+  });
+  for (const [index, value] of [
+    [11, 2.4],
+    [12, 1.5],
+    [34, 0.12],
+  ])
+    await op("effect.set_property", {
+      comp,
+      layer: "Finish - heavy film grain",
+      effectIndex: 1,
+      property: [index],
+      value,
+    });
+  await call("ae_save_project", {}, "save heavy grain and exposure");
+  await call(
+    "ae_render_frame",
+    { compNameOrId: comp, time: 1.8, outPath: join(evidence, "heavy-grain-hero.png") },
+    "render photographic finish",
+  );
+} catch (error) {
+  console.error(error);
+  process.exitCode = 1;
+} finally {
+  await client.close().catch(() => {});
+}

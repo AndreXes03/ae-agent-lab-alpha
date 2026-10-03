@@ -1,6 +1,6 @@
 {
   "name": "ae-agent-lab",
-  "version": "0.1.0-alpha.3-studio.3",
+  "version": "0.1.0-alpha.3-studio.4",
   "private": true,
   "description": "Experimental local After Effects agent bridge derived from kumo.productions' MIT runtime.",
   "keywords": [
@@ -16,6 +16,10 @@
   ],
   "homepage": "https://github.com/AndreXes03/ae-agent-lab-alpha",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AndreXes03/ae-agent-lab-alpha.git"
+  },
   "bin": {
     "ae-agent-lab": "dist/index.js"
   },
@@ -69,9 +73,5 @@
   "engines": {
     "node": ">=24.0.0"
   },
-  "mcpName": "local.ae-agent-lab",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/AndreXes03/ae-agent-lab-alpha.git"
-  }
+  "mcpName": "local.ae-agent-lab"
 }

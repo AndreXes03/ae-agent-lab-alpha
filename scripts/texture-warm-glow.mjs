@@ -48,22 +48,56 @@ async function op(operation, args) {
 }
 
 try {
- await client.connect(transport);
- const state=await call("ae_project_info",{},"inspect isolated worker");
- if(state.file || state.numItems>0) throw new Error("Fresh worker required");
- await op("project.open",{path:project});
- await call("ae_comp_info",{nameOrId:comp},"inspect saved composition");
- await call("ae_save_project",{path:join(root,"demo","warm-glow-textured.aep")},"save texture copy");
- for(const [name,matchName,values] of [
-  ["Finish - optical softness","ADBE Gaussian Blur 2",[[1,6],[3,true]]],
-  ["Finish - fine monochrome grain","ADBE Noise",[[1,2.5],[2,false],[3,true]]]
- ]) {
-  await op("layer.create_adjustment",{comp,name});
-  await op("layer.move",{comp,layer:name,toIndex:5});
-  await op("effect.add",{comp,layer:name,matchName});
-  for(const [index,value] of values) await op("effect.set_property",{comp,layer:name,effectIndex:1,property:[index],value});
- }
- await call("ae_save_project",{},"save finish");
- await call("ae_render_frame",{compNameOrId:comp,time:1.8,outPath:join(evidence,"textured-hero.png")},"render texture review");
-} catch(error) { console.error(error);process.exitCode=1; }
-finally {await client.close().catch(()=>{});}
+  await client.connect(transport);
+  const state = await call("ae_project_info", {}, "inspect isolated worker");
+  if (state.file || state.numItems > 0) throw new Error("Fresh worker required");
+  await op("project.open", { path: project });
+  await call("ae_comp_info", { nameOrId: comp }, "inspect saved composition");
+  await call(
+    "ae_save_project",
+    { path: join(root, "demo", "warm-glow-textured.aep") },
+    "save texture copy",
+  );
+  for (const [name, matchName, values] of [
+    [
+      "Finish - optical softness",
+      "ADBE Gaussian Blur 2",
+      [
+        [1, 6],
+        [3, true],
+      ],
+    ],
+    [
+      "Finish - fine monochrome grain",
+      "ADBE Noise",
+      [
+        [1, 2.5],
+        [2, false],
+        [3, true],
+      ],
+    ],
+  ]) {
+    await op("layer.create_adjustment", { comp, name });
+    await op("layer.move", { comp, layer: name, toIndex: 5 });
+    await op("effect.add", { comp, layer: name, matchName });
+    for (const [index, value] of values)
+      await op("effect.set_property", {
+        comp,
+        layer: name,
+        effectIndex: 1,
+        property: [index],
+        value,
+      });
+  }
+  await call("ae_save_project", {}, "save finish");
+  await call(
+    "ae_render_frame",
+    { compNameOrId: comp, time: 1.8, outPath: join(evidence, "textured-hero.png") },
+    "render texture review",
+  );
+} catch (error) {
+  console.error(error);
+  process.exitCode = 1;
+} finally {
+  await client.close().catch(() => {});
+}

@@ -52,7 +52,7 @@ Generate a **new UUID for each intended edit**, not each network attempt. On ret
 
 References preserve identity, not cached values: AE rechecks the project, comp, stable layer ID/order, and property identity inside the edit call. Reordered/deleted or ambiguous targets are rejected. Duplicate sibling property match names are unsupported for reusable property references even with an explicit index; inspect again or use a separately verified explicit edit. No claim of mutable-value caching is made.
 
-Responses are compact. `verification:"asserted"` means implemented postconditions passed; `readback_only` means the bridge read the result but did not assert every intended value. Neither establishes visual quality. The local receipt retains bounded readbacks; omitted values are explicitly marked as truncated. For existing fallback `ae_do` calls, `includeContext:false` skips redundant ambient context when identity is already established.
+Responses are compact. `verification:"asserted"` means implemented postconditions passed; `readback_only` means the bridge read the result but did not assert every intended value. Neither establishes visual quality. The local receipt retains bounded readbacks; omitted values are explicitly marked as truncated. Fallback `ae_do` omits ambient context by default. Establish identity with `ae_context` first; request `includeContext:true` only when project/selection context must be refreshed.
 
 Transport diagnostics separate `queueWaitMs` (local serialization wait) from `executionMs` (the entire transport call after dequeuing, including AE wait). These are not measurements of model reasoning. The fast-edit result also records AE-side elapsed time and call count. Current resident polling intervals are unchanged; first measure before tuning them.
 
@@ -108,3 +108,19 @@ The output contains expected key times and one `batch.run` with `stopOnError: tr
 ## Evidence
 
 Catalog response sizes are measured in `tests/catalog-efficiency.test.ts`. Recipe tests cover offline arithmetic and invalid inputs. These checks are not native AE acceptance and do not guarantee a percentage reduction in billed tokens or credits.
+
+## Scoped preservation checks and compact catalog caching
+
+Use `ae_verify_targets` to capture only explicitly named canonical property paths before a change and compare the returned baseline ID afterwards. Supply a fixed `sampleTime`; the playhead is never used. Full selected keys, interpolation, easing, spatial tangents, expressions and source/timing data stay in server memory. Only fingerprints and changed fields reach the model. Missing/ambiguous properties and separated leaders fail. Baselines are bounded to 64 and do not survive a server restart; capture again before the next edit. `allowChanges:["sourcePath"]` permits a planned footage path replacement, never changed dimensions, source IDs, animation or layer identity. It is a preservation check, not a check that the new source was the requested file and not proof of visual quality.
+
+Catalog responses return `cacheKey`. Reuse known schemas in the conversation; when refreshing the same lookup, send `ifNoneMatch` with its key. The key covers the full response including current policy. `notModified:true` means reuse the schema already acquired, not that AE/project state is unchanged. `query` is literal name/description filtering. Do not print complete tool-return wrappers twice; extract one representation. JSON whitespace is removed without truncating evidence or errors.
+
+## Direction, temporal review and approved decisions
+
+Work on one short movement/transition under the user's direction before extending a whole sequence. In `ae_motion_plan`, each fresh item may supply `motion` with `startFrame`, `durationFrames`, `positionOffset`, `scaleFrom`, `outInfluence`, `inInfluence`, Position speeds (px/s), and up to eight `positionWaypoints` with local `frameOffset`/relative `offset`/optional speed. Select these for the actual shot; do not mechanically apply a uniform ease to all layers. Defaults preserve the earlier simple reveals. Nonzero arrival speed followed by a static hold is not continuous motion: inspect the join and playback. Never replace existing animation using this fresh-layer planner.
+
+Retain a short shot-specific direction note in the conversation: approved movement and interval, rejected behavior, intended change, and layers/properties that must remain unchanged. Preserve the user's decision instead of regenerating the whole treatment. This is conversational direction, not model training or a reusable preset.
+
+For necessary temporal review, use `ae_do` operation `render.review` with comp, startFrame, exclusive endFrame, a new absolute movie outputPath and exact outputTemplate (optional renderTemplate) from `render.list_templates`. It renders only that <=10-second interval, keeps existing queue items out of the render and restores their flags, then removes its temporary item. Never claim quality from the completed flag: inspect the actual movie and verify its output fps/resolution. This version does not retrieve cached RAM previews or guarantee draft-resolution savings. Do not invoke it automatically after each edit.
+
+Measure time to an approved movement as well as AE-side time, bridge call count and response bytes. Response bytes are not billed tokens. Report unverified native behavior separately from offline proof.

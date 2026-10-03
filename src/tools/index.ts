@@ -5,6 +5,7 @@ import { resolveTarget } from "../transport/instances.js";
 import type { ToolGroup } from "./define-tool.js";
 import type { ToolResult } from "./types.js";
 
+import { verifyTargetsTool } from "./verify-targets.js";
 import { editTool } from "./edit.js";
 import { inspectTargetsTool } from "./inspect-targets.js";
 import { catalogTool } from "./catalog.js";
@@ -94,6 +95,7 @@ export const ALL_TOOLS: AnyTool[] = [
   workflowTool,
   editTool,
   inspectTargetsTool,
+  verifyTargetsTool,
   doTool,
   contextTool,
 ].map((tool) => withInstanceParam(tool as AnyTool));
