@@ -1,3 +1,16 @@
+## 0.1.0-alpha.3-studio.4 — focused context and directed motion
+
+- Compact, lossless tool JSON retains both MCP content forms; no claim of billed-token savings.
+- `ae_do` omits ambient context by default (opt in with `includeContext:true`) and reports queue/execution timing.
+- Catalog lookups accept literal `query` and policy-sensitive `ifNoneMatch`/`cacheKey`; unchanged schemas are not reprinted.
+- `ae_verify_targets` keeps bounded snapshots local and compares source identity/dimensions/path, layer timing, expressions, full selected key state, and samples at one explicit time. Missing/ambiguous properties fail; intentional source-path changes cannot hide animation/dimension changes. Baselines expire on server restart or after 64 newer captures.
+- Fresh-layer motion planning accepts individual timing, offsets, initial scale, temporal influences, Position endpoint speeds, and intermediate anticipation/overshoot positions. Existing-animation guards remain active.
+- `render.review` isolates a <=10-second frame-aligned interval in a temporary queue item and restores other queue flags on success/failure; it never saves the project or runs automatically. Discover exact local templates first. Native render/FPS/template fidelity and aesthetic results remain unverified for this release.
+- Session status identifies stale/mismatched records without restarting or closing a worker.
+- Agent guidance validates one short motion interval under user direction before expanding the treatment, retains approved/rejected decisions per shot, and avoids whole-project exports for scoped verification.
+
+Validation: 422 offline tests pass; build, checks and isolated installer smoke pass. Four-operation catalog text falls from 5,656 to 3,852 bytes; unchanged refresh is 108 bytes. These are response bytes, not billed tokens. See docs/STUDIO4-VALIDATION.md. Native AE acceptance is not claimed.
+
 ## 0.1.0-alpha.3-studio.3 — fast interactive editing
 
 - Add `ae_edit`: bounded registered edits, current-value reads, checkpoints and readback in one AE dispatch, without automatic rendering.

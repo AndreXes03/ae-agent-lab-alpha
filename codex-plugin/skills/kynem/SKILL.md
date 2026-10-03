@@ -42,3 +42,11 @@ Use `ae_inspect_targets` to obtain compact target values and reusable `target:` 
 Combine related operations and their checks; never issue concurrent writes to the same AE worker. Use `ae_catalog.operations` only for the exact missing schemas and retain those schemas in context. For fallback `ae_do` calls on a known target, set `includeContext:false` and batch dependent changes/readbacks. Unsupported edits still use the existing scoped workflow; do not force them through the fast allowlist or enable eval.
 
 Keep previews separate from editing. First read the compact edit result; do not automatically call render tools. For appearance, request one or two representative frames and inspect them. For motion, prefer AE playback of the affected interval where available; exporting a movie remains an explicit review/delivery decision. Report `readback_only` checks honestly: successful readback is not proof that all intended changes match or that motion looks good.
+
+## Focused context and direction (studio.4)
+
+`ae_do` omits ambient context by default; use `ae_context` to establish/recheck identity after switching/reconnecting, and `includeContext:true` only when needed. Do not export a whole project to verify a few properties. Use `ae_verify_targets` with explicit canonical paths and a fixed sample time for preservation checks. Keep the baseline ID; full snapshots stay local and expire on restart. Permit only intentional source-path/sample changes; never treat missing properties as null equality.
+
+Use the catalog's cacheKey/ifNoneMatch only to refresh schemas already held in context; cache keys never prove project state. Print one tool result representation, not both content and structuredContent.
+
+For motion, validate a short interval with the user's direction before extending it across a sequence. Choose timing and curve controls per shot using the motion planner's explicit `motion` fields for fresh layers; keep its existing-animation guards. Retain a concise note of approved/rejected movement and protected properties. For necessary temporal review use render.review on only the affected <=10-second interval with known local movie templates. Inspect playback and output fps; isolated frames cannot establish rhythm. Successful commands never prove professional animation quality.

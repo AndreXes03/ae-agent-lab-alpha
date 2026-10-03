@@ -44,7 +44,7 @@ export function defineTool<S extends z.ZodRawShape>(spec: ToolSpec<S>): ToolSpec
 export function jsonResult(payload: Record<string, unknown>): ToolResult {
   const envelope = { ok: true, ...payload };
   return {
-    content: [{ type: "text", text: JSON.stringify(envelope, null, 2) }],
+    content: [{ type: "text", text: JSON.stringify(envelope) }],
     structuredContent: envelope,
     isError: false,
   };

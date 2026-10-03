@@ -17,6 +17,7 @@ const EXPECTED_TOOLS = [
   "ae_workflow",
   "ae_edit",
   "ae_inspect_targets",
+  "ae_verify_targets",
   "ae_project_export_json",
   "ae_project_import_json",
   "ae_project_info",

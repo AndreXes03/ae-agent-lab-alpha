@@ -26,11 +26,18 @@ function showLiveEvent(line) {
     return;
   }
   const item = event?.item;
-  if (event?.type === "item.completed" && item?.type === "agent_message" && typeof item.text === "string") {
+  if (
+    event?.type === "item.completed" &&
+    item?.type === "agent_message" &&
+    typeof item.text === "string"
+  ) {
     console.log(`\n[Codex]\n${item.text}`);
     return;
   }
-  if ((event?.type === "item.started" || event?.type === "item.completed") && item?.type === "mcp_tool_call") {
+  if (
+    (event?.type === "item.started" || event?.type === "item.completed") &&
+    item?.type === "mcp_tool_call"
+  ) {
     const tool = item.tool ?? item.tool_name ?? item.name ?? "MCP tool";
     const state = event.type === "item.started" ? "started" : (item.status ?? "completed");
     console.log(`[MCP ${state}] ${tool}`);
@@ -41,15 +48,22 @@ async function main() {
   if (process.argv.length !== 2) throw new Error("Usage: node scripts/run-client-demo.mjs");
   const session = JSON.parse(await readFile(sessionPath, "utf8"));
   if (session.phase !== "ready" || session.worker !== expectedWorker) {
-    throw new Error(`Expected ready ${expectedWorker} session; found ${session.phase}/${session.worker}`);
+    throw new Error(
+      `Expected ready ${expectedWorker} session; found ${session.phase}/${session.worker}`,
+    );
   }
-  if (await realpath(session.input) !== await realpath(fixture)) {
-    throw new Error("The bundled Exposure edit is only for the warm-glow fixture. For your own project, use the session's printed chat prompt and docs/AGENT-WORKFLOW.md.");
+  if ((await realpath(session.input)) !== (await realpath(fixture))) {
+    throw new Error(
+      "The bundled Exposure edit is only for the warm-glow fixture. For your own project, use the session's printed chat prompt and docs/AGENT-WORKFLOW.md.",
+    );
   }
   const runDir = resolve(session.runDir);
   const project = resolve(session.project);
   const runtime = resolve(session.runtime);
-  if (!runDir.startsWith(join(root, "demo", "runs") + sep) || project !== join(runDir, "project.aep")) {
+  if (
+    !runDir.startsWith(join(root, "demo", "runs") + sep) ||
+    project !== join(runDir, "project.aep")
+  ) {
     throw new Error("Session project/run directory is outside the demo runs directory");
   }
   if (runtime !== join(root, "runtime", "demo-session")) {
@@ -72,15 +86,25 @@ async function main() {
     }
   }
   const template = await readFile(templatePath, "utf8");
-  const prompt = template.replaceAll("{{WORKER}}", expectedWorker)
+  const prompt = template
+    .replaceAll("{{WORKER}}", expectedWorker)
     .replaceAll("{{PROJECT}}", project)
     .replaceAll("{{INPUT}}", session.input)
     .replaceAll("{{RUN_DIR}}", runDir)
     .replaceAll("{{VARIANT}}", variant);
   const args = [
-    "exec", "--ignore-user-config", "--ephemeral", "--json", "--color", "never",
-    "--approve-for-me", "--skip-git-repo-check",
-    "--cd", root, "--model", "gpt-6-sol",
+    "exec",
+    "--ignore-user-config",
+    "--ephemeral",
+    "--json",
+    "--color",
+    "never",
+    "--approve-for-me",
+    "--skip-git-repo-check",
+    "--cd",
+    root,
+    "--model",
+    "gpt-6-sol",
     ...config("model_reasoning_effort", "medium"),
     ...config(`mcp_servers.${expectedWorker}.command`, process.execPath),
     ...config(`mcp_servers.${expectedWorker}.args`, [serverPath]),
@@ -88,7 +112,9 @@ async function main() {
     ...config(`mcp_servers.${expectedWorker}.env.AE_MCP_INSTANCE`, expectedWorker),
     ...config(`mcp_servers.${expectedWorker}.env.AE_MCP_READONLY`, "0"),
     ...config(`mcp_servers.${expectedWorker}.env.AE_MCP_ENABLE_EVAL`, "0"),
-    "--output-last-message", finalPath, "-",
+    "--output-last-message",
+    finalPath,
+    "-",
   ];
   const startedAt = new Date().toISOString();
   const transcriptStream = createWriteStream(transcript, { flags: "wx", mode: 0o600 });
@@ -113,9 +139,18 @@ async function main() {
     new Promise((done) => stderrStream.end(done)),
   ]);
   const result = {
-    startedAt, finishedAt: new Date().toISOString(), model: "gpt-6-sol",
-    reasoningEffort: "medium", worker: expectedWorker, input: session.input,
-    project, variant, transcript, stderr: stderrPath, final: finalPath, ...exit,
+    startedAt,
+    finishedAt: new Date().toISOString(),
+    model: "gpt-6-sol",
+    reasoningEffort: "medium",
+    worker: expectedWorker,
+    input: session.input,
+    project,
+    variant,
+    transcript,
+    stderr: stderrPath,
+    final: finalPath,
+    ...exit,
   };
   await writeFile(resultPath, `${JSON.stringify(result, null, 2)}\n`, { flag: "wx", mode: 0o600 });
   console.log(`Codex exit: ${exit.code ?? exit.signal}`);
@@ -126,6 +161,8 @@ async function main() {
 }
 
 main().catch((error) => {
-  console.error(`Codex MCP demo did not start: ${error instanceof Error ? error.message : String(error)}`);
+  console.error(
+    `Codex MCP demo did not start: ${error instanceof Error ? error.message : String(error)}`,
+  );
   process.exitCode = 1;
 });

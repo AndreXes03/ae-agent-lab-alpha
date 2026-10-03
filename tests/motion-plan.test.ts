@@ -112,6 +112,52 @@ describe("motion plan", () => {
     expect(bar.some((o) => (o.args.property as string[])[1] === "Opacity")).toBe(false);
   });
 
+  it("compiles explicit timing, arrival speed and anticipation without hiding safety guards", () => {
+    const plan = planMotion({
+      ...base,
+      items: [
+        {
+          ...base.items[0],
+          motion: {
+            startFrame: 8,
+            durationFrames: 30,
+            positionOffset: [-100, 0],
+            outInfluence: 25,
+            inInfluence: 90,
+            positionStartSpeed: 150,
+            positionEndSpeed: 60,
+            positionWaypoints: [{ frameOffset: 20, offset: [12, 0], speed: 0 }],
+          },
+        },
+      ],
+    });
+    expect(plan.ready).toBe(true);
+    expect(plan.schedule[0]).toMatchObject({ startFrame: 8, endFrame: 38 });
+    const op = plan.operations.find((o) => (o.args.property as string[])[1] === "Position")!;
+    const keys = op.args.keys as Array<{
+      time: number;
+      value: number[];
+      inSpeed?: number;
+      outSpeed?: number;
+    }>;
+    expect(keys).toHaveLength(3);
+    expect(keys[0]).toMatchObject({ time: 8 / 25, value: [860, 480], outSpeed: 150 });
+    expect(keys[1]).toMatchObject({ time: 28 / 25, value: [972, 480] });
+    expect(keys[2].inSpeed).toBe(60);
+    expect(validateOpArgs(getOp(op.operation)!, op.args).ok).toBe(true);
+    const bad = planMotion({
+      ...base,
+      items: [
+        {
+          ...base.items[0],
+          motion: { durationFrames: 10, positionWaypoints: [{ frameOffset: 10, offset: [1, 0] }] },
+        },
+      ],
+    });
+    expect(bad.ready).toBe(false);
+    expect(bad.operations).toEqual([]);
+  });
+
   it("uses zero endpoint speeds and a monotone no-overshoot ease", () => {
     const plan = planMotion({ ...base, items: [base.items[0]] });
     const opacity = plan.operations.find(

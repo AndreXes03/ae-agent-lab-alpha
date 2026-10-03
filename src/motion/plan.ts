@@ -3,7 +3,22 @@ export type LayerRef = string | number | { id: number };
 export type Preset = "typography" | "panel" | "icon" | "bar";
 export type Vec2 = [number, number];
 
+export interface MotionDirection {
+  startFrame?: number;
+  durationFrames?: number;
+  positionOffset?: Vec2;
+  scaleFrom?: Vec2;
+  outInfluence?: number;
+  inInfluence?: number;
+  /** Spatial speeds in px/s, applied only to Position. */
+  positionStartSpeed?: number;
+  positionEndSpeed?: number;
+  /** Intermediate positions relative to the settled target; explicit anticipation/overshoot. */
+  positionWaypoints?: Array<{ frameOffset: number; offset: Vec2; speed?: number }>;
+}
+
 export interface MotionItem {
+  motion?: MotionDirection;
   layer: LayerRef;
   preset: Preset;
   /** Local Position value read AFTER pivot preparation on the real layer. */
@@ -93,10 +108,22 @@ function dot(a: Vec2, b: Vec2): number {
 }
 
 /** Both tangents have zero endpoint speed: a monotone, strong ease with no overshoot. */
-function revealKeys(time0: number, time1: number, from: number | Vec2, to: number | Vec2) {
+function revealKeys(
+  time0: number,
+  time1: number,
+  from: number | Vec2,
+  to: number | Vec2,
+  motion?: MotionDirection,
+) {
   return [
-    { time: time0, value: from, interp: "ease", outInfluence: 70, outSpeed: 0 },
-    { time: time1, value: to, interp: "ease", inInfluence: 75, inSpeed: 0 },
+    {
+      time: time0,
+      value: from,
+      interp: "ease",
+      outInfluence: motion?.outInfluence ?? 70,
+      outSpeed: 0,
+    },
+    { time: time1, value: to, interp: "ease", inInfluence: motion?.inInfluence ?? 75, inSpeed: 0 },
   ];
 }
 
@@ -128,6 +155,8 @@ export function planMotion(request: MotionPlanRequest): MotionPlan {
   const warning = (code: string, message: string) =>
     findings.push({ severity: "warning", code, message });
 
+  if (!Number.isFinite(request.fps) || request.fps <= 0)
+    error("FPS", "Frame rate must be positive and finite.");
   if (request.phase !== "audit" && request.items.length === 0)
     error("NO_ITEMS", "Provide at least one layer.");
   if (request.phase !== "audit" && request.sceneEndFrame > request.compDurationFrames)
@@ -152,9 +181,51 @@ export function planMotion(request: MotionPlanRequest): MotionPlan {
   }
 
   for (const [index, item] of (request.phase === "audit" ? [] : request.items).entries()) {
-    const startFrame = request.sceneStartFrame + index * request.staggerFrames;
-    const endFrame =
-      startFrame + Math.max(2, Math.round(durationSeconds[item.preset] * request.fps));
+    const motion = item.motion;
+    const startFrame =
+      motion?.startFrame ?? request.sceneStartFrame + index * request.staggerFrames;
+    const duration =
+      motion?.durationFrames ?? Math.max(2, Math.round(durationSeconds[item.preset] * request.fps));
+    const endFrame = startFrame + duration;
+    if (
+      !Number.isSafeInteger(startFrame) ||
+      startFrame < request.sceneStartFrame ||
+      !Number.isSafeInteger(duration) ||
+      duration < 2
+    )
+      error("MOTION_TIMING", `Layer ${index + 1} has invalid explicit timing.`);
+    for (const influence of [motion?.outInfluence, motion?.inInfluence])
+      if (
+        influence !== undefined &&
+        (!Number.isFinite(influence) || influence < 0.1 || influence > 100)
+      )
+        error("MOTION_EASE", `Layer ${index + 1} influence must be 0.1..100.`);
+    for (const speed of [motion?.positionStartSpeed, motion?.positionEndSpeed])
+      if (speed !== undefined && (!Number.isFinite(speed) || speed < 0))
+        error("MOTION_SPEED", `Layer ${index + 1} Position speed must be nonnegative.`);
+    for (const vector of [motion?.positionOffset, motion?.scaleFrom])
+      if (vector && (vector.length !== 2 || !vector.every(Number.isFinite)))
+        error("MOTION_VECTOR", `Layer ${index + 1} requires finite 2D values.`);
+    if (motion?.scaleFrom?.some((v) => v < 0))
+      error("MOTION_SCALE", "Initial scale cannot be negative.");
+    let previousOffset = 0;
+    if ((motion?.positionWaypoints?.length ?? 0) > 8)
+      error("MOTION_WAYPOINTS", "At most 8 intermediate positions.");
+    for (const point of motion?.positionWaypoints ?? []) {
+      if (
+        !Number.isSafeInteger(point.frameOffset) ||
+        point.frameOffset <= previousOffset ||
+        point.frameOffset >= duration ||
+        point.offset.length !== 2 ||
+        !point.offset.every(Number.isFinite) ||
+        (point.speed !== undefined && (!Number.isFinite(point.speed) || point.speed < 0))
+      )
+        error(
+          "MOTION_WAYPOINTS",
+          `Layer ${index + 1} waypoint times must increase strictly inside the reveal.`,
+        );
+      previousOffset = point.frameOffset;
+    }
     schedule.push({ layer: item.layer, preset: item.preset, startFrame, endFrame });
     if (item.visibleAtSceneStart)
       error(
@@ -208,6 +279,7 @@ export function planMotion(request: MotionPlanRequest): MotionPlan {
       );
     }
 
+    const firstOperation = operations.length;
     const t0 = startFrame / request.fps;
     const t1 = endFrame / request.fps;
     const [x, y] = item.targetPosition;
@@ -265,6 +337,29 @@ export function planMotion(request: MotionPlanRequest): MotionPlan {
     }
     if (item.preset !== "bar")
       operations.push(apply(request.comp, item.layer, "Opacity", revealKeys(t0, t1, 0, 100)));
+    for (const operation of operations.slice(firstOperation)) {
+      const property = (operation.args.property as string[])[1];
+      const keys = operation.args.keys as ReturnType<typeof revealKeys>;
+      keys[0].outInfluence = motion?.outInfluence ?? 70;
+      keys[1].inInfluence = motion?.inInfluence ?? 75;
+      if (property === "Scale" && motion?.scaleFrom) keys[0].value = motion.scaleFrom;
+      if (property === "Position") {
+        if (motion?.positionOffset)
+          keys[0].value = [x + motion.positionOffset[0], y + motion.positionOffset[1]];
+        keys[0].outSpeed = motion?.positionStartSpeed ?? 0;
+        keys[1].inSpeed = motion?.positionEndSpeed ?? 0;
+        const intermediate = (motion?.positionWaypoints ?? []).map((point) => ({
+          time: (startFrame + point.frameOffset) / request.fps,
+          value: [x + point.offset[0], y + point.offset[1]],
+          interp: "ease",
+          inInfluence: motion?.inInfluence ?? 75,
+          outInfluence: motion?.outInfluence ?? 70,
+          inSpeed: point.speed ?? 0,
+          outSpeed: point.speed ?? 0,
+        }));
+        operation.args.keys = [keys[0], ...intermediate, keys[1]];
+      }
+    }
   }
 
   const lastEnd = Math.max(request.sceneStartFrame, ...schedule.map((s) => s.endFrame));

@@ -50,7 +50,7 @@ export const doTool = defineTool({
       .boolean()
       .optional()
       .describe(
-        "Include ambient project/selection context (default true). Set false for an already identified target to avoid repeated context gathering.",
+        "Include ambient project/selection context (default false). Establish identity with ae_context; set true only when refreshed context is needed.",
       ),
     timeoutMs: z
       .number()
@@ -167,7 +167,7 @@ export const doTool = defineTool({
         var _opResult = (function() {
             ${userJsx}
         })();
-        ${doArgs.includeContext === false ? "var _ctx = null;" : AMBIENT_CONTEXT_JSX}
+        ${doArgs.includeContext === true ? AMBIENT_CONTEXT_JSX : "var _ctx = null;"}
         return { result: _opResult, context: _ctx };
     `;
     // Lines of wrapper ABOVE the operation code, for mapping the dispatcher's
@@ -232,9 +232,11 @@ export const doTool = defineTool({
 
     return jsonResult({
       result: opResult,
-      context,
-      logs: result.logs,
+      ...(doArgs.includeContext === true ? { context } : {}),
+      ...(result.logs.length ? { logs: result.logs } : {}),
       durationMs: result.durationMs,
+      ...(result.queueWaitMs === undefined ? {} : { queueWaitMs: result.queueWaitMs }),
+      ...(result.executionMs === undefined ? {} : { executionMs: result.executionMs }),
     });
   },
 });

@@ -10,7 +10,9 @@ vi.mock("../src/agent-install.js", async (importOriginal) => {
   const actual = await importOriginal<typeof import("../src/agent-install.js")>();
   return {
     ...actual,
-    agentInstallStatus: async () => [{ version: "26.5", stubPath: "/fake/stub.jsx", installed: true, current: true }],
+    agentInstallStatus: async () => [
+      { version: "26.5", stubPath: "/fake/stub.jsx", installed: true, current: true },
+    ],
   };
 });
 vi.mock("../src/config.js", async (importOriginal) => {
@@ -42,7 +44,10 @@ describe.skipIf(process.platform !== "darwin")("instance.start macOS launcher fa
 
     const start = getOp("instance.start")!;
     const began = Date.now();
-    const result = await start.run!({ name: `test-launch-fail-${Date.now()}`, timeoutMs: 90000 }, nullTransport()) as {
+    const result = (await start.run!(
+      { name: `test-launch-fail-${Date.now()}`, timeoutMs: 90000 },
+      nullTransport(),
+    )) as {
       ok: boolean;
       errorCode?: string;
       error?: string;
