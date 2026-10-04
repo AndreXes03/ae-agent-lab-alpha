@@ -1,5 +1,7 @@
 # Motion reveal planning
 
+For vague briefs and first drafts, [DRAFT-MOTION-DIRECTION.md](DRAFT-MOTION-DIRECTION.md) offers optional style and transition tendencies. Explicit user direction wins; these choices never relax the planner guards.
+
 `ae_motion_plan` is an offline planner for four small reveal patterns: typography, panel, icon, and bar. It emits `layer.set_anchor` and `keyframe.apply` arguments for `ae_do`; it does not edit a project. Typography, panels, and icons combine movement and scale with opacity. Bars grow horizontally from a left pivot without an opacity fade. The patterns stagger by whole frames and use stronger zero-speed endpoint easing. Text never receives an arbitrary rotation. The planner does not judge whether the result looks good.
 
 ## Before planning

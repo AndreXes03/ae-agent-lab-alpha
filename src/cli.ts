@@ -1,3 +1,5 @@
+import { createStoryboard } from "./storyboard.js";
+import { createLocalReview } from "./local-review.js";
 // Command-line subcommands of the `ae-agent-lab` binary. Without
 // arguments the binary is the MCP server (stdio); with one it is a small
 // maintenance tool for the pull path — installing the resident agent into
@@ -21,6 +23,9 @@ export const USAGE = `ae-agent-lab — local MCP bridge for Adobe After Effects
   ae-agent-lab uninstall-agent         remove it again
   ae-agent-lab agent-status            show where the agent is installed and whether it is current
   ae-agent-lab instances               list the After Effects instances whose agent is live
+  ae-agent-lab storyboard --manifest <json> --out <new directory>
+  ae-agent-lab review --video <file> --out <new directory> [--comp <name>] [--fps <number>] [--version <label>]
+  ae-agent-lab review --manifest <json> --out <new directory>
   ae-agent-lab help                    this text
 
 Options for install-agent / uninstall-agent / agent-status:
@@ -58,6 +63,24 @@ export async function runCli(
   argv: string[],
   out: (line: string) => void = (line) => process.stdout.write(`${line}\n`),
 ): Promise<number> {
+  if (argv[0] === "storyboard") {
+    try {
+      out(await createStoryboard(argv.slice(1)));
+      return 0;
+    } catch (error) {
+      out(String(error));
+      return 1;
+    }
+  }
+  if (argv[0] === "review") {
+    try {
+      out(await createLocalReview(argv.slice(1)));
+      return 0;
+    } catch (error) {
+      out(String(error));
+      return 1;
+    }
+  }
   const args = parseCliArgs(argv);
   if (args.unknown.length > 0) {
     out(`unknown argument(s): ${args.unknown.join(" ")}\n`);

@@ -1,0 +1,1779 @@
+{
+  "schemaVersion": 1,
+  "id": "kynem_demo",
+  "title": "KYNEM / dal comando alle varianti",
+  "revision": "draft-2-ending",
+  "mode": "storyboard",
+  "format": {
+    "width": 1280,
+    "height": 720,
+    "fps": 30
+  },
+  "style": {
+    "background": "#07101f",
+    "palette": [
+      "#07101f",
+      "#12243e",
+      "#247bff",
+      "#ffffff"
+    ],
+    "font": "Arial",
+    "spacing": 24,
+    "cornerRadius": 0,
+    "strokeWidth": 4,
+    "motionBlur": false
+  },
+  "scenes": [
+    {
+      "id": "command",
+      "title": "Comando",
+      "startFrame": 0,
+      "durationFrames": 60,
+      "keyFrame": 36,
+      "elements": [
+        {
+          "id": "background",
+          "type": "rect",
+          "x": 0,
+          "y": 0,
+          "width": 1280,
+          "height": 720,
+          "fill": "#07101f"
+        },
+        {
+          "id": "commandPanel",
+          "type": "rect",
+          "x": 160,
+          "y": 250,
+          "width": 960,
+          "height": 180,
+          "fill": "#12243e"
+        },
+        {
+          "id": "accentLine",
+          "type": "rect",
+          "x": 192,
+          "y": 275,
+          "width": 4,
+          "height": 125,
+          "fill": "#247bff"
+        },
+        {
+          "id": "commandText",
+          "type": "text",
+          "x": 224,
+          "y": 310,
+          "width": 1080,
+          "height": 90,
+          "text": "KYNEM: anima questo titolo",
+          "fill": "#ffffff",
+          "fontSize": 40,
+          "fontFamily": "Arial"
+        }
+      ]
+    },
+    {
+      "id": "title",
+      "title": "Titolo animato",
+      "startFrame": 60,
+      "durationFrames": 72,
+      "keyFrame": 96,
+      "elements": [
+        {
+          "id": "background",
+          "type": "rect",
+          "x": 0,
+          "y": 0,
+          "width": 1280,
+          "height": 720,
+          "fill": "#07101f"
+        },
+        {
+          "id": "commandPanel",
+          "type": "rect",
+          "x": 160,
+          "y": 160,
+          "width": 960,
+          "height": 400,
+          "fill": "#12243e"
+        },
+        {
+          "id": "accentLine",
+          "type": "rect",
+          "x": 192,
+          "y": 206,
+          "width": 4,
+          "height": 96,
+          "fill": "#247bff"
+        },
+        {
+          "id": "titleText",
+          "type": "text",
+          "x": 224,
+          "y": 220,
+          "width": 1080,
+          "height": 90,
+          "text": "KYNEM",
+          "fill": "#ffffff",
+          "fontSize": 90,
+          "fontFamily": "Arial"
+        },
+        {
+          "id": "titleSubtitle",
+          "type": "text",
+          "x": 224,
+          "y": 370,
+          "width": 1080,
+          "height": 90,
+          "text": "Dall’idea al movimento.",
+          "fill": "#ffffff",
+          "fontSize": 36,
+          "fontFamily": "Arial"
+        }
+      ]
+    },
+    {
+      "id": "request",
+      "title": "Tre varianti",
+      "startFrame": 132,
+      "durationFrames": 60,
+      "keyFrame": 165,
+      "elements": [
+        {
+          "id": "background",
+          "type": "rect",
+          "x": 0,
+          "y": 0,
+          "width": 1280,
+          "height": 720,
+          "fill": "#07101f"
+        },
+        {
+          "id": "commandPanel",
+          "type": "rect",
+          "x": 160,
+          "y": 250,
+          "width": 960,
+          "height": 180,
+          "fill": "#12243e"
+        },
+        {
+          "id": "accentLine",
+          "type": "rect",
+          "x": 192,
+          "y": 275,
+          "width": 4,
+          "height": 125,
+          "fill": "#247bff"
+        },
+        {
+          "id": "requestText",
+          "type": "text",
+          "x": 224,
+          "y": 310,
+          "width": 1080,
+          "height": 90,
+          "text": "Crea tre varianti del titolo",
+          "fill": "#ffffff",
+          "fontSize": 40,
+          "fontFamily": "Arial"
+        }
+      ]
+    },
+    {
+      "id": "variants",
+      "title": "Preview delle varianti",
+      "startFrame": 192,
+      "durationFrames": 108,
+      "keyFrame": 246,
+      "elements": [
+        {
+          "id": "background",
+          "type": "rect",
+          "x": 0,
+          "y": 0,
+          "width": 1280,
+          "height": 720,
+          "fill": "#07101f"
+        },
+        {
+          "id": "commandPanel",
+          "type": "rect",
+          "x": 160,
+          "y": 160,
+          "width": 960,
+          "height": 400,
+          "fill": "#12243e"
+        },
+        {
+          "id": "variantsHeading",
+          "type": "text",
+          "x": 192,
+          "y": 186,
+          "width": 1080,
+          "height": 90,
+          "text": "Scegli la direzione",
+          "fill": "#ffffff",
+          "fontSize": 36,
+          "fontFamily": "Arial"
+        },
+        {
+          "id": "variant1Panel",
+          "type": "rect",
+          "x": 192,
+          "y": 290,
+          "width": 280,
+          "height": 160,
+          "fill": "#12243e"
+        },
+        {
+          "id": "variant1Label",
+          "type": "text",
+          "x": 216,
+          "y": 322,
+          "width": 1080,
+          "height": 90,
+          "text": "01 / Essenziale",
+          "fill": "#ffffff",
+          "fontSize": 24,
+          "fontFamily": "Arial"
+        },
+        {
+          "id": "variant1Accent",
+          "type": "rect",
+          "x": 216,
+          "y": 410,
+          "width": 180,
+          "height": 4,
+          "fill": "#247bff"
+        },
+        {
+          "id": "variant2Panel",
+          "type": "rect",
+          "x": 496,
+          "y": 290,
+          "width": 280,
+          "height": 160,
+          "fill": "#247bff"
+        },
+        {
+          "id": "variant2Label",
+          "type": "text",
+          "x": 520,
+          "y": 322,
+          "width": 1080,
+          "height": 90,
+          "text": "02 / UI",
+          "fill": "#ffffff",
+          "fontSize": 24,
+          "fontFamily": "Arial"
+        },
+        {
+          "id": "variant2Accent",
+          "type": "rect",
+          "x": 520,
+          "y": 410,
+          "width": 180,
+          "height": 4,
+          "fill": "#247bff"
+        },
+        {
+          "id": "variant3Panel",
+          "type": "rect",
+          "x": 800,
+          "y": 290,
+          "width": 280,
+          "height": 160,
+          "fill": "#12243e"
+        },
+        {
+          "id": "variant3Label",
+          "type": "text",
+          "x": 824,
+          "y": 322,
+          "width": 1080,
+          "height": 90,
+          "text": "03 / Grafico",
+          "fill": "#ffffff",
+          "fontSize": 24,
+          "fontFamily": "Arial"
+        },
+        {
+          "id": "variant3Accent",
+          "type": "rect",
+          "x": 824,
+          "y": 410,
+          "width": 180,
+          "height": 4,
+          "fill": "#247bff"
+        }
+      ]
+    },
+    {
+      "id": "closing",
+      "title": "Chiusura",
+      "startFrame": 300,
+      "durationFrames": 60,
+      "keyFrame": 336,
+      "elements": [
+        {
+          "id": "background",
+          "type": "rect",
+          "x": 0,
+          "y": 0,
+          "width": 1280,
+          "height": 720,
+          "fill": "#07101f"
+        },
+        {
+          "id": "commandPanel",
+          "type": "rect",
+          "x": 160,
+          "y": 160,
+          "width": 960,
+          "height": 400,
+          "fill": "#12243e"
+        },
+        {
+          "id": "variant2Panel",
+          "type": "rect",
+          "x": 460,
+          "y": 282,
+          "width": 360,
+          "height": 130,
+          "fill": "#247bff"
+        },
+        {
+          "id": "closingTitle",
+          "type": "text",
+          "x": 192,
+          "y": 202,
+          "width": 1080,
+          "height": 90,
+          "text": "KYNEM",
+          "fill": "#ffffff",
+          "fontSize": 54,
+          "fontFamily": "Arial"
+        },
+        {
+          "id": "closingText",
+          "type": "text",
+          "x": 192,
+          "y": 464,
+          "width": 1080,
+          "height": 90,
+          "text": "Scegli. Affina. Anima.",
+          "fill": "#ffffff",
+          "fontSize": 32,
+          "fontFamily": "Arial"
+        }
+      ]
+    }
+  ],
+  "transitions": [
+    {
+      "id": "command_title",
+      "fromScene": "command",
+      "toScene": "title",
+      "elementIds": [
+        "commandPanel",
+        "accentLine"
+      ],
+      "durationFrames": 18,
+      "staggerFrames": 3,
+      "curve": [
+        0.42,
+        0,
+        0.58,
+        1
+      ],
+      "recipe": "Espandi il pannello intorno al suo centro: da (160,250,960,180) a (160,160,960,400). La linea blu si sposta al titolo. Il comando lascia spazio al titolo con opacity in 6 frame; titolo e sottotitolo arrivano sfalsati di 3 frame.",
+      "properties": [
+        "Position",
+        "Scale",
+        "Opacity"
+      ],
+      "handoff": "Pannello e linea conservano identità e colore; stato finale A = stato iniziale B. Il raccordo occupa gli ultimi 18 frame della scena uscente, senza aggiungere durata."
+    },
+    {
+      "id": "title_request",
+      "fromScene": "title",
+      "toScene": "request",
+      "elementIds": [
+        "commandPanel",
+        "accentLine"
+      ],
+      "durationFrames": 18,
+      "staggerFrames": 3,
+      "curve": [
+        0.42,
+        0,
+        0.58,
+        1
+      ],
+      "recipe": "Comprimi il pannello alto a barra comando intorno al centro. Titolo e sottotitolo escono con opacity in 6 frame; richiesta entra dopo il ridimensionamento. Nessun pan del quadro.",
+      "properties": [
+        "Position",
+        "Scale",
+        "Opacity"
+      ],
+      "handoff": "La barra comando deriva dallo stesso commandPanel, con tipografia sempre nitida. Il raccordo occupa gli ultimi 18 frame della scena uscente, senza aggiungere durata."
+    },
+    {
+      "id": "request_variants",
+      "fromScene": "request",
+      "toScene": "variants",
+      "elementIds": [
+        "commandPanel"
+      ],
+      "durationFrames": 24,
+      "staggerFrames": 3,
+      "curve": [
+        0.42,
+        0,
+        0.58,
+        1
+      ],
+      "recipe": "Il pannello si espande a contenitore delle preview. Le card compaiono con opacity e scala 96→100%, arrivi separati da 3 frame. Nessuna trasformazione arbitraria delle lettere.",
+      "properties": [
+        "Position",
+        "Scale",
+        "Opacity"
+      ],
+      "handoff": "Contenitore unico condiviso; card 1/2/3 sono nuovi elementi identificati e conservati. Il raccordo occupa gli ultimi 24 frame della scena uscente, senza aggiungere durata."
+    },
+    {
+      "id": "variants_closing",
+      "fromScene": "variants",
+      "toScene": "closing",
+      "elementIds": [
+        "commandPanel",
+        "variant2Panel"
+      ],
+      "durationFrames": 18,
+      "staggerFrames": 3,
+      "curve": [
+        0.42,
+        0,
+        0.58,
+        1
+      ],
+      "recipe": "La card centrale si sposta da (496,290,280,160) a (460,282,360,130), mantenendo centro e colore blu finale. Card laterali escono in 6 frame; titolo KYNEM e chiusura entrano 3 frame dopo. Breve settle di 4 frame e hold finale. La revisione cambia solo il testo finale; geometry, timing e raccordo restano identici.",
+      "properties": [
+        "Position",
+        "Scale",
+        "Opacity"
+      ],
+      "handoff": "variant2Panel resta lo stesso elemento; collegare il suo ultimo stato alla chiusura, non ricrearlo con un salto. Il raccordo occupa gli ultimi 18 frame della scena uscente, senza aggiungere durata."
+    }
+  ],
+  "effects": [
+    {
+      "id": "controlledGlow",
+      "target": "finishingAdjustment",
+      "status": "supported_native_unverified",
+      "layers": "Adjustment sopra shape/pannelli, sotto tutta la tipografia",
+      "operations": [
+        "layer.create_adjustment",
+        "effect.add",
+        "effect.set_property"
+      ],
+      "recipe": "Due glow opzionali: core radius 12px/intensity 0.45/threshold 80%; halo radius 48px/intensity 0.15/threshold 85%. Original Colors e Screen dopo ispezione enum. Il preview schematico omette entrambi.",
+      "properties": [
+        "Glow Radius",
+        "Glow Intensity",
+        "Glow Threshold",
+        "Glow Colors",
+        "Glow Operation"
+      ],
+      "verification": "Risolvere proprietà e unità native con il catalogo; inspect frame e playback del worker copiato. Non impostare enum numerici ipotizzati."
+    }
+  ],
+  "assets": [
+    {
+      "id": "fontArial",
+      "required": true,
+      "description": "Font Arial installato; confermare metriche in AE"
+    }
+  ],
+  "limitations": [
+    "Visual schematici vettoriali, non render AE; glow omesso.",
+    "Geometry e curve verificabili offline; font, effect binding e playback nativo da verificare.",
+    "Nessun generatore immagini integrato; non sono state generate immagini AI.",
+    "360 frame a 30fps = 12 secondi; approval nell’interfaccia prima della produzione video AE."
+  ],
+  "production": {
+    "sceneSpec": {
+      "id": "kynemDemoNative",
+      "name": "KYNEM storyboard demo",
+      "width": 1280,
+      "height": 720,
+      "fps": 30,
+      "durationFrames": 360,
+      "nodes": [
+        {
+          "id": "background",
+          "type": "rect",
+          "x": 0,
+          "y": 0,
+          "width": 1280,
+          "height": 720,
+          "color": [
+            0.027450980392156862,
+            0.06274509803921569,
+            0.12156862745098039
+          ],
+          "startFrame": 0,
+          "endFrame": 360
+        },
+        {
+          "id": "commandPanel",
+          "type": "rect",
+          "x": 160,
+          "y": 250,
+          "width": 960,
+          "height": 180,
+          "color": [
+            0.07058823529411765,
+            0.1411764705882353,
+            0.24313725490196078
+          ],
+          "startFrame": 0,
+          "endFrame": 360,
+          "motion": [
+            {
+              "property": "position",
+              "keys": [
+                {
+                  "frame": 0,
+                  "value": [
+                    160,
+                    250
+                  ],
+                  "easing": "hold"
+                },
+                {
+                  "frame": 42,
+                  "value": [
+                    160,
+                    250
+                  ],
+                  "easing": [
+                    0.42,
+                    0,
+                    0.58,
+                    1
+                  ]
+                },
+                {
+                  "frame": 59,
+                  "value": [
+                    160,
+                    160
+                  ],
+                  "easing": "hold"
+                },
+                {
+                  "frame": 114,
+                  "value": [
+                    160,
+                    160
+                  ],
+                  "easing": [
+                    0.42,
+                    0,
+                    0.58,
+                    1
+                  ]
+                },
+                {
+                  "frame": 131,
+                  "value": [
+                    160,
+                    250
+                  ],
+                  "easing": "hold"
+                },
+                {
+                  "frame": 168,
+                  "value": [
+                    160,
+                    250
+                  ],
+                  "easing": [
+                    0.42,
+                    0,
+                    0.58,
+                    1
+                  ]
+                },
+                {
+                  "frame": 191,
+                  "value": [
+                    160,
+                    160
+                  ],
+                  "easing": "hold"
+                },
+                {
+                  "frame": 359,
+                  "value": [
+                    160,
+                    160
+                  ],
+                  "easing": "hold"
+                }
+              ]
+            },
+            {
+              "property": "scale",
+              "keys": [
+                {
+                  "frame": 0,
+                  "value": [
+                    100,
+                    100
+                  ],
+                  "easing": "hold"
+                },
+                {
+                  "frame": 42,
+                  "value": [
+                    100,
+                    100
+                  ],
+                  "easing": [
+                    0.42,
+                    0,
+                    0.58,
+                    1
+                  ]
+                },
+                {
+                  "frame": 59,
+                  "value": [
+                    100,
+                    222.22222222222223
+                  ],
+                  "easing": "hold"
+                },
+                {
+                  "frame": 114,
+                  "value": [
+                    100,
+                    222.22222222222223
+                  ],
+                  "easing": [
+                    0.42,
+                    0,
+                    0.58,
+                    1
+                  ]
+                },
+                {
+                  "frame": 131,
+                  "value": [
+                    100,
+                    100
+                  ],
+                  "easing": "hold"
+                },
+                {
+                  "frame": 168,
+                  "value": [
+                    100,
+                    100
+                  ],
+                  "easing": [
+                    0.42,
+                    0,
+                    0.58,
+                    1
+                  ]
+                },
+                {
+                  "frame": 191,
+                  "value": [
+                    100,
+                    222.22222222222223
+                  ],
+                  "easing": "hold"
+                },
+                {
+                  "frame": 359,
+                  "value": [
+                    100,
+                    222.22222222222223
+                  ],
+                  "easing": "hold"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "accentLine",
+          "type": "rect",
+          "x": 192,
+          "y": 275,
+          "width": 4,
+          "height": 125,
+          "color": [
+            0.1411764705882353,
+            0.4823529411764706,
+            1.0
+          ],
+          "startFrame": 0,
+          "endFrame": 192,
+          "motion": [
+            {
+              "property": "position",
+              "keys": [
+                {
+                  "frame": 0,
+                  "value": [
+                    192,
+                    275
+                  ],
+                  "easing": "hold"
+                },
+                {
+                  "frame": 42,
+                  "value": [
+                    192,
+                    275
+                  ],
+                  "easing": [
+                    0.42,
+                    0,
+                    0.58,
+                    1
+                  ]
+                },
+                {
+                  "frame": 59,
+                  "value": [
+                    192,
+                    206
+                  ],
+                  "easing": "hold"
+                },
+                {
+                  "frame": 114,
+                  "value": [
+                    192,
+                    206
+                  ],
+                  "easing": [
+                    0.42,
+                    0,
+                    0.58,
+                    1
+                  ]
+                },
+                {
+                  "frame": 131,
+                  "value": [
+                    192,
+                    275
+                  ],
+                  "easing": "hold"
+                },
+                {
+                  "frame": 191,
+                  "value": [
+                    192,
+                    275
+                  ],
+                  "easing": "hold"
+                }
+              ]
+            },
+            {
+              "property": "scale",
+              "keys": [
+                {
+                  "frame": 0,
+                  "value": [
+                    100,
+                    100
+                  ],
+                  "easing": "hold"
+                },
+                {
+                  "frame": 42,
+                  "value": [
+                    100,
+                    100
+                  ],
+                  "easing": [
+                    0.42,
+                    0,
+                    0.58,
+                    1
+                  ]
+                },
+                {
+                  "frame": 59,
+                  "value": [
+                    100,
+                    76.8
+                  ],
+                  "easing": "hold"
+                },
+                {
+                  "frame": 114,
+                  "value": [
+                    100,
+                    76.8
+                  ],
+                  "easing": [
+                    0.42,
+                    0,
+                    0.58,
+                    1
+                  ]
+                },
+                {
+                  "frame": 131,
+                  "value": [
+                    100,
+                    100
+                  ],
+                  "easing": "hold"
+                },
+                {
+                  "frame": 191,
+                  "value": [
+                    100,
+                    100
+                  ],
+                  "easing": "hold"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "commandText",
+          "type": "text",
+          "x": 224,
+          "y": 310,
+          "width": 1080,
+          "height": 90,
+          "color": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "startFrame": 0,
+          "endFrame": 60,
+          "text": "KYNEM: anima questo titolo",
+          "font": "Arial",
+          "fontSize": 40,
+          "motion": [
+            {
+              "property": "opacity",
+              "keys": [
+                {
+                  "frame": 0,
+                  "value": 0,
+                  "easing": [
+                    0.42,
+                    0,
+                    0.58,
+                    1
+                  ]
+                },
+                {
+                  "frame": 9,
+                  "value": 100,
+                  "easing": "hold"
+                },
+                {
+                  "frame": 54,
+                  "value": 100,
+                  "easing": [
+                    0.42,
+                    0,
+                    0.58,
+                    1
+                  ]
+                },
+                {
+                  "frame": 59,
+                  "value": 0,
+                  "easing": "hold"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "titleText",
+          "type": "text",
+          "x": 224,
+          "y": 220,
+          "width": 1080,
+          "height": 90,
+          "color": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "startFrame": 60,
+          "endFrame": 132,
+          "text": "KYNEM",
+          "font": "Arial",
+          "fontSize": 90,
+          "motion": [
+            {
+              "property": "opacity",
+              "keys": [
+                {
+                  "frame": 60,
+                  "value": 0,
+                  "easing": [
+                    0.42,
+                    0,
+                    0.58,
+                    1
+                  ]
+                },
+                {
+                  "frame": 69,
+                  "value": 100,
+                  "easing": "hold"
+                },
+                {
+                  "frame": 126,
+                  "value": 100,
+                  "easing": [
+                    0.42,
+                    0,
+                    0.58,
+                    1
+                  ]
+                },
+                {
+                  "frame": 131,
+                  "value": 0,
+                  "easing": "hold"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "titleSubtitle",
+          "type": "text",
+          "x": 224,
+          "y": 370,
+          "width": 1080,
+          "height": 90,
+          "color": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "startFrame": 60,
+          "endFrame": 132,
+          "text": "Dall’idea al movimento.",
+          "font": "Arial",
+          "fontSize": 36,
+          "motion": [
+            {
+              "property": "opacity",
+              "keys": [
+                {
+                  "frame": 60,
+                  "value": 0,
+                  "easing": [
+                    0.42,
+                    0,
+                    0.58,
+                    1
+                  ]
+                },
+                {
+                  "frame": 69,
+                  "value": 100,
+                  "easing": "hold"
+                },
+                {
+                  "frame": 126,
+                  "value": 100,
+                  "easing": [
+                    0.42,
+                    0,
+                    0.58,
+                    1
+                  ]
+                },
+                {
+                  "frame": 131,
+                  "value": 0,
+                  "easing": "hold"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "requestText",
+          "type": "text",
+          "x": 224,
+          "y": 310,
+          "width": 1080,
+          "height": 90,
+          "color": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "startFrame": 132,
+          "endFrame": 192,
+          "text": "Crea tre varianti del titolo",
+          "font": "Arial",
+          "fontSize": 40,
+          "motion": [
+            {
+              "property": "opacity",
+              "keys": [
+                {
+                  "frame": 132,
+                  "value": 0,
+                  "easing": [
+                    0.42,
+                    0,
+                    0.58,
+                    1
+                  ]
+                },
+                {
+                  "frame": 141,
+                  "value": 100,
+                  "easing": "hold"
+                },
+                {
+                  "frame": 186,
+                  "value": 100,
+                  "easing": [
+                    0.42,
+                    0,
+                    0.58,
+                    1
+                  ]
+                },
+                {
+                  "frame": 191,
+                  "value": 0,
+                  "easing": "hold"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "variantsHeading",
+          "type": "text",
+          "x": 192,
+          "y": 186,
+          "width": 1080,
+          "height": 90,
+          "color": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "startFrame": 192,
+          "endFrame": 300,
+          "text": "Scegli la direzione",
+          "font": "Arial",
+          "fontSize": 36,
+          "motion": [
+            {
+              "property": "opacity",
+              "keys": [
+                {
+                  "frame": 192,
+                  "value": 0,
+                  "easing": [
+                    0.42,
+                    0,
+                    0.58,
+                    1
+                  ]
+                },
+                {
+                  "frame": 201,
+                  "value": 100,
+                  "easing": "hold"
+                },
+                {
+                  "frame": 294,
+                  "value": 100,
+                  "easing": [
+                    0.42,
+                    0,
+                    0.58,
+                    1
+                  ]
+                },
+                {
+                  "frame": 299,
+                  "value": 0,
+                  "easing": "hold"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "variant1Panel",
+          "type": "rect",
+          "x": 192,
+          "y": 290,
+          "width": 280,
+          "height": 160,
+          "color": [
+            0.07058823529411765,
+            0.1411764705882353,
+            0.24313725490196078
+          ],
+          "startFrame": 192,
+          "endFrame": 300,
+          "motion": [
+            {
+              "property": "opacity",
+              "keys": [
+                {
+                  "frame": 192,
+                  "value": 0,
+                  "easing": [
+                    0.42,
+                    0,
+                    0.58,
+                    1
+                  ]
+                },
+                {
+                  "frame": 201,
+                  "value": 100,
+                  "easing": "hold"
+                },
+                {
+                  "frame": 294,
+                  "value": 100,
+                  "easing": [
+                    0.42,
+                    0,
+                    0.58,
+                    1
+                  ]
+                },
+                {
+                  "frame": 299,
+                  "value": 0,
+                  "easing": "hold"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "variant1Label",
+          "type": "text",
+          "x": 216,
+          "y": 322,
+          "width": 1080,
+          "height": 90,
+          "color": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "startFrame": 192,
+          "endFrame": 300,
+          "text": "01 / Essenziale",
+          "font": "Arial",
+          "fontSize": 24,
+          "motion": [
+            {
+              "property": "opacity",
+              "keys": [
+                {
+                  "frame": 192,
+                  "value": 0,
+                  "easing": [
+                    0.42,
+                    0,
+                    0.58,
+                    1
+                  ]
+                },
+                {
+                  "frame": 201,
+                  "value": 100,
+                  "easing": "hold"
+                },
+                {
+                  "frame": 294,
+                  "value": 100,
+                  "easing": [
+                    0.42,
+                    0,
+                    0.58,
+                    1
+                  ]
+                },
+                {
+                  "frame": 299,
+                  "value": 0,
+                  "easing": "hold"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "variant1Accent",
+          "type": "rect",
+          "x": 216,
+          "y": 410,
+          "width": 180,
+          "height": 4,
+          "color": [
+            0.1411764705882353,
+            0.4823529411764706,
+            1.0
+          ],
+          "startFrame": 192,
+          "endFrame": 300,
+          "motion": [
+            {
+              "property": "opacity",
+              "keys": [
+                {
+                  "frame": 192,
+                  "value": 0,
+                  "easing": [
+                    0.42,
+                    0,
+                    0.58,
+                    1
+                  ]
+                },
+                {
+                  "frame": 201,
+                  "value": 100,
+                  "easing": "hold"
+                },
+                {
+                  "frame": 294,
+                  "value": 100,
+                  "easing": [
+                    0.42,
+                    0,
+                    0.58,
+                    1
+                  ]
+                },
+                {
+                  "frame": 299,
+                  "value": 0,
+                  "easing": "hold"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "variant2Label",
+          "type": "text",
+          "x": 520,
+          "y": 322,
+          "width": 1080,
+          "height": 90,
+          "color": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "startFrame": 192,
+          "endFrame": 300,
+          "text": "02 / UI",
+          "font": "Arial",
+          "fontSize": 24,
+          "motion": [
+            {
+              "property": "opacity",
+              "keys": [
+                {
+                  "frame": 192,
+                  "value": 0,
+                  "easing": [
+                    0.42,
+                    0,
+                    0.58,
+                    1
+                  ]
+                },
+                {
+                  "frame": 204,
+                  "value": 100,
+                  "easing": "hold"
+                },
+                {
+                  "frame": 294,
+                  "value": 100,
+                  "easing": [
+                    0.42,
+                    0,
+                    0.58,
+                    1
+                  ]
+                },
+                {
+                  "frame": 299,
+                  "value": 0,
+                  "easing": "hold"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "variant2Accent",
+          "type": "rect",
+          "x": 520,
+          "y": 410,
+          "width": 180,
+          "height": 4,
+          "color": [
+            0.1411764705882353,
+            0.4823529411764706,
+            1.0
+          ],
+          "startFrame": 192,
+          "endFrame": 300,
+          "motion": [
+            {
+              "property": "opacity",
+              "keys": [
+                {
+                  "frame": 192,
+                  "value": 0,
+                  "easing": [
+                    0.42,
+                    0,
+                    0.58,
+                    1
+                  ]
+                },
+                {
+                  "frame": 204,
+                  "value": 100,
+                  "easing": "hold"
+                },
+                {
+                  "frame": 294,
+                  "value": 100,
+                  "easing": [
+                    0.42,
+                    0,
+                    0.58,
+                    1
+                  ]
+                },
+                {
+                  "frame": 299,
+                  "value": 0,
+                  "easing": "hold"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "variant3Panel",
+          "type": "rect",
+          "x": 800,
+          "y": 290,
+          "width": 280,
+          "height": 160,
+          "color": [
+            0.07058823529411765,
+            0.1411764705882353,
+            0.24313725490196078
+          ],
+          "startFrame": 192,
+          "endFrame": 300,
+          "motion": [
+            {
+              "property": "opacity",
+              "keys": [
+                {
+                  "frame": 192,
+                  "value": 0,
+                  "easing": [
+                    0.42,
+                    0,
+                    0.58,
+                    1
+                  ]
+                },
+                {
+                  "frame": 207,
+                  "value": 100,
+                  "easing": "hold"
+                },
+                {
+                  "frame": 294,
+                  "value": 100,
+                  "easing": [
+                    0.42,
+                    0,
+                    0.58,
+                    1
+                  ]
+                },
+                {
+                  "frame": 299,
+                  "value": 0,
+                  "easing": "hold"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "variant3Label",
+          "type": "text",
+          "x": 824,
+          "y": 322,
+          "width": 1080,
+          "height": 90,
+          "color": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "startFrame": 192,
+          "endFrame": 300,
+          "text": "03 / Grafico",
+          "font": "Arial",
+          "fontSize": 24,
+          "motion": [
+            {
+              "property": "opacity",
+              "keys": [
+                {
+                  "frame": 192,
+                  "value": 0,
+                  "easing": [
+                    0.42,
+                    0,
+                    0.58,
+                    1
+                  ]
+                },
+                {
+                  "frame": 207,
+                  "value": 100,
+                  "easing": "hold"
+                },
+                {
+                  "frame": 294,
+                  "value": 100,
+                  "easing": [
+                    0.42,
+                    0,
+                    0.58,
+                    1
+                  ]
+                },
+                {
+                  "frame": 299,
+                  "value": 0,
+                  "easing": "hold"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "variant3Accent",
+          "type": "rect",
+          "x": 824,
+          "y": 410,
+          "width": 180,
+          "height": 4,
+          "color": [
+            0.1411764705882353,
+            0.4823529411764706,
+            1.0
+          ],
+          "startFrame": 192,
+          "endFrame": 300,
+          "motion": [
+            {
+              "property": "opacity",
+              "keys": [
+                {
+                  "frame": 192,
+                  "value": 0,
+                  "easing": [
+                    0.42,
+                    0,
+                    0.58,
+                    1
+                  ]
+                },
+                {
+                  "frame": 207,
+                  "value": 100,
+                  "easing": "hold"
+                },
+                {
+                  "frame": 294,
+                  "value": 100,
+                  "easing": [
+                    0.42,
+                    0,
+                    0.58,
+                    1
+                  ]
+                },
+                {
+                  "frame": 299,
+                  "value": 0,
+                  "easing": "hold"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "closingTitle",
+          "type": "text",
+          "x": 192,
+          "y": 202,
+          "width": 1080,
+          "height": 90,
+          "color": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "startFrame": 300,
+          "endFrame": 360,
+          "text": "KYNEM",
+          "font": "Arial",
+          "fontSize": 54,
+          "motion": [
+            {
+              "property": "opacity",
+              "keys": [
+                {
+                  "frame": 300,
+                  "value": 0,
+                  "easing": [
+                    0.42,
+                    0,
+                    0.58,
+                    1
+                  ]
+                },
+                {
+                  "frame": 309,
+                  "value": 100,
+                  "easing": "hold"
+                },
+                {
+                  "frame": 359,
+                  "value": 100,
+                  "easing": "hold"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "closingText",
+          "type": "text",
+          "x": 192,
+          "y": 464,
+          "width": 1080,
+          "height": 90,
+          "color": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "startFrame": 300,
+          "endFrame": 360,
+          "text": "Scegli. Affina. Anima.",
+          "font": "Arial",
+          "fontSize": 32,
+          "motion": [
+            {
+              "property": "opacity",
+              "keys": [
+                {
+                  "frame": 300,
+                  "value": 0,
+                  "easing": [
+                    0.42,
+                    0,
+                    0.58,
+                    1
+                  ]
+                },
+                {
+                  "frame": 309,
+                  "value": 100,
+                  "easing": "hold"
+                },
+                {
+                  "frame": 359,
+                  "value": 100,
+                  "easing": "hold"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "variant2Panel",
+          "type": "rect",
+          "x": 496,
+          "y": 290,
+          "width": 280,
+          "height": 160,
+          "color": [
+            0.1411764705882353,
+            0.4823529411764706,
+            1
+          ],
+          "startFrame": 192,
+          "endFrame": 360,
+          "motion": [
+            {
+              "property": "opacity",
+              "keys": [
+                {
+                  "frame": 192,
+                  "value": 0,
+                  "easing": [
+                    0.42,
+                    0,
+                    0.58,
+                    1
+                  ]
+                },
+                {
+                  "frame": 204,
+                  "value": 100,
+                  "easing": "hold"
+                },
+                {
+                  "frame": 359,
+                  "value": 100,
+                  "easing": "hold"
+                }
+              ]
+            },
+            {
+              "property": "position",
+              "keys": [
+                {
+                  "frame": 192,
+                  "value": [
+                    496,
+                    290
+                  ],
+                  "easing": "hold"
+                },
+                {
+                  "frame": 282,
+                  "value": [
+                    496,
+                    290
+                  ],
+                  "easing": [
+                    0.42,
+                    0,
+                    0.58,
+                    1
+                  ]
+                },
+                {
+                  "frame": 299,
+                  "value": [
+                    460,
+                    282
+                  ],
+                  "easing": "hold"
+                },
+                {
+                  "frame": 359,
+                  "value": [
+                    460,
+                    282
+                  ],
+                  "easing": "hold"
+                }
+              ]
+            },
+            {
+              "property": "scale",
+              "keys": [
+                {
+                  "frame": 192,
+                  "value": [
+                    100,
+                    100
+                  ],
+                  "easing": "hold"
+                },
+                {
+                  "frame": 282,
+                  "value": [
+                    100,
+                    100
+                  ],
+                  "easing": [
+                    0.42,
+                    0,
+                    0.58,
+                    1
+                  ]
+                },
+                {
+                  "frame": 299,
+                  "value": [
+                    128.57142857142858,
+                    81.25
+                  ],
+                  "easing": "hold"
+                },
+                {
+                  "frame": 359,
+                  "value": [
+                    128.57142857142858,
+                    81.25
+                  ],
+                  "easing": "hold"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "approvalRequired": true,
+    "transitionPlacement": "Final frames of outgoing scene, included in scene duration",
+    "verificationScope": "offline only; native pending"
+  }
+}

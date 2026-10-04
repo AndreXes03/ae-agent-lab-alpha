@@ -1,0 +1,19 @@
+---
+name: kynem-storyboard
+description: Design a producible KYNEM motion storyboard or a clean styleframe before After Effects execution. Use for storyboard, styleframe, concept, scene transitions or targeted storyboard revisions.
+---
+
+# KYNEM storyboard and styleframes
+
+Resolve the plugin root two directories above this skill directory and read its `local-runtime.json`. Use its absolute `checkout` for the documentation/CLI and its absolute `node` executable for local commands; quote paths safely. This discovery does not require setup or launching After Effects. If runtime configuration is missing, report that limitation instead of guessing a checkout or registering another bridge.
+
+Read `docs/STORYBOARD.md` and `docs/STORYBOARD-CAPABILITIES.md` in the configured checkout before designing. Inspect the loaded scene schema/catalog when capability differs from those notes. Plan with supported controls and distinguish offline verification from native AE acceptance. The existing `kynem` skill handles worker activation and copied-project edits.
+
+1. Resolve message, duration, format and fps. Ask only for a missing substantial decision; declare ordinary assumptions. Preserve clear user direction and approved references. Use `docs/DRAFT-MOTION-DIRECTION.md` only for unspecified choices.
+2. Design scenes and their joins together. Give recurring elements stable IDs. Specify palette, font, measured/explicit dimensions, spacing, strokes and supported treatment recipes numerically. Every join identifies the retained element, its movement, reveal/arrival, duration in frames, stagger, curve and AE properties. Avoid unexplained disappearing elements and automatic repeated pans/zooms.
+3. Produce the structured local package and native schematic/vector styleframes for supported 2D elements. Label schematic fidelity clearly. Artwork has no annotations or grid; transition notes sit outside it. Intermediate transition frames are optional, hidden/skippable by default. Include one only when it explains the join. Image generation is not integrated into this product; if requested, declare that dependency and provide an optional prompt/spec without claiming a generated image.
+4. Open the storyboard interface and obtain the user's explicit approval **before any actual AE video production**. Approval may be the interface export or an explicit human go-ahead in chat identifying the current revision. An exported draft, preview, or chat assumption is not approval. Approval applies to the inspected package revision; changes invalidate approval for the affected scope. This approval step is explicitly required by the user's storyboard workflow.
+5. On a targeted revision, retain approved unaffected scenes, IDs, styling and timing. Rebuild only the requested scene and adjacent joins that depend on it. On “start over,” create a new concept. Keep a revision record with changed scene IDs, protected scenes and reason.
+6. Deliver storyboard mode (sequence with external timing/transition notes) or styleframe mode (one clean frame). Hand the approved structured package to the AE agent with assets, effect recipes and exact unverified steps. Execute through supported scene/typed operations on the managed copy; never interpret recipe prose as arbitrary script permission.
+
+Validate the KYNEM demo fixture: command → animated title → request three variants → variant previews → closing. Check every scene spec, total timing, persistent identities and explicit joins. Exercise one targeted ending revision that preserves earlier scenes. Verify native AE behavior only when a verified copied-project worker is available; otherwise list precisely what remains unverified. Do not publish or send outputs to third parties.

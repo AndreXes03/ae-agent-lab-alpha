@@ -4,7 +4,7 @@ Per **Mac**, con **After Effects 2026** e **Codex desktop** già installati. Il 
 
 ## Una volta sola
 
-1. Estrai lo ZIP **KYNEM-Mac** e fai doppio clic su **Install KYNEM.command**. Attendi la conferma nel Terminale.
+1. Scarica [KYNEM-Mac-0.1.0-alpha.4.zip](https://github.com/AndreXes03/ae-agent-lab-alpha/releases/download/v0.1.0-alpha.4/KYNEM-Mac-0.1.0-alpha.4.zip), estrai lo ZIP e fai doppio clic su **Install KYNEM.command**. Attendi la conferma nel Terminale.
 2. Se macOS blocca il launcher non firmato, usa la normale autorizzazione **Apri comunque** in Impostazioni di Sistema → Privacy e sicurezza, se disponibile. Non disattivare le protezioni del sistema.
 3. Apri almeno una volta AE 2026 e abilita **Preferences → Scripting & Expressions → Allow Scripts to Write Files and Access Network**. Conferma gli eventuali permessi di automazione quando richiesti.
 4. Apri una **nuova chat Codex**, digita `@` e seleziona **KYNEM**. Se l’elenco non si aggiorna, riavvia Codex; puoi anche richiamare la skill con `$kynem`.

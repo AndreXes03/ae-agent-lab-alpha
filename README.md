@@ -8,6 +8,8 @@
 
 > **Experimental alpha.** The native edit and render evidence comes from one Mac running After Effects 2026 (26.5). The new installer and Codex plugin have offline checks; the complete `@KYNEM` workflow on another Mac still needs tester validation.
 
+**Local candidate:** this checkout is alpha.5 and has not been published. The download above remains the published alpha.4 installer.
+
 ## See the work
 
 ![Rendered frame from the editable Warm Glow After Effects demo project](demo/warm-glow/heavy-grain-hero.png)

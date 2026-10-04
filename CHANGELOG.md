@@ -1,3 +1,14 @@
+## 0.1.0-alpha.5 — local candidate: storyboard and review
+
+- Add a local browser review for already rendered videos, with playback and user notes returned to the agent.
+- Keep review scoped to existing output files and validate requests before opening media or returning feedback.
+- Add optional draft motion direction for fresh animations, with explicit user choices and preservation of approved motion.
+- Add a separate storyboard skill, production specifications, capability guidance and reusable local examples.
+- Include the review player and both skills in the Mac installer.
+- This candidate remains local and has not been published.
+
+Validation: offline checks and installer verification are recorded in the release notes. Native AE visual acceptance and measured performance gains are not claimed.
+
 ## 0.1.0-alpha.3-studio.4 — focused context and directed motion
 
 - Compact, lossless tool JSON retains both MCP content forms; no claim of billed-token savings.

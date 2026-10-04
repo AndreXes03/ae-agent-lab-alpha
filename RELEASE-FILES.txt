@@ -22,9 +22,11 @@ RELEASE-FILES.txt
 Start Demo.command
 Start Project.command
 Stop Demo.command
+assets/review.html
 codex-plugin/.codex-plugin/plugin.json
 codex-plugin/README.md
 codex-plugin/scripts/bridge.mjs
+codex-plugin/skills/kynem-storyboard/SKILL.md
 codex-plugin/skills/kynem/SKILL.md
 codex-plugin/skills/kynem/agents/openai.yaml
 demo/client-proof/README.md
@@ -36,20 +38,26 @@ docs/AGENT-WORKFLOW.md
 docs/ALPHA-QUICKSTART.md
 docs/CLIENT-DEMO-PROMPT.md
 docs/DEMO-SESSION.md
+docs/DRAFT-MOTION-DIRECTION.md
 docs/EFFICIENT-WORKFLOWS.md
 docs/EXAMPLE-PROMPTS.md
 docs/FIRST-TESTER.md
 docs/FRIENDS-TUTORIAL.it.md
 docs/INSTALL.it.md
+docs/LOCAL-REVIEW.md
 docs/MOTION-QUALITY.md
 docs/NATIVE-SCENES-VALIDATION.md
 docs/RELEASE-CANDIDATE.md
 docs/SCENE-WORKFLOW.md
+docs/STORYBOARD-CAPABILITIES.md
+docs/STORYBOARD.md
 docs/STUDIO-TEST.it.md
 docs/STUDIO4-VALIDATION.md
 docs/TOOLS.md
 docs/UNINSTALL.md
 docs/assets/kynem-banner.svg
+examples/storyboard/kynem-demo-ending-revision.json
+examples/storyboard/kynem-demo.json
 fixtures/empty.json
 fixtures/scenes/card.json
 fixtures/simple.json
@@ -101,6 +109,7 @@ src/color/transform.ts
 src/config.ts
 src/errors.ts
 src/index.ts
+src/local-review.ts
 src/motion/plan.ts
 src/operations/batch.ts
 src/operations/command.ts
@@ -148,6 +157,7 @@ src/scenes/native.ts
 src/scenes/preview.ts
 src/scenes/service.ts
 src/schema.ts
+src/storyboard.ts
 src/tools/catalog.ts
 src/tools/comp-info.ts
 src/tools/context.ts
@@ -217,6 +227,7 @@ tests/json-safety.test.ts
 tests/launcher.test.ts
 tests/layer-move.test.ts
 tests/lint-jsx.test.ts
+tests/local-review.test.ts
 tests/mailbox-safety.test.ts
 tests/mcp-server.test.ts
 tests/motion-plan.test.ts
@@ -234,6 +245,7 @@ tests/scene-integration.test.ts
 tests/scene-preview.test.ts
 tests/scene-runtime.test.ts
 tests/sheet.test.ts
+tests/storyboard.test.ts
 tests/synthetic.test.ts
 tests/target-refs.test.ts
 tests/tools-instance.test.ts

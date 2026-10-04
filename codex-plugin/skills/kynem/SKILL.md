@@ -5,6 +5,10 @@ description: Use KYNEM to inspect and edit an existing After Effects project thr
 
 # KYNEM — existing After Effects projects
 
+## Optional first-draft direction
+
+When the user requests a first draft or leaves style/transitions open, read `docs/DRAFT-MOTION-DIRECTION.md` in the configured checkout. Choose a reversible tendency for that draft, keep explicit user direction and approved references authoritative, and record protected properties. Use supported scene/typed operations on the managed copy. Review actual playback before extending motion across a sequence; screenshots cannot establish rhythm.
+
 ## Declarative native scenes (alpha.4)
 
 For new bounded 2D graphics, read `docs/SCENE-WORKFLOW.md` and use `ae_scene` instead of issuing one low-level operation per element. Describe text, shapes and groups with stable IDs, explicit geometry and frame timing. Prepare on the verified managed copy, inspect the compact changes/conflicts, then apply the returned job ID. Preserve that ID for status/retry; never replay an uncertain request as a new job. Existing arbitrary layers are not automatically adopted. Keep unsupported content in its existing scoped editing path.
@@ -58,3 +62,7 @@ Keep previews separate from editing. First read the compact edit result; do not 
 Use the catalog's cacheKey/ifNoneMatch only to refresh schemas already held in context; cache keys never prove project state. Print one tool result representation, not both content and structuredContent.
 
 For motion, validate a short interval with the user's direction before extending it across a sequence. Choose timing and curve controls per shot using the motion planner's explicit `motion` fields for fresh layers; keep its existing-animation guards. Retain a concise note of approved/rejected movement and protected properties. For necessary temporal review use render.review on only the affected <=10-second interval with known local movie templates. Inspect playback and output fps; isolated frames cannot establish rhythm. Successful commands never prove professional animation quality.
+
+## Contextual feedback on an existing render
+
+When the user needs point, instant or interval comments on a rendered video, prepare a local review with the maintenance CLI. Supply inspected composition ID/name, FPS, source start frame and render version through a manifest; unknown context must stay unbound. Follow [local review](../../../docs/LOCAL-REVIEW.md). Exported feedback identifies the reviewed artifact and requests changes; inspect the current project and save a variant before applying any edit.
