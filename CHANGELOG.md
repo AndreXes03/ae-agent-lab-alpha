@@ -68,3 +68,14 @@ First public experimental alpha.
 - Italian tester guide and feedback forms.
 
 Native evidence covers one Mac with AE 26.5. Other-machine onboarding and external projects remain unverified. See PROVENANCE.md for upstream attribution.
+
+## 0.1.0-alpha.4 — declarative native scene foundation
+
+- New `ae_scene` prepare/apply/status path compiles bounded 2D scene descriptions into native AE layers on the verified managed project copy. Stable IDs, per-property baselines and stale-state checks preserve unrelated manual edits and reject conflicts. Durable claims prevent replay after timeout; pre-edit checkpoints support recovery from partial failure.
+- Original layout/motion engine supports groups, text, rectangles and constrained line connectors, stack/grid/padding/alignment, frame timing and cubic curves sampled into bounded editable native keys. `ae_scene_compose` concatenates compatible scenes into a local specification artifact.
+- `ae_scene_preview` creates a self-contained schematic HTML player with scrub/play/pause, shared motion evaluation and a dependency-aware immutable cache. Cached previews skip frame evaluation. This is not an AE render or a cache of native RAM previews.
+- Scene files can be passed by local `specPath`, avoiding repeated scene JSON in model/tool messages. Input is bounded and validated; arbitrary script evaluation remains disabled.
+- `property.adjust` performs relative numeric operations locally inside AE, including bounded offsets of existing keys, with preflight and readback. Available through the guarded single-dispatch editing path.
+- Includes studio.4 focused context and verification improvements. No Remotion code or dependency was incorporated.
+
+Validation and known boundaries are recorded in `docs/NATIVE-SCENES-VALIDATION.md`. New native AE execution and visual acceptance are not claimed by offline tests.

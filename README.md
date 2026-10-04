@@ -4,7 +4,7 @@
 
 **Make a precise After Effects edit from a Codex conversation.** KYNEM connects Codex to After Effects on your Mac so you can inspect a composition, ask for a scoped change, and review rendered frames. It works on a **copy of a saved `.aep`**; there is no separate panel or chat app.
 
-**[Download KYNEM for Mac (ZIP)](https://github.com/AndreXes03/ae-agent-lab-alpha/releases/download/v0.1.0-alpha.3-studio.4/KYNEM-Mac-0.1.0-alpha.3-studio.4.zip)** · [Installation guide in Italian](docs/INSTALL.it.md) · [Report what you tried](https://github.com/AndreXes03/ae-agent-lab-alpha/issues/new/choose)
+**[Download KYNEM for Mac (ZIP)](https://github.com/AndreXes03/ae-agent-lab-alpha/releases/download/v0.1.0-alpha.4/KYNEM-Mac-0.1.0-alpha.4.zip)** · [Installation guide in Italian](docs/INSTALL.it.md) · [Report what you tried](https://github.com/AndreXes03/ae-agent-lab-alpha/issues/new/choose)
 
 > **Experimental alpha.** The native edit and render evidence comes from one Mac running After Effects 2026 (26.5). The new installer and Codex plugin have offline checks; the complete `@KYNEM` workflow on another Mac still needs tester validation.
 
@@ -34,6 +34,12 @@ These are **example requests**, not claims that every workflow has been tested e
 
 KYNEM is intended for **small, reviewable changes**. Ask it to confirm the active project and layers before editing, save a variant, read changed values back, and inspect actual renders. If a call times out, inspect the state before retrying because an edit may already have run.
 
+## Experimental native scene workflow
+
+Alpha.4 adds a declarative 2D scene workflow: describe text, rectangles, groups, layout and motion in a local JSON file; preview the timing schematically, then prepare and apply native layers on the managed AE copy. Updates preserve unrelated manual edits and reject conflicting changes. The schematic player is explicitly **not an AE render**.
+
+See [scene workflow and limits](docs/SCENE-WORKFLOW.md) and [validation evidence](docs/NATIVE-SCENES-VALIDATION.md). Existing project edits remain available through the scoped editing workflow. No Remotion dependency or code is included.
+
 ## Help shape the alpha
 
 Try the included demo or a disposable copy of your own work, then [tell us what worked and what to improve](https://github.com/AndreXes03/ae-agent-lab-alpha/issues/new/choose). A short description of your Mac, AE version, prompt, and observed result helps. Please redact private paths and client details; there is no need to upload a client project.
@@ -43,7 +49,7 @@ Try the included demo or a disposable copy of your own work, then [tell us what 
 
 The linked installer includes [focused context and directed motion](docs/EFFICIENT-WORKFLOWS.md), scoped preservation checks, cache-aware operation lookup and per-layer motion controls. These additions have offline verification; native AE acceptance and performance gains remain unverified.
 
-The source route requires macOS, After Effects 2026, [Node.js 24+](https://nodejs.org/en/download), and a configured Codex CLI. Use the [source release](https://github.com/AndreXes03/ae-agent-lab-alpha/releases/tag/v0.1.0-alpha.3-studio.4), keep it in a stable folder, and double-click `Start Demo.command`. It installs locked dependencies, builds the MCP server, and starts a named AE worker with a fresh copy of the bundled project. Keep its Terminal window open and paste the session prompt into a new Codex chat. Finish with `Stop Demo.command`.
+The source route requires macOS, After Effects 2026, [Node.js 24+](https://nodejs.org/en/download), and a configured Codex CLI. Use the [source release](https://github.com/AndreXes03/ae-agent-lab-alpha/releases/tag/v0.1.0-alpha.4), keep it in a stable folder, and double-click `Start Demo.command`. It installs locked dependencies, builds the MCP server, and starts a named AE worker with a fresh copy of the bundled project. Keep its Terminal window open and paste the session prompt into a new Codex chat. Finish with `Stop Demo.command`.
 
 ```bash
 npm ci --ignore-scripts

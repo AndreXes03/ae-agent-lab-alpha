@@ -1,0 +1,50 @@
+{
+  "id": "card-scene",
+  "name": "Native card study",
+  "width": 1280,
+  "height": 720,
+  "fps": 30,
+  "durationFrames": 120,
+  "nodes": [
+    {
+      "id": "card",
+      "type": "group",
+      "x": 0,
+      "y": 0,
+      "width": 640,
+      "height": 320,
+      "anchor": "center"
+    },
+    {
+      "id": "surface",
+      "type": "rect",
+      "parent": "card",
+      "x": 0,
+      "y": 0,
+      "width": 640,
+      "height": 320,
+      "color": [0.08, 0.09, 0.12]
+    },
+    {
+      "id": "title",
+      "type": "text",
+      "parent": "card",
+      "x": 48,
+      "y": 64,
+      "width": 540,
+      "height": 80,
+      "text": "Motion, directed.",
+      "font": "ArialMT",
+      "fontSize": 48,
+      "motion": [
+        {
+          "property": "opacity",
+          "keys": [
+            { "frame": 0, "value": 0, "easing": [0.22, 0.0, 0.35, 1.0] },
+            { "frame": 24, "value": 100 }
+          ]
+        }
+      ]
+    }
+  ]
+}

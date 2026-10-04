@@ -15,6 +15,7 @@ import "./text.js";
 import "./mask.js";
 import "./command.js";
 import "./property.js";
+import "./property-adjust.js";
 import "./marker.js";
 import "./batch.js";
 import "./timeline.js";

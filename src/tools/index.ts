@@ -7,6 +7,9 @@ import type { ToolResult } from "./types.js";
 
 import { verifyTargetsTool } from "./verify-targets.js";
 import { editTool } from "./edit.js";
+import { sceneTool } from "./scene.js";
+import { scenePreviewTool } from "./scene-preview.js";
+import { sceneComposeTool } from "./scene-compose.js";
 import { inspectTargetsTool } from "./inspect-targets.js";
 import { catalogTool } from "./catalog.js";
 import { compInfoTool } from "./comp-info.js";
@@ -51,7 +54,13 @@ export const INSTANCE_PARAM = z
   );
 
 /** Tools that never contact After Effects have no instance to pick. */
-const INSTANCE_FREE_TOOLS = new Set(["ae_catalog", "ae_motion_plan", "ae_workflow_plan"]);
+const INSTANCE_FREE_TOOLS = new Set([
+  "ae_catalog",
+  "ae_motion_plan",
+  "ae_workflow_plan",
+  "ae_scene_preview",
+  "ae_scene_compose",
+]);
 
 /**
  * A view of `transport` whose calls go to `instance` unless a call names one
@@ -94,6 +103,9 @@ export const ALL_TOOLS: AnyTool[] = [
   workflowPlanTool,
   workflowTool,
   editTool,
+  sceneTool,
+  scenePreviewTool,
+  sceneComposeTool,
   inspectTargetsTool,
   verifyTargetsTool,
   doTool,

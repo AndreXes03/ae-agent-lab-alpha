@@ -18,6 +18,7 @@ const EDIT_NAMES = new Set([
   "text.set_box",
   "transform.set",
   "property.set",
+  "property.adjust",
   "keyframe.add",
   "keyframe.apply",
   "keyframe.remove",
@@ -41,7 +42,7 @@ const operationInput = z
       .string()
       .min(1)
       .describe(
-        "Edits: text.set_content, text.set_style, text.set_style_range, text.set_box, transform.set, property.set, keyframe.add/apply/remove/set_easing/shift/set_value/set_interpolation/set_spatial/set_roving, layer.set_anchor/set_timing/set_enabled/set_props/set_blend_mode, comp.set_work_area. Reads: property.get, layer.info, comp.info.",
+        "Edits: text.set_content, text.set_style, text.set_style_range, text.set_box, transform.set, property.set/adjust, keyframe.add/apply/remove/set_easing/shift/set_value/set_interpolation/set_spatial/set_roving, layer.set_anchor/set_timing/set_enabled/set_props/set_blend_mode, comp.set_work_area. Reads: property.get, layer.info, comp.info.",
       ),
     args: z.record(z.string(), z.unknown()),
     targetRef: z.string().optional(),

@@ -20,7 +20,13 @@ describe("instance argument", () => {
     for (const t of ALL_TOOLS) {
       const declared = "instance" in t.inputShape;
       expect(declared, `${t.name} instance param`).toBe(
-        !["ae_catalog", "ae_motion_plan", "ae_workflow_plan"].includes(t.name),
+        ![
+          "ae_catalog",
+          "ae_motion_plan",
+          "ae_workflow_plan",
+          "ae_scene_preview",
+          "ae_scene_compose",
+        ].includes(t.name),
       );
     }
   });

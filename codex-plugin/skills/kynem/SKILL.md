@@ -5,6 +5,14 @@ description: Use KYNEM to inspect and edit an existing After Effects project thr
 
 # KYNEM — existing After Effects projects
 
+## Declarative native scenes (alpha.4)
+
+For new bounded 2D graphics, read `docs/SCENE-WORKFLOW.md` and use `ae_scene` instead of issuing one low-level operation per element. Describe text, shapes and groups with stable IDs, explicit geometry and frame timing. Prepare on the verified managed copy, inspect the compact changes/conflicts, then apply the returned job ID. Preserve that ID for status/retry; never replay an uncertain request as a new job. Existing arbitrary layers are not automatically adopted. Keep unsupported content in its existing scoped editing path.
+
+Use `ae_scene_preview` for an offline schematic player when planning timing/layout; it never proves native font, effect, blur or compositing fidelity. Reuse cached previews only when dependency fingerprints are known. Review native AE frames/playback for final visual acceptance. Do not render the full video after each edit. Never promise instant rendering or measured token savings.
+
+For existing properties, `property.adjust` via `ae_edit` performs finite numeric offsets in AE without exporting all values. It supports static offset/multiply and offset of existing key values while preserving times; expressions and ambiguous dimensions are refused. Use the same checkpoint/status rules as other edits.
+
 Handle activation and setup yourself. Preserve the user's edit brief; do not ask them to repeat it or paste a startup prompt. The installed KYNEM plugin includes a dedicated MCP server named `kynem`; use its tools for the worker named `ae-agent-lab-demo`. Do not run a global connector or register another server.
 
 ## Activate
