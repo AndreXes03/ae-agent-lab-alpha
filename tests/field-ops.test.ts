@@ -6,6 +6,7 @@
 // the e2e suite covers what AE does with the result.
 
 import * as path from "node:path";
+import { runInNewContext } from "node:vm";
 
 import { describe, expect, it } from "vitest";
 
@@ -151,16 +152,94 @@ describe("layer.set_anchor", () => {
   });
 });
 
+function timingLayer(inPoint = 8.85, outPoint = 12, stretch = 100) {
+  let startTime = -3,
+    currentIn = inPoint,
+    currentOut = outPoint;
+  return {
+    index: 1,
+    name: "Trim target",
+    stretch,
+    get startTime() {
+      return startTime;
+    },
+    set startTime(value: number) {
+      const delta = value - startTime;
+      startTime = value;
+      currentIn += delta;
+      currentOut += delta;
+    },
+    get inPoint() {
+      return currentIn;
+    },
+    set inPoint(value: number) {
+      const old = currentIn;
+      currentIn = value;
+      currentOut = old;
+    },
+    get outPoint() {
+      return currentOut;
+    },
+    set outPoint(value: number) {
+      currentOut = value;
+    },
+  };
+}
+function runTiming(layer: ReturnType<typeof timingLayer>, args: Record<string, unknown>) {
+  return runInNewContext(
+    "(function(){" + getOp("layer.set_timing")!.toJsx({ comp: "Main", layer: 1, ...args }) + "})()",
+    {
+      AE: {
+        findCompByNameOrId: () => ({ duration: 12 }),
+        resolveLayers: () => [layer],
+        errText: (error: Error) => error.message,
+      },
+    },
+  );
+}
+
 describe("layer.set_timing", () => {
+  it("preserves the omitted out point when the native in-point setter changes it", () => {
+    const layer = timingLayer();
+    const result = runTiming(layer, { inPoint: 8.7 });
+    expect(result.ok).toBe(true);
+    expect(layer.inPoint).toBe(8.7);
+    expect(layer.outPoint).toBe(12);
+    expect(result.layers[0].outPoint).toBe(12);
+  });
+  it("captures omitted bounds after shifting and keeps reversed spans valid", () => {
+    const layer = timingLayer();
+    expect(runTiming(layer, { shift: 1, outPoint: 14 }).ok).toBe(true);
+    expect(layer.inPoint).toBe(9.85);
+    expect(layer.outPoint).toBe(14);
+    const reverse = timingLayer(12, 8.85, -100);
+    expect(runTiming(reverse, { outPoint: 8.7 }).ok).toBe(true);
+    expect(reverse.inPoint).toBe(12);
+    expect(reverse.outPoint).toBe(8.7);
+  });
+  it("rejects malformed trim values and zero span without changing trim bounds", () => {
+    for (const value of [null, {}, NaN, Infinity])
+      expect(
+        getOp("layer.set_timing")!.toJsx({ comp: "Main", layer: 1, inPoint: value }),
+      ).toContain("finite number");
+    const layer = timingLayer();
+    const result = runTiming(layer, { inPoint: 12 });
+    expect(result.ok).toBe(false);
+    expect(layer.inPoint).toBe(8.85);
+    expect(layer.outPoint).toBe(12);
+  });
+
   it("expands the 'comp' sentinel and applies in the documented order", () => {
     const op = getOp("layer.set_timing")!;
     const jsx = op.toJsx({ comp: "Main", layer: 1, shift: 1, inPoint: "comp", outPoint: "comp" });
     expect(jsx).toContain("_l.startTime = _l.startTime + 1;");
-    expect(jsx).toContain('_l.inPoint = ("comp" === "comp") ? 0 : "comp";');
-    expect(jsx).toContain('_l.outPoint = ("comp" === "comp") ? _comp.duration : "comp";');
+    expect(jsx).toContain('var _targetIn = ("comp" === "comp") ? 0 : "comp";');
+    expect(jsx).toContain('var _targetOut = ("comp" === "comp") ? _comp.duration : "comp";');
     expect(jsx.indexOf("_l.startTime")).toBeLessThan(jsx.indexOf("_l.inPoint"));
     expect(op.toJsx({ comp: "Main", layer: 1 })).toContain("give at least one of");
-    expect(op.toJsx({ comp: "Main", layer: 1, outPoint: "end" })).toContain("number or 'comp'");
+    expect(op.toJsx({ comp: "Main", layer: 1, outPoint: "end" })).toContain(
+      "finite number or 'comp'",
+    );
   });
 });
 

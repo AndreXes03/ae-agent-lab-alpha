@@ -98,6 +98,37 @@ try {
     await readFile(join(root, "codex-plugin", ".codex-plugin", "plugin.json"), "utf8"),
     sourceManifest,
   );
+  // Reusing a version must not silently accept a partially deleted review runtime.
+  const missingAsset = join(app, "assets", "codex-feedback.js");
+  const savedAsset = await readFile(missingAsset);
+  await rm(missingAsset);
+  const incomplete = spawnSync(
+    process.execPath,
+    [join(root, "scripts", "install-kynem.mjs"), process.execPath],
+    { env, encoding: "utf8" },
+  );
+  assert.notEqual(incomplete.status, 0);
+  assert.match(incomplete.stderr, /missing assets\/codex-feedback.js/);
+  assert.equal(
+    await readFile(join(app, "runtime", "demo-session", "keep.txt"), "utf8"),
+    "existing runtime",
+  );
+  await writeFile(missingAsset, savedAsset);
+  const missingModule = join(app, "dist", "review-session.js");
+  const savedModule = await readFile(missingModule);
+  await rm(missingModule);
+  const incompleteModule = spawnSync(
+    process.execPath,
+    [join(root, "scripts", "install-kynem.mjs"), process.execPath],
+    { env, encoding: "utf8" },
+  );
+  assert.notEqual(incompleteModule.status, 0);
+  assert.match(incompleteModule.stderr, /missing dist\/review-session.js/);
+  assert.equal(
+    await readFile(join(app, "runtime", "demo-session", "keep.txt"), "utf8"),
+    "existing runtime",
+  );
+  await writeFile(missingModule, savedModule);
   // A recorded unfinished session in an older release must block an upgrade.
   await writeFile(
     join(env.KYNEM_INSTALL_ROOT, "local-runtime.json"),

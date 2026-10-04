@@ -62,6 +62,17 @@ test("loopback feedback validates identity, requires origin/token, persists rece
         })
       ).status,
     ).toBe(400);
+    expect(
+      (
+        await send({
+          ...input,
+          feedback: { ...payload, feedback: [{ ...payload.feedback[0], sourceStartFrame: 67 }] },
+        })
+      ).status,
+    ).toBe(400);
+    expect(
+      (await send({ ...input, feedback: { ...payload, coordinateSpace: "wrong-space" } })).status,
+    ).toBe(400);
     const response = await send();
     expect(response.status).toBe(201);
     const receipt: any = await response.json();
@@ -73,7 +84,13 @@ test("loopback feedback validates identity, requires origin/token, persists rece
     const inbox = await readReviewInbox(dir);
     expect(inbox.feedback).toHaveLength(1);
     expect(inbox.feedback[0].payload.feedback[0].note).toBe("Shorten this settle");
+    expect(inbox.feedback[0].payload.feedback[0].sourceStartFrame).toBe(66);
+    expect(inbox.feedback[0].payload.feedback[0].sourceEndFrame).toBe(90);
     await acknowledgeReview(dir, receipt.feedbackId, "processing", "Reading requested change");
+    await Promise.all([
+      acknowledgeReview(dir, receipt.feedbackId, "processing", "Updating properties"),
+      ...Array.from({ length: 12 }, () => readReviewInbox(dir)),
+    ]);
     expect(((await (await fetch(service.url + "/api/status")).json()) as any).state).toBe(
       "processing",
     );

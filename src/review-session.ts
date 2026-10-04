@@ -1,6 +1,16 @@
 import { createServer, type Server } from "node:http";
 import { randomUUID, randomBytes, createHash } from "node:crypto";
-import { readFile, writeFile, readdir, lstat, realpath, rename, mkdir, rm } from "node:fs/promises";
+import {
+  readFile,
+  writeFile,
+  readdir,
+  lstat,
+  realpath,
+  rename,
+  mkdir,
+  rm,
+  link,
+} from "node:fs/promises";
 import { resolve, extname, basename } from "node:path";
 import { stableJson } from "./storyboard.js";
 
@@ -42,6 +52,38 @@ async function writeSession(dir: string, data: any) {
   const temporary = resolve(dir, `.session-${randomUUID()}.tmp`);
   await writeFile(temporary, JSON.stringify(data), { flag: "wx", mode: 0o600 });
   await rename(temporary, resolve(dir, descriptor));
+}
+async function writeReceipt(path: string, receipt: any, exclusive = false): Promise<void> {
+  const temporary = `${path}.tmp-${randomUUID()}`;
+  try {
+    await writeFile(temporary, JSON.stringify(receipt), { flag: "wx", mode: 0o600 });
+    if (exclusive) await link(temporary, path);
+    else await rename(temporary, path);
+  } finally {
+    await rm(temporary, { force: true });
+  }
+}
+function canonicalVideoNotes(payload: any, context: any): any[] {
+  if (
+    payload.coordinateSpace !== undefined &&
+    payload.coordinateSpace !== "normalized-video-image-top-left"
+  )
+    throw Error("Invalid video coordinate space");
+  const fps = context.review.fps,
+    offset = context.review.startFrame;
+  return payload.feedback.map((note: any) => {
+    const first = fps
+      ? offset + Math.round((note.type === "range" ? note.start : note.time) * fps)
+      : null;
+    const last = fps && note.type === "range" ? offset + Math.round(note.end * fps) : null;
+    if (
+      (note.sourceStartFrame !== undefined && note.sourceStartFrame !== first) ||
+      (note.sourceEndFrame !== undefined && note.sourceEndFrame !== last)
+    )
+      throw Error("Source frames do not match review timing");
+    const { sourceStartFrame: _start, sourceEndFrame: _end, ...rest } = note;
+    return fps ? { ...rest, sourceStartFrame: first, sourceEndFrame: last } : rest;
+  });
 }
 const bounded = (n: any, max: number) =>
   typeof n === "number" && Number.isFinite(n) && n >= 0 && n <= max;
@@ -208,7 +250,7 @@ export async function acknowledgeReview(
     }
     item.state = state;
     item.updatedAt = new Date().toISOString();
-    await writeFile(path, JSON.stringify(item), { mode: 0o600 });
+    await writeReceipt(path, item);
     session.status = {
       state,
       message: message ?? state,
@@ -281,6 +323,8 @@ export async function serveReview(dir: string, port = 0): Promise<{ server: Serv
             )
               throw Error("Stale review session");
             validateFeedback(input.feedback, session.context);
+            if (session.context.kind === "video")
+              input.feedback.feedback = canonicalVideoNotes(input.feedback, session.context);
             const files = (await readdir(root)).filter((n) =>
               /^\.feedback-[0-9a-f-]{36}\.json$/.test(n),
             );
@@ -317,9 +361,9 @@ export async function serveReview(dir: string, port = 0): Promise<{ server: Serv
             if (files.length >= 1000) throw Error("Inbox limit reached");
             const id = randomUUID(),
               updatedAt = new Date().toISOString();
-            await writeFile(
+            await writeReceipt(
               resolve(root, `.feedback-${id}.json`),
-              JSON.stringify({
+              {
                 id,
                 sessionId: session.sessionId,
                 context: session.context,
@@ -327,8 +371,8 @@ export async function serveReview(dir: string, port = 0): Promise<{ server: Serv
                 updatedAt,
                 submittedHash,
                 payload: { ...input.feedback, feedback: fresh },
-              }),
-              { flag: "wx", mode: 0o600 },
+              },
+              true,
             );
             session.status = {
               state: session.status.state === "processing" ? "processing" : "queued",

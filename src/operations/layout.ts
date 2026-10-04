@@ -13,6 +13,9 @@ const LAYER_TARGET_PARAM = {
   required: true,
 };
 
+const invalidTrim = (value: unknown) =>
+  value !== undefined && value !== "comp" && (typeof value !== "number" || !Number.isFinite(value));
+
 registerOp({
   name: "layer.set_anchor",
   category: "layer",
@@ -96,7 +99,7 @@ registerOp({
   name: "layer.set_timing",
   category: "layer",
   description:
-    "Set a layer's timing in one call: shift (relative move of the whole layer), startTime, inPoint, outPoint ('comp' = comp start / comp end — e.g. to extend a layer copied out of a shorter comp), stretch. Applied in that order; AE clamps in/out to the source for footage.",
+    "Set a layer's timing in one call: shift (relative move of the whole layer), startTime, inPoint, outPoint ('comp' = comp start / comp end — e.g. to extend a layer copied out of a shorter comp), stretch. Applied in that order. An omitted trim bound is preserved after shift/startTime; AE clamps in/out to the source for footage.",
   params: [
     { name: "comp", type: "any", description: "Comp name or id", required: true },
     LAYER_TARGET_PARAM,
@@ -125,20 +128,32 @@ registerOp({
     const sets: string[] = [];
     if (args.shift !== undefined) sets.push(`_l.startTime = _l.startTime + ${jsxVal(args.shift)};`);
     if (args.startTime !== undefined) sets.push(`_l.startTime = ${jsxVal(args.startTime)};`);
-    if (args.inPoint !== undefined)
-      sets.push(`_l.inPoint = (${jsxVal(args.inPoint)} === "comp") ? 0 : ${jsxVal(args.inPoint)};`);
-    if (args.outPoint !== undefined)
+    if (args.inPoint !== undefined || args.outPoint !== undefined) {
+      const inValue =
+        args.inPoint === undefined
+          ? "_l.inPoint"
+          : `(${jsxVal(args.inPoint)} === "comp") ? 0 : ${jsxVal(args.inPoint)}`;
+      const outValue =
+        args.outPoint === undefined
+          ? "_l.outPoint"
+          : `(${jsxVal(args.outPoint)} === "comp") ? _comp.duration : ${jsxVal(args.outPoint)}`;
+      // AE's in-point setter can change outPoint. Always capture the intended pair first.
+      sets.push(`var _targetIn = ${inValue};`);
+      sets.push(`var _targetOut = ${outValue};`);
       sets.push(
-        `_l.outPoint = (${jsxVal(args.outPoint)} === "comp") ? _comp.duration : ${jsxVal(args.outPoint)};`,
+        `if (!isFinite(_targetIn) || !isFinite(_targetOut) || _targetIn === _targetOut) throw new Error("trim points must be finite and have a nonzero span");`,
       );
+      sets.push(`_l.inPoint = _targetIn;`);
+      sets.push(`_l.outPoint = _targetOut;`);
+    }
     if (args.stretch !== undefined) sets.push(`_l.stretch = ${jsxVal(args.stretch)};`);
     if (sets.length === 0) {
       return jsxFail("give at least one of shift, startTime, inPoint, outPoint, stretch");
     }
-    const inBad = typeof args.inPoint === "string" && args.inPoint !== "comp";
-    const outBad = typeof args.outPoint === "string" && args.outPoint !== "comp";
+    const inBad = invalidTrim(args.inPoint);
+    const outBad = invalidTrim(args.outPoint);
     if (inBad || outBad) {
-      return jsxFail("inPoint/outPoint must be a number or 'comp'");
+      return jsxFail("inPoint/outPoint must be a finite number or 'comp'");
     }
     return `
             ${jsxCompPreamble(args)}

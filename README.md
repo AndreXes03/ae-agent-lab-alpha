@@ -8,9 +8,9 @@ Prompt → inspect → typed edit → native AE → review.
 
 ## Demo
 
-[![Watch the KYNEM native motion demo](docs/assets/kynem-demo-thumbnail.jpg)](https://github.com/AndreXes03/ae-agent-lab-alpha/releases/download/v0.1.0-alpha.5/KYNEM-README-demo-v17-clean.mp4)
+[![Watch the KYNEM native motion demo](docs/assets/kynem-demo-thumbnail.jpg)](https://github.com/AndreXes03/ae-agent-lab-alpha/releases/download/v0.1.0-alpha.6/KYNEM-README-demo-v18-clean.mp4)
 
-[Watch/download the film](https://github.com/AndreXes03/ae-agent-lab-alpha/releases/download/v0.1.0-alpha.5/KYNEM-README-demo-v17-clean.mp4) · [What was verified](docs/DEMO.md)
+[Watch/download the film](https://github.com/AndreXes03/ae-agent-lab-alpha/releases/download/v0.1.0-alpha.6/KYNEM-README-demo-v18-clean.mp4) · [What was verified](docs/DEMO.md)
 
 An agent authored and revised native AE graphics with human art direction. The command cards and timeline are illustrative; this retimed promotional animation is not a live agent execution recording.
 
@@ -40,7 +40,7 @@ macOS may request launcher and AE automation permissions. This is an experimenta
 
 ### Mac installer
 
-[Download KYNEM alpha.5 for Mac](https://github.com/AndreXes03/ae-agent-lab-alpha/releases/download/v0.1.0-alpha.5/KYNEM-Mac-0.1.0-alpha.5.zip). Extract the whole ZIP and double-click **Install KYNEM.command**. It includes the compiled bridge and dependencies; downloading a missing Node runtime requires internet.
+[Download KYNEM alpha.6 for Mac](https://github.com/AndreXes03/ae-agent-lab-alpha/releases/download/v0.1.0-alpha.6/KYNEM-Mac-0.1.0-alpha.6.zip). Extract the whole ZIP and double-click **Install KYNEM.command**. It includes the compiled bridge and dependencies; downloading a missing Node runtime requires internet.
 
 Open a new Codex chat, select **KYNEM** with `@` or invoke `$kynem`, and give it your saved project path plus one specific edit. The skill starts an isolated worker on a copied project. [Italian installation guide](docs/INSTALL.it.md).
 

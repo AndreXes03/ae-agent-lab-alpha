@@ -55,14 +55,35 @@ async function writeJson(path, value) {
   await writeFile(temp, `${JSON.stringify(value, null, 2)}\n`, { mode: 0o600 });
   await rename(temp, path);
 }
+const requiredAppFiles = [
+  "dist/index.js",
+  "dist/cli.js",
+  "dist/local-review.js",
+  "dist/storyboard.js",
+  "dist/review-session.js",
+  "jsx/agent.jsx",
+  "node_modules/@modelcontextprotocol/sdk/package.json",
+  "node_modules/zod/package.json",
+  "scripts/demo-session.mjs",
+  "docs/AGENT-WORKFLOW.md",
+  "assets/review.html",
+  "assets/storyboard.html",
+  "assets/codex-feedback.js",
+  "examples/storyboard/kynem-demo.json",
+];
+async function missingAppFile(app) {
+  for (const needed of requiredAppFiles) if (!(await exists(join(app, needed)))) return needed;
+  return null;
+}
 async function ensureApp(version) {
   const versionDir = join(support, "versions", version);
   const app = join(versionDir, "app");
   if (await exists(app)) {
     const installed = JSON.parse(await readFile(join(app, "package.json"), "utf8"));
-    if (installed.version !== version || !(await exists(join(app, "dist", "index.js")))) {
+    const missing = await missingAppFile(app);
+    if (installed.version !== version || missing) {
       throw new Error(
-        `Existing ${version} installation is incomplete: ${app}. Inspect it before retrying.`,
+        `Existing ${version} installation is incomplete${missing ? ` (missing ${missing})` : ""}: ${app}. Inspect it before retrying.`,
       );
     }
     return app;
@@ -89,22 +110,11 @@ async function ensureApp(version) {
       if (await exists(join(source, name)))
         await cp(join(source, name), join(stage, "app", name), { recursive: true });
     }
-    for (const needed of [
-      "dist/index.js",
-      "jsx/agent.jsx",
-      "node_modules/@modelcontextprotocol/sdk/package.json",
-      "node_modules/zod/package.json",
-      "scripts/demo-session.mjs",
-      "assets/review.html",
-      "assets/storyboard.html",
-      "assets/codex-feedback.js",
-      "examples/storyboard/kynem-demo.json",
-    ]) {
-      if (!(await exists(join(stage, "app", needed))))
-        throw new Error(
-          `The ZIP is missing ${needed}. Extract the complete release ZIP and try again.`,
-        );
-    }
+    const missing = await missingAppFile(join(stage, "app"));
+    if (missing)
+      throw new Error(
+        `The ZIP is missing ${missing}. Extract the complete release ZIP and try again.`,
+      );
     await rename(stage, versionDir);
   } catch (error) {
     await rm(stage, { recursive: true, force: true });

@@ -1,3 +1,16 @@
+## 0.1.0-alpha.6 — review reliability and demo polish
+
+- Keep feedback and native Codex handoff tied to the current video and latest comment edits; hide obsolete handoff actions.
+- Preserve comment targets while typing by suspending playback/navigation shortcuts in the comment composer.
+- Give comment overlays a local backdrop blur, with a solid reduced-transparency fallback.
+- Write feedback receipts atomically and validate source-frame references against the reviewed video timing.
+- Preserve the omitted layer trim bound when AE changes it as a side effect of setting the other bound.
+- Check the full required runtime/review files before reusing an existing installation.
+- Clarify storyboard approval export and local agent status messages.
+- Refine the native promotional demo: closer scene handoffs, measured typewriter cursor placement, text spacing and closing readability.
+
+Validation and remaining native/platform limits are listed in the release notes. The promotional film is not a recording of autonomous execution.
+
 ## 0.1.0-alpha.5 — native AE workflow and local review
 
 - Add a local browser review for already rendered videos, with playback and user notes returned to the agent.

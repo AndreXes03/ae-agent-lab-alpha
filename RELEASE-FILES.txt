@@ -246,6 +246,7 @@ tests/property-adjust.test.ts
 tests/registry.test.ts
 tests/render-preview.test.ts
 tests/review-session.test.ts
+tests/review-ui-state.test.ts
 tests/scene-compose.test.ts
 tests/scene-core.test.ts
 tests/scene-input.test.ts

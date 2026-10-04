@@ -36,4 +36,4 @@ jobs:
       - name: Offline policy, schema, and instance tests
         # These tests use mocks, temporary files and a loopback review server. They
         # do not start After Effects and do not establish native acceptance.
-        run: npx vitest run tests/policy.test.ts tests/opschema.test.ts tests/instances.test.ts tests/scene-core.test.ts tests/scene-runtime.test.ts tests/scene-preview.test.ts tests/scene-integration.test.ts tests/scene-compose.test.ts tests/scene-input.test.ts tests/property-adjust.test.ts tests/local-review.test.ts tests/storyboard.test.ts tests/review-session.test.ts tests/codex-feedback.test.ts
+        run: npx vitest run tests/policy.test.ts tests/opschema.test.ts tests/field-ops.test.ts tests/instances.test.ts tests/scene-core.test.ts tests/scene-runtime.test.ts tests/scene-preview.test.ts tests/scene-integration.test.ts tests/scene-compose.test.ts tests/scene-input.test.ts tests/property-adjust.test.ts tests/local-review.test.ts tests/storyboard.test.ts tests/review-session.test.ts tests/codex-feedback.test.ts tests/review-ui-state.test.ts
