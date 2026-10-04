@@ -68,6 +68,8 @@ try {
   ]);
   for (const relative of [
     "assets/review.html",
+    "assets/storyboard.html",
+    "assets/codex-feedback.js",
     "examples/storyboard/kynem-demo.json",
     "examples/storyboard/kynem-demo-ending-revision.json",
   ]) {

@@ -57,3 +57,5 @@ All five fixture styleframes were constructed as simple rectangle/text compositi
 ## Local feedback connection
 
 The same [local feedback inbox](LOCAL-REVIEW.md#send-feedback-to-a-local-agent-inbox) works for storyboard and video pages. Serve the generated storyboard directory with `review-serve`, send context-bound feedback, then explicitly invoke the user's Codex plugin chat to process that directory. Queued feedback does not automatically wake the agent or approve the storyboard. The existing preview stays available while the agent publishes truthful status acknowledgements.
+
+In Codex's built-in browser, a saved receipt can be opened through the native annotation composer and submitted by the user into the current chat. This handoff preserves the storyboard revision/hash and its approval gate; see [native browser handoff](LOCAL-REVIEW.md#handoff-in-the-codex-browser).

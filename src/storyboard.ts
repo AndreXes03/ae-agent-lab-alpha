@@ -185,6 +185,10 @@ export async function createStoryboard(argv: string[]): Promise<string> {
         .digest("hex");
   if (Object.keys(imageDigests).length) spec.imageDigests = imageDigests;
   validateStoryboard(spec);
+  const nativeHandoff = await readFile(
+    fileURLToPath(new URL("../assets/codex-feedback.js", import.meta.url)),
+    "utf8",
+  );
   const template = await readFile(
     fileURLToPath(new URL("../assets/storyboard.html", import.meta.url)),
     "utf8",
@@ -230,7 +234,9 @@ export async function createStoryboard(argv: string[]): Promise<string> {
   );
   await writeFile(
     resolve(output, "index.html"),
-    template.replace("__STORYBOARD_CONTEXT__", JSON.stringify(context).replace(/</g, "\\u003c")),
+    template
+      .replace("<!--__CODEX_FEEDBACK__-->", "<script>" + nativeHandoff + "</script>")
+      .replace("__STORYBOARD_CONTEXT__", JSON.stringify(context).replace(/</g, "\\u003c")),
   );
   await initializeReviewSession(output, {
     kind: "storyboard",

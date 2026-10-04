@@ -96,6 +96,8 @@ async function ensureApp(version) {
       "node_modules/zod/package.json",
       "scripts/demo-session.mjs",
       "assets/review.html",
+      "assets/storyboard.html",
+      "assets/codex-feedback.js",
       "examples/storyboard/kynem-demo.json",
     ]) {
       if (!(await exists(join(stage, "app", needed))))

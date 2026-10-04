@@ -28,7 +28,7 @@ export const USAGE = `ae-agent-lab — local MCP bridge for Adobe After Effects
   ae-agent-lab review --video <file> --out <new directory> [--comp <name>] [--fps <number>] [--version <label>]
   ae-agent-lab review --manifest <json> --out <new directory>
   ae-agent-lab review-serve --dir <review directory> [--port <number>]
-  ae-agent-lab review-inbox --dir <review directory> [--limit <1–50>]
+  ae-agent-lab review-inbox --dir <review directory> [--limit <1–50>] [--id <receipt UUID>]
   ae-agent-lab review-ack --dir <review directory> --id <feedback UUID> --state <processing|completed|failed> [--message <text>] [--preview <local filename>]
   ae-agent-lab help                    this text
 

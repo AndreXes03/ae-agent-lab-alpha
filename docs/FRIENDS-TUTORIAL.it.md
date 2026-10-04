@@ -1,6 +1,6 @@
-# Guida rapida per la demo AE Agent Lab
+# Guida rapida per la demo KYNEM da sorgenti
 
-Questa è una prima prova locale: collega Codex a un worker separato di After Effects e lavora su una copia del progetto dimostrativo. La procedura è stata verificata su un solo Mac con After Effects 2026 (26.5).
+Per installare KYNEM e usarlo sui tuoi progetti, segui la [guida installer](INSTALL.it.md). Questa procedura alternativa da sorgenti collega Codex a un worker separato di After Effects e lavora su una copia del progetto dimostrativo. La procedura è stata verificata su un solo Mac con After Effects 2026 (26.5).
 
 ## Prima di iniziare
 
@@ -8,7 +8,7 @@ Questa è una prima prova locale: collega Codex a un worker separato di After Ef
 - [**Node.js 24 o successivo**](https://nodejs.org/en/download) e **Codex** installati e già configurati sul Mac.
 - Una connessione internet per il primo avvio e spazio libero per dipendenze, copie del progetto e render.
 
-Scarica lo **ZIP completo della release** da [questa release GitHub](https://github.com/AndreXes03/ae-agent-lab-alpha/releases/tag/v0.1.0-alpha.2) e decomprimilo in una cartella stabile, per esempio `Documenti/AE Agent Lab`. Non spostare o rinominare la cartella durante la prova: Codex la userà per collegarsi al worker.
+Scarica lo **ZIP dei sorgenti** (`KYNEM-Source-0.1.0-alpha.5.zip`) da [questa release GitHub](https://github.com/AndreXes03/ae-agent-lab-alpha/releases/tag/v0.1.0-alpha.5) e decomprimilo in una cartella stabile, per esempio `Documenti/AE Agent Lab`. Non spostare o rinominare la cartella durante la prova: Codex la userà per collegarsi al worker.
 
 ## Avvia la demo
 

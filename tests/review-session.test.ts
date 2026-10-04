@@ -105,6 +105,9 @@ test("loopback feedback validates identity, requires origin/token, persists rece
     expect(pendingStatus.state).toBe("queued");
     expect(pendingStatus.pendingCount).toBe(1);
     expect(pendingStatus.latestPreview).toBe("latest.html");
+    const exact = await readReviewInbox(dir, 10, receipt.feedbackId);
+    expect(exact.feedback[0].state).toBe("completed");
+    expect(exact.contextHash).toBe(session.contextHash);
     const freshInbox = await readReviewInbox(dir);
     expect(freshInbox.feedback[0].payload.feedback).toHaveLength(1);
     expect(freshInbox.feedback[0].payload.feedback[0].id).toBe("n2");

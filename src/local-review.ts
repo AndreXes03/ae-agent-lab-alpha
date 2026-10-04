@@ -54,6 +54,10 @@ export async function createLocalReview(argv: string[]): Promise<string> {
   for (const key of ["compId", "compName", "version"] as const)
     if (context[key] !== null && typeof context[key] !== "string")
       throw new Error(`${key} must be a string`);
+  const nativeHandoff = await readFile(
+    fileURLToPath(new URL("../assets/codex-feedback.js", import.meta.url)),
+    "utf8",
+  );
   const template = await readFile(
     fileURLToPath(new URL("../assets/review.html", import.meta.url)),
     "utf8",
@@ -66,7 +70,9 @@ export async function createLocalReview(argv: string[]): Promise<string> {
     await initializeReviewSession(output, { kind: "video", review: context });
     await writeFile(
       resolve(output, "index.html"),
-      template.replace("__REVIEW_CONTEXT__", JSON.stringify(context).replace(/</g, "\\u003c")),
+      template
+        .replace("<!--__CODEX_FEEDBACK__-->", "<script>" + nativeHandoff + "</script>")
+        .replace("__REVIEW_CONTEXT__", JSON.stringify(context).replace(/</g, "\\u003c")),
     );
   } catch (error) {
     throw new Error(

@@ -1,4 +1,4 @@
-## 0.1.0-alpha.5 — local candidate: storyboard and review
+## 0.1.0-alpha.5 — native AE workflow and local review
 
 - Add a local browser review for already rendered videos, with playback and user notes returned to the agent.
 - Keep review scoped to existing output files and validate requests before opening media or returning feedback.
@@ -7,8 +7,10 @@
 - Direct the host Codex/GPT image tool to generate storyboard artwork from supported AE recipes; schematic fixtures remain technical checks, and generated concepts are not native AE evidence.
 - Include the review player and both skills in the Mac installer.
 - Add a context-bound local feedback inbox with explicit agent acknowledgements and nonblocking review.
-- Refine the review interfaces, installer asset copying and README positioning; public demo selection/hosting remains pending.
-- This candidate remains local and has not been published.
+- Refine the video and storyboard review with a restrained macOS material interface, persistent feedback and visible Codex handoff.
+- Fix installer copying of review assets and storyboard examples; include the shared feedback helper.
+- Present the core Codex-to-AE workflow and a native promotional demo with clear evidence boundaries.
+- Add a visible native Codex feedback handoff shared by video and storyboard review, with feedback tied to the exact reviewed artifact.
 
 Validation: offline checks and installer verification are recorded in the release notes. Native AE visual acceptance and measured performance gains are not claimed.
 

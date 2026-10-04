@@ -9,3 +9,7 @@ The npm package is private to prevent registry publication; source and demo asse
 ## Original declarative scene additions
 
 The `src/scenes/` modules, scene tools and relative numeric adjustment operation are original KYNEM implementations. They use general declarative scene, frame-based animation and incremental update techniques. No Remotion source code, runtime package or other Remotion dependency is included. Existing upstream notices remain applicable to the inherited bridge.
+
+## Local review and storyboard support
+
+The review interfaces, feedback handoff and storyboard specifications are original KYNEM additions. They support the local Codex-to-After-Effects workflow. The promotional demo is a directed native AE animation, not a recording of live agent execution. KYNEM remains independent; no Adobe or OpenAI endorsement is claimed.

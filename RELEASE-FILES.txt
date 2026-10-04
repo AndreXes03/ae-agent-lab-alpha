@@ -22,6 +22,7 @@ RELEASE-FILES.txt
 Start Demo.command
 Start Project.command
 Stop Demo.command
+assets/codex-feedback.js
 assets/review.html
 assets/storyboard.html
 codex-plugin/.codex-plugin/plugin.json
@@ -201,6 +202,7 @@ src/workflows/variants.ts
 tests/agent-install.test.ts
 tests/batch.test.ts
 tests/catalog-efficiency.test.ts
+tests/codex-feedback.test.ts
 tests/color.test.ts
 tests/e2e/feedback-fixes.test.ts
 tests/e2e/field-ops.test.ts

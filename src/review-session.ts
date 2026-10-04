@@ -102,7 +102,8 @@ function validateFeedback(payload: any, context: any) {
     if (typeof n.note !== "string" || !n.note.trim() || n.note.length > 20000)
       throw Error("Invalid note");
 }
-export async function readReviewInbox(dir: string, limit = 10): Promise<any> {
+export async function readReviewInbox(dir: string, limit = 10, id?: string): Promise<any> {
+  if (id && !/^[0-9a-f-]{36}$/.test(id)) throw Error("Invalid receipt UUID");
   if (!Number.isInteger(limit) || limit < 1 || limit > 50) throw Error("Inbox limit must be 1–50");
   const session = await readSession(dir),
     receipts = [];
@@ -126,10 +127,12 @@ export async function readReviewInbox(dir: string, limit = 10): Promise<any> {
   return {
     sessionId: session.sessionId,
     context: session.context,
+    contextHash: createHash("sha256").update(stableJson(session.context)).digest("hex"),
+    reviewDir: await realpath(dir),
     status: session.status,
     pendingCount: pending.length,
-    hasMore: pending.length > limit,
-    feedback: pending.slice(0, limit),
+    hasMore: !id && pending.length > limit,
+    feedback: id ? receipts.filter((receipt) => receipt.id === id) : pending.slice(0, limit),
   };
 }
 async function withReviewLock<T>(dir: string, work: () => Promise<T>): Promise<T> {
@@ -243,7 +246,12 @@ export async function serveReview(dir: string, port = 0): Promise<{ server: Serv
       const url = new URL(req.url ?? "/", origin);
       if (url.pathname === "/api/session" && req.method === "GET") {
         const session = await readSession(root);
-        return json(200, { ...session, token });
+        return json(200, {
+          ...session,
+          token,
+          reviewDir: root,
+          contextHash: createHash("sha256").update(stableJson(session.context)).digest("hex"),
+        });
       }
       if (url.pathname === "/api/status" && req.method === "GET")
         return json(200, (await readSession(root)).status);
@@ -422,7 +430,11 @@ export async function runReviewSessionCli(
   if (command === "review-serve")
     out((await serveReview(dir, opts["--port"] ? Number(opts["--port"]) : 0)).url);
   else if (command === "review-inbox")
-    out(JSON.stringify(await readReviewInbox(dir, opts["--limit"] ? Number(opts["--limit"]) : 10)));
+    out(
+      JSON.stringify(
+        await readReviewInbox(dir, opts["--limit"] ? Number(opts["--limit"]) : 10, opts["--id"]),
+      ),
+    );
   else
     out(
       JSON.stringify(
