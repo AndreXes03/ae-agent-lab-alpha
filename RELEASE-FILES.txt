@@ -23,6 +23,7 @@ Start Demo.command
 Start Project.command
 Stop Demo.command
 assets/review.html
+assets/storyboard.html
 codex-plugin/.codex-plugin/plugin.json
 codex-plugin/README.md
 codex-plugin/scripts/bridge.mjs
