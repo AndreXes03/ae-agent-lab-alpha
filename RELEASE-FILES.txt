@@ -39,6 +39,7 @@ docs/AGENT-WORKFLOW.md
 docs/ALPHA-QUICKSTART.md
 docs/CLIENT-DEMO-PROMPT.md
 docs/DEMO-SESSION.md
+docs/DEMO.md
 docs/DRAFT-MOTION-DIRECTION.md
 docs/EFFICIENT-WORKFLOWS.md
 docs/EXAMPLE-PROMPTS.md
@@ -57,6 +58,8 @@ docs/STUDIO4-VALIDATION.md
 docs/TOOLS.md
 docs/UNINSTALL.md
 docs/assets/kynem-banner.svg
+docs/assets/kynem-demo-thumbnail.jpg
+examples/readme-move.json
 examples/storyboard/kynem-demo-ending-revision.json
 examples/storyboard/kynem-demo.json
 fixtures/empty.json
@@ -148,6 +151,7 @@ src/operations/viewer.ts
 src/opschema.ts
 src/policy.ts
 src/registry.ts
+src/review-session.ts
 src/scenes/cache.ts
 src/scenes/compile.ts
 src/scenes/input.ts
@@ -239,6 +243,7 @@ tests/policy.test.ts
 tests/property-adjust.test.ts
 tests/registry.test.ts
 tests/render-preview.test.ts
+tests/review-session.test.ts
 tests/scene-compose.test.ts
 tests/scene-core.test.ts
 tests/scene-input.test.ts

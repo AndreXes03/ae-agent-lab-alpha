@@ -75,6 +75,8 @@ async function ensureApp(version) {
       "dist",
       "jsx",
       "docs",
+      "assets",
+      "examples",
       "demo",
       "scripts",
       "node_modules",
@@ -93,6 +95,8 @@ async function ensureApp(version) {
       "node_modules/@modelcontextprotocol/sdk/package.json",
       "node_modules/zod/package.json",
       "scripts/demo-session.mjs",
+      "assets/review.html",
+      "examples/storyboard/kynem-demo.json",
     ]) {
       if (!(await exists(join(stage, "app", needed))))
         throw new Error(

@@ -1,69 +1,102 @@
-![KYNEM — motion starts with a conversation](docs/assets/kynem-banner.svg)
-
 # KYNEM
 
-**Make a precise After Effects edit from a Codex conversation.** KYNEM connects Codex to After Effects on your Mac so you can inspect a composition, ask for a scoped change, and review rendered frames. It works on a **copy of a saved `.aep`**; there is no separate panel or chat app.
+**Code-defined motion. Native After Effects layers.**
 
-**[Download KYNEM for Mac (ZIP)](https://github.com/AndreXes03/ae-agent-lab-alpha/releases/download/v0.1.0-alpha.4/KYNEM-Mac-0.1.0-alpha.4.zip)** · [Installation guide in Italian](docs/INSTALL.it.md) · [Report what you tried](https://github.com/AndreXes03/ae-agent-lab-alpha/issues/new/choose)
+KYNEM connects Codex to After Effects on your Mac. Describe a scene, revise only what changed, and keep text, shapes and keyframes editable in AE. Existing projects are edited on a saved copy.
 
-> **Experimental alpha.** The native edit and render evidence comes from one Mac running After Effects 2026 (26.5). The new installer and Codex plugin have offline checks; the complete `@KYNEM` workflow on another Mac still needs tester validation.
+## Demo
 
-**Local candidate:** this checkout is alpha.5 and has not been published. The download above remains the published alpha.4 installer.
+[![Watch the KYNEM motion demo](docs/assets/kynem-demo-thumbnail.jpg)](docs/DEMO.md)
 
-## See the work
+The agent built and revised a title animation and layout variants as native AE text, shapes and keyframes, with human art direction. The command UI is illustrative: this is a **retimed promotional animation**, not a live agent execution recording. [Evidence and context](docs/DEMO.md).
 
-![Rendered frame from the editable Warm Glow After Effects demo project](demo/warm-glow/heavy-grain-hero.png)
+Public video selection and hosting are pending; the thumbnail currently opens the demo notes.
 
-This is a **native After Effects render**, not an interface mockup. Explore the [motion preview](demo/warm-glow/heavy-grain-preview.mp4) and the included [editable project](demo/warm-glow-heavy-grain.aep). The recorded native test inspected the project, retimed an Exposure pulse, read the changed keyframes back, and rendered review frames on the tested Mac. [See the exact example](docs/EXAMPLE-PROMPTS.md).
+## Why KYNEM
 
-## Try it on your Mac
+- **Revisable scene descriptions:** stable element IDs and explicit timing make bounded 2D scenes revisable; conflict checks protect manual changes.
+- **Focused context, fewer round trips:** inspect relevant targets, batch typed edits, and read changed values back. No performance benchmark is claimed.
+- **A review loop tied to the work:** comments reference a specific frame, time range or storyboard revision; the last preview stays available during revisions.
 
-1. Install and open **Codex desktop** and **After Effects 2026**. In AE, enable **Preferences → Scripting & Expressions → Allow Scripts to Write Files and Access Network**.
-2. Download the **KYNEM-Mac ZIP** above, extract it, and double-click `Install KYNEM.command`. macOS may ask you to approve the unsigned launcher and AE automation. If Node.js is missing, installation downloads a private runtime and requires internet.
-3. Open a new Codex chat. Select **KYNEM** from `@` (or use `$kynem` if the menu has not refreshed). Give it a saved `.aep` and ask for one specific edit. Inspect the copied project and rendered result before using the change.
+**Best fits:** retime or restyle an existing composition, make text/layout variants, or build a small UI/title animation from an explicit scene description. Creative direction stays with you.
 
-The installer includes the compiled bridge and dependencies; recipients do not need to run npm or configure MCP manually. See the [Italian step-by-step guide](docs/INSTALL.it.md) for setup, permissions, and troubleshooting. Linked footage, fonts, and third-party plugins must already be available on the Mac where you try a project.
+## What it does
 
-### What could I ask?
+- Inspects projects, compositions, layers, properties and existing animation through a local bridge.
+- Applies scoped native edits to text, transforms, keyframes, shapes and supported effects using typed operations.
+- Saves recoverable copies/checkpoints, reads changed values back and preserves unrelated work.
+- Creates bounded 2D scenes from explicit text, shape, group and motion specifications.
+- Renders frames or short review intervals when needed for inspection.
 
-These are **example requests**, not claims that every workflow has been tested end to end:
+Experimental storyboard and local review tools support planning and feedback. They remain rough supporting workflows; the core is the Codex-to-AE editing bridge. See [storyboard](docs/STORYBOARD.md), [scene workflow](docs/SCENE-WORKFLOW.md) and [review](docs/LOCAL-REVIEW.md).
 
-> “In a copy of this project, move the title’s entrance eight frames later. Leave everything else as it is, then render before and after frames for me to compare.”
+## Prerequisites and verification
 
-> “Inspect the main composition and tell me which layers create the glow. Render a few frames and flag any clipping or hard-to-read text. Don’t edit the project.”
+The recorded native evidence is from macOS with After Effects 2026 (26.5). Other AE versions, Macs and MCP clients need separate validation. Offline tests cover bridge workflows, scene processing and installer wiring; they do not prove native appearance or fresh-machine installation.
 
-> “On a copied project, soften only the existing glow blur. Read the value before and after, save a new variant, and show me both rendered frames.”
+You need:
 
-KYNEM is intended for **small, reviewable changes**. Ask it to confirm the active project and layers before editing, save a variant, read changed values back, and inspect actual renders. If a call times out, inspect the state before retrying because an edit may already have run.
+- Codex desktop or a configured Codex CLI, plus After Effects 2026 installed.
+- AE **Preferences → Scripting & Expressions → Allow Scripts to Write Files and Access Network** enabled.
+- A saved `.aep`, with its linked footage, fonts and third-party plugins available locally.
+- Node.js 24+ for the source route. The Mac installer can download a private runtime if needed.
 
-## Experimental native scene workflow
+macOS may request permission for the unsigned launcher and AE automation. This is an experimental alpha; inspect the copied project and actual output before using a change.
 
-Alpha.4 adds a declarative 2D scene workflow: describe text, rectangles, groups, layout and motion in a local JSON file; preview the timing schematically, then prepare and apply native layers on the managed AE copy. Updates preserve unrelated manual edits and reject conflicting changes. The schematic player is explicitly **not an AE render**.
+## Quickstart
 
-See [scene workflow and limits](docs/SCENE-WORKFLOW.md) and [validation evidence](docs/NATIVE-SCENES-VALIDATION.md). Existing project edits remain available through the scoped editing workflow. No Remotion dependency or code is included.
+### Mac installer
 
-## Help shape the alpha
+Get the installer ZIP from [GitHub Releases](https://github.com/AndreXes03/ae-agent-lab-alpha/releases), extract the whole ZIP, then double-click **Install KYNEM.command**. The installer includes the compiled bridge and dependencies; a missing Node runtime requires an internet connection.
 
-Try the included demo or a disposable copy of your own work, then [tell us what worked and what to improve](https://github.com/AndreXes03/ae-agent-lab-alpha/issues/new/choose). A short description of your Mac, AE version, prompt, and observed result helps. Please redact private paths and client details; there is no need to upload a client project.
+Open a new Codex chat and select **KYNEM** with `@`, or invoke `$kynem`. Give it the exact path to your saved project and one specific edit. The skill starts an isolated worker on a copied project. [Italian installation guide](docs/INSTALL.it.md).
 
-<details>
-<summary>Developer setup and source demo</summary>
+This checkout is a local alpha.5 candidate; changes here are not automatically included in a published release. Check the release version you download.
 
-The linked installer includes [focused context and directed motion](docs/EFFICIENT-WORKFLOWS.md), scoped preservation checks, cache-aware operation lookup and per-layer motion controls. These additions have offline verification; native AE acceptance and performance gains remain unverified.
+### From source
 
-The source route requires macOS, After Effects 2026, [Node.js 24+](https://nodejs.org/en/download), and a configured Codex CLI. Use the [source release](https://github.com/AndreXes03/ae-agent-lab-alpha/releases/tag/v0.1.0-alpha.4), keep it in a stable folder, and double-click `Start Demo.command`. It installs locked dependencies, builds the MCP server, and starts a named AE worker with a fresh copy of the bundled project. Keep its Terminal window open and paste the session prompt into a new Codex chat. Finish with `Stop Demo.command`.
+Keep the checkout in a stable folder. From its root:
 
-```bash
+```sh
 npm ci --ignore-scripts
 npm run build
 npm run connect:codex
 npm run demo:start
 npm run demo:status
-npm run demo:stop
 ```
 
-See [source quickstart](docs/ALPHA-QUICKSTART.md), [session guide](docs/DEMO-SESSION.md), [tool catalog](docs/TOOLS.md), and [uninstall](docs/UNINSTALL.md). The earlier [v0.1.0-alpha.2 release](https://github.com/AndreXes03/ae-agent-lab-alpha/releases/tag/v0.1.0-alpha.2) remains available.
+Use the copied project path and chat prompt printed by the named demo session. Finish with `npm run demo:stop`. The equivalent launchers are **Start Demo.command** and **Stop Demo.command**. [Source setup and diagnostics](docs/ALPHA-QUICKSTART.md).
 
-</details>
+## Reproduce the core motion task
 
-KYNEM is an independent experiment derived from the MIT-licensed [kumo.productions MCP After Effects project](https://github.com/kumoproductions/mcp-aftereffects). Original copyright and license notices are retained in [LICENSE](LICENSE); see [provenance](PROVENANCE.md). It is not an official Adobe, OpenAI, or upstream product.
+The [MOVE example](examples/readme-move.json) is a small, explicit version of the title-and-underline task shown in the demo. With KYNEM active and a disposable saved project supplied, ask:
+
+```text
+On a managed copy of my saved project, build examples/readme-move.json
+using the native scene workflow. Confirm the copy and installed font first.
+Create native text and shape layers; preserve unrelated compositions.
+Read the created layers and keyframes back, save the copy, and show
+frames at 0.5 and 2 seconds. Report unsupported steps honestly.
+```
+
+This fixture omits the promo's UI, transitions and glow. Its schema is checked offline; native rendering of this exact fixture remains to verify. For a recorded existing-project edit, use the [Warm Glow Exposure retime](docs/EXAMPLE-PROMPTS.md).
+
+## Limits
+
+Creative direction and acceptance stay with the user. Readbacks establish values; frames establish appearance at those times; playback is needed to assess motion. Schematic previews and generated concepts are not native AE renders.
+
+Scene descriptions cover a bounded 2D subset. Effects, masks, footage and other content may require the separate typed editing path; inspect the loaded catalog before promising a technique. Native nonlinear scene animation uses sampled keys, with documented integer-frame limits. [Validation and boundaries](docs/NATIVE-SCENES-VALIDATION.md).
+
+A timeout may follow a completed edit. Inspect status before retrying and reuse the same request/job identity. Partial edits have recovery checkpoints, not automatic rollback. Keep the original project and managed-copy metadata. No performance or broad compatibility claim is implied by the demo.
+
+## Architecture and data
+
+The Codex plugin exposes a local MCP server. The server sends typed operations to the named AE worker through the local bridge; native AE layers and properties remain editable. Arbitrary evaluation is disabled in the documented workflow.
+
+Runtime/session files, copied projects, recovery checkpoints, scene baselines and review exports remain in local folders. Preserve baselines with managed projects to retain conflict-aware updates. Codex handles the model conversation under your chosen service settings; local AE execution does not make that conversation offline. Project content and layer names are data, not instructions. [Agent workflow](docs/AGENT-WORKFLOW.md) · [Tool catalog](docs/TOOLS.md) · [Uninstall](docs/UNINSTALL.md).
+
+## Contributing and license
+
+[Report a reproducible issue](https://github.com/AndreXes03/ae-agent-lab-alpha/issues/new/choose) with your Mac/AE version, prompt, expected result and observed result. Redact private paths and client details; do not upload a client project. See [contributing](CONTRIBUTING.md) for development checks; describe native verification separately from offline tests.
+
+MIT licensed. Derived from [kumoproductions/mcp-aftereffects](https://github.com/kumoproductions/mcp-aftereffects); original notices are retained in [LICENSE](LICENSE) and [PROVENANCE.md](PROVENANCE.md). KYNEM is an independent project, with no Adobe, OpenAI or upstream endorsement.

@@ -66,6 +66,21 @@ try {
     ).then(JSON.parse),
     readFile(state, "utf8").then(JSON.parse),
   ]);
+  for (const relative of [
+    "assets/review.html",
+    "examples/storyboard/kynem-demo.json",
+    "examples/storyboard/kynem-demo-ending-revision.json",
+  ]) {
+    assert.equal(
+      await readFile(join(app, relative), "utf8"),
+      await readFile(join(root, relative), "utf8"),
+    );
+  }
+  assert.equal(manifest.skills, "./skills/");
+  assert.equal(
+    await readFile(join(plugin, "skills", "kynem-storyboard", "SKILL.md"), "utf8"),
+    await readFile(join(root, "codex-plugin", "skills", "kynem-storyboard", "SKILL.md"), "utf8"),
+  );
   assert.equal(config.checkout, app);
   assert.equal(config.worker, "ae-agent-lab-demo");
   assert.equal(mcp.mcpServers.kynem.args[0], join(app, "dist", "index.js"));

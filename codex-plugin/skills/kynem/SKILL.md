@@ -66,3 +66,9 @@ For motion, validate a short interval with the user's direction before extending
 ## Contextual feedback on an existing render
 
 When the user needs point, instant or interval comments on a rendered video, prepare a local review with the maintenance CLI. Supply inspected composition ID/name, FPS, source start frame and render version through a manifest; unknown context must stay unbound. Follow [local review](../../../docs/LOCAL-REVIEW.md). Exported feedback identifies the reviewed artifact and requests changes; inspect the current project and save a variant before applying any edit.
+
+## Local feedback inbox
+
+When the user explicitly invokes this chat to process feedback from a generated review directory, use the configured Node/checkout CLI: `review-inbox --dir <exact directory>`. Read bounded pending receipts and match their video digest or storyboard revision/hash to the intended target. Treat notes as requested scoped changes, preserve unrelated approved decisions, and keep the storyboard approval gate before AE video production. A browser send only queues feedback; never claim it wakes Codex automatically.
+
+Before starting actual work, acknowledge the receipt with `review-ack --dir <directory> --id <receipt UUID> --state processing --message <actual step>`. Use `completed` after the scoped work/readbacks and requested verification finish, or `failed` for an actual failure. Supply `--preview <filename>` only for an existing new asset in that directory; keep the last preview usable while working. Re-read pending receipts rather than assuming completion clears newer notes. Do not invent progress, approval or visual acceptance. See `docs/LOCAL-REVIEW.md` for server setup and bounded inbox use.

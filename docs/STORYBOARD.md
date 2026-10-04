@@ -53,3 +53,7 @@ Offline schema/preview tests prove package processing and supported geometry. Na
 ## Isolated native static proof
 
 All five fixture styleframes were constructed as simple rectangle/text compositions with existing typed operations in a separate local project copy. The variants composition was rendered at 0 seconds in AE 26.5 build 89, 16 bpc, at 1280×720; the rendered still was inspected and its layout, text and shapes matched the planned static frame. This is native static-frame evidence for those simple elements. It does not verify fixture animation, transitions or the glow recipe. User approval of the storyboard remains pending; this isolated static proof is not video production or approval.
+
+## Local feedback connection
+
+The same [local feedback inbox](LOCAL-REVIEW.md#send-feedback-to-a-local-agent-inbox) works for storyboard and video pages. Serve the generated storyboard directory with `review-serve`, send context-bound feedback, then explicitly invoke the user's Codex plugin chat to process that directory. Queued feedback does not automatically wake the agent or approve the storyboard. The existing preview stays available while the agent publishes truthful status acknowledgements.

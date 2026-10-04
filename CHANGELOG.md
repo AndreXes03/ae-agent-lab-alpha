@@ -6,6 +6,8 @@
 - Add a separate storyboard skill, production specifications, capability guidance and reusable local examples.
 - Direct the host Codex/GPT image tool to generate storyboard artwork from supported AE recipes; schematic fixtures remain technical checks, and generated concepts are not native AE evidence.
 - Include the review player and both skills in the Mac installer.
+- Add a context-bound local feedback inbox with explicit agent acknowledgements and nonblocking review.
+- Refine the review interfaces, installer asset copying and README positioning; public demo selection/hosting remains pending.
 - This candidate remains local and has not been published.
 
 Validation: offline checks and installer verification are recorded in the release notes. Native AE visual acceptance and measured performance gains are not claimed.

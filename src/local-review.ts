@@ -1,3 +1,4 @@
+import { initializeReviewSession } from "./review-session.js";
 import { readFile, mkdir, copyFile, writeFile } from "node:fs/promises";
 import { createReadStream } from "node:fs";
 import { createHash } from "node:crypto";
@@ -62,6 +63,7 @@ export async function createLocalReview(argv: string[]): Promise<string> {
   await mkdir(output);
   try {
     await copyFile(source, resolve(output, context.video));
+    await initializeReviewSession(output, { kind: "video", review: context });
     await writeFile(
       resolve(output, "index.html"),
       template.replace("__REVIEW_CONTEXT__", JSON.stringify(context).replace(/</g, "\\u003c")),

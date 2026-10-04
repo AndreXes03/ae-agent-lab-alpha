@@ -1,3 +1,4 @@
+import { initializeReviewSession } from "./review-session.js";
 import { readFile, mkdir, writeFile, copyFile } from "node:fs/promises";
 import { createHash } from "node:crypto";
 import { dirname, resolve, extname } from "node:path";
@@ -231,5 +232,13 @@ export async function createStoryboard(argv: string[]): Promise<string> {
     resolve(output, "index.html"),
     template.replace("__STORYBOARD_CONTEXT__", JSON.stringify(context).replace(/</g, "\\u003c")),
   );
+  await initializeReviewSession(output, {
+    kind: "storyboard",
+    manifestHash: context.manifestHash,
+    revision: spec.revision,
+    sceneHashes: context.sceneHashes,
+    sceneIds: spec.scenes.map((s: any) => s.id),
+    transitionIds: (spec.transitions ?? []).map((t: any) => t.id),
+  });
   return resolve(output, "index.html");
 }

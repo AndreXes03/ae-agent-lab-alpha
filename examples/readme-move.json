@@ -1,0 +1,95 @@
+{
+  "id": "readme_move",
+  "name": "KYNEM MOVE example",
+  "width": 1280,
+  "height": 720,
+  "fps": 30,
+  "durationFrames": 90,
+  "nodes": [
+    {
+      "id": "background",
+      "type": "rect",
+      "width": 1280,
+      "height": 720,
+      "color": [0.025, 0.035, 0.055]
+    },
+    {
+      "id": "title",
+      "type": "text",
+      "text": "MOVE",
+      "font": "Arial-BoldMT",
+      "fontSize": 150,
+      "width": 480,
+      "height": 190,
+      "x": 400,
+      "y": 235,
+      "motion": [
+        {
+          "property": "position",
+          "keys": [
+            {
+              "frame": 0,
+              "value": [400, 315],
+              "easing": [0.12, 0.85, 0.2, 1]
+            },
+            {
+              "frame": 30,
+              "value": [400, 235],
+              "easing": "linear"
+            },
+            {
+              "frame": 89,
+              "value": [400, 231]
+            }
+          ]
+        },
+        {
+          "property": "opacity",
+          "keys": [
+            {
+              "frame": 0,
+              "value": 0
+            },
+            {
+              "frame": 8,
+              "value": 100
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "underline",
+      "type": "rect",
+      "x": 410,
+      "y": 425,
+      "width": 460,
+      "height": 5,
+      "color": [0.145, 0.48, 1],
+      "motion": [
+        {
+          "property": "scale",
+          "keys": [
+            {
+              "frame": 0,
+              "value": [0, 100]
+            },
+            {
+              "frame": 8,
+              "value": [0, 100],
+              "easing": [0.12, 0.85, 0.2, 1]
+            },
+            {
+              "frame": 34,
+              "value": [100, 100]
+            },
+            {
+              "frame": 89,
+              "value": [102, 100]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
