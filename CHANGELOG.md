@@ -4,6 +4,7 @@
 - Keep review scoped to existing output files and validate requests before opening media or returning feedback.
 - Add optional draft motion direction for fresh animations, with explicit user choices and preservation of approved motion.
 - Add a separate storyboard skill, production specifications, capability guidance and reusable local examples.
+- Direct the host Codex/GPT image tool to generate storyboard artwork from supported AE recipes; schematic fixtures remain technical checks, and generated concepts are not native AE evidence.
 - Include the review player and both skills in the Mac installer.
 - This candidate remains local and has not been published.
 
