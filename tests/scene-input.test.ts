@@ -1,7 +1,9 @@
 import { afterAll, describe, expect, it } from "vitest";
-import { mkdir, rm, symlink, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, rm, symlink, writeFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { loadSceneInput } from "../src/scenes/input.js";
-const directory = `/private/tmp/kynem-scene-input-test-${process.pid}`;
+const directory = await mkdtemp(join(tmpdir(), "kynem-scene-input-test-"));
 afterAll(() => rm(directory, { recursive: true, force: true }));
 const scene = {
   id: "test",

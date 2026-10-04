@@ -1,9 +1,12 @@
 import { afterAll, describe, expect, it, vi } from "vitest";
 import { readFile, rm } from "node:fs/promises";
 import type { AeTransport } from "../src/transport/AeTransport.js";
-const settings = vi.hoisted(() => ({
-  directory: `/private/tmp/kynem-scene-compose-test-${process.pid}`,
-}));
+const settings = await vi.hoisted(async () => {
+  const { mkdtemp } = await import("node:fs/promises");
+  const { tmpdir } = await import("node:os");
+  const { join } = await import("node:path");
+  return { directory: await mkdtemp(join(tmpdir(), "kynem-scene-compose-test-")) };
+});
 vi.mock("../src/config.js", () => ({ RUNTIME_DIR: settings.directory }));
 import { sceneComposeTool } from "../src/tools/scene-compose.js";
 import { sceneSpec } from "../src/scenes/model.js";
