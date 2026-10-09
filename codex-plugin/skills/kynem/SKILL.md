@@ -74,3 +74,17 @@ When the user explicitly invokes this chat to process feedback from a generated 
 Before starting actual work, acknowledge the receipt with `review-ack --dir <directory> --id <receipt UUID> --state processing --message <actual step>`. Use `completed` after the scoped work/readbacks and requested verification finish, or `failed` for an actual failure. Supply `--preview <filename>` only for an existing new asset in that directory; keep the last preview usable while working. Re-read pending receipts rather than assuming completion clears newer notes. Do not invent progress, approval or visual acceptance. See `docs/LOCAL-REVIEW.md` for server setup and bounded inbox use.
 
 For a user-submitted native browser annotation carrying KYNEM `reviewDir`, `receiptId`, `sessionId` and `contextHash`, read `review-inbox --dir <reviewDir> --id <receiptId>` and match its session/context hash before acting. Process only the referenced pending receipt, not unrelated notes; a completed receipt must not be applied again. The native annotation request itself does not establish delivery, approval or processing. Keep version binding intact and acknowledge actual work through the existing local status commands.
+
+## Existing-project cutdowns
+
+Prefer compact `ae_context`, `ae_inspect_targets` and supported `ae_edit` batches. Inspect affected parent chains with `comp.inspect_hierarchy` before retiming or bypassing controllers; unknown expression dependencies forbid assuming a rig is safe to delete. Agree duration in frames, required text, protected ranges and explicit audio intent. Maintain final/source/study/backup identities. Use `ae_delivery_check` for supplied-evidence preflight; it does not independently verify media. Confirm the exact instance and final comp before playback, and review audio across the delivered cut. Report readback, stills, playback and audio evidence separately. See `docs/DELIVERY-CHECK.md` and `docs/HIERARCHY-INSPECT.md` in the repository.
+
+## Keep the project organized
+
+Organization is part of every edit and delivery. Inspect the existing Project-panel folder convention first and reuse it. In a new or unstructured working copy, group project items into `01_FINAL`, `02_PRECOMPS`, `03_ASSETS`, `90_STUDIES`, and `99_BACKUPS`, creating only folders actually needed. These are AE Project-panel folders, not extra nesting inside compositions.
+
+- Keep final/main compositions separate from supporting precomps, footage, experiments and backups. Give new items short meaningful names including purpose, aspect ratio and duration when helpful. Avoid unexplained numbered duplicates.
+- Use typed folder and item-move operations discovered through `ae_catalog`; move existing project items by ID instead of rebuilding them. Preserve layer order, parent chains, mattes and source links. Do not reparent layers or precompose merely to tidy the Project panel.
+- Rename newly created items freely; preserve existing names that expressions or scripts may reference unless dependencies are checked. Do not reorganize unrelated client material, delete alternatives or merge folders without a reason within the brief.
+- Name new layers by role and group related new layers sensibly without changing compositing order. Keep backups distinguishable and outside final-delivery folders.
+- Before handing off, read back the final comp IDs/names/folders and confirm that final comps reference the intended sources. Report the exact final comp and saved copy; do not leave the user to guess which study or duplicate is the deliverable.

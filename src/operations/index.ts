@@ -23,6 +23,7 @@ import "./layer-advanced.js";
 import "./render.js";
 import "./review.js";
 import "./inspect.js";
+import "./hierarchy.js";
 import "./footage.js";
 import "./item.js";
 import "./font.js";

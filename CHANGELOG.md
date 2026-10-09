@@ -1,5 +1,14 @@
-## 0.1.0-alpha.6 — review reliability and demo polish
+## 0.1.0-alpha.7
 
+- Add bounded hierarchy inspection for parents, mattes and expression flags.
+- Add an offline delivery evidence check for duration, text, organization and audio intent; it does not independently inspect AE or media.
+- Preserve valid catalog results with optional partial discovery, and expose actionable property-group errors.
+- Attach actual composition identity and unreviewed playback/audio status to short review renders.
+- Guide agents to use compact inspection, grouped edits and organized Project-panel folders without changing existing rigs.
+
+Validation: offline tests and compilation; these additions have not received native AE acceptance.
+
+## 0.1.0-alpha.6 — review reliability and demo polish
 - Keep feedback and native Codex handoff tied to the current video and latest comment edits; hide obsolete handoff actions.
 - Preserve comment targets while typing by suspending playback/navigation shortcuts in the comment composer.
 - Give comment overlays a local backdrop blur, with a solid reduced-transparency fallback.

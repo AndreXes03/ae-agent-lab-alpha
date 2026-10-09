@@ -47,6 +47,7 @@ function fixture(cursor = 0, keyValue = 100) {
   };
   class Comp {
     id = 42;
+    name = "Final";
     frameRate = 25;
     duration = 4;
     numLayers = 1;
@@ -205,6 +206,7 @@ function reviewFixture(fail = false) {
   };
   class Comp {
     id = 42;
+    name = "Final";
     frameRate = 25;
     duration = 30;
   }
@@ -243,7 +245,17 @@ describe("short temporal review isolation", () => {
   };
   it("renders only the new interval and restores queue state", () => {
     const f = reviewFixture();
-    expect(f.run(args)).toMatchObject({ ok: true, completed: true, startFrame: 25, endFrame: 75 });
+    expect(f.run(args)).toMatchObject({
+      ok: true,
+      completed: true,
+      startFrame: 25,
+      endFrame: 75,
+      compId: 42,
+      compName: "Final",
+      projectPath: null,
+      playbackReviewed: false,
+      audioReviewed: false,
+    });
     expect(f.temporary.timeSpanStart).toBe(1);
     expect(f.temporary.timeSpanDuration).toBe(2);
     expect(f.temporary.skipFrames).toBe(0);

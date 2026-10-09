@@ -40,7 +40,7 @@ macOS may request launcher and AE automation permissions. This is an experimenta
 
 ### Mac installer
 
-[Download KYNEM alpha.6 for Mac](https://github.com/AndreXes03/ae-agent-lab-alpha/releases/download/v0.1.0-alpha.6/KYNEM-Mac-0.1.0-alpha.6.zip). Extract the whole ZIP and double-click **Install KYNEM.command**. It includes the compiled bridge and dependencies; downloading a missing Node runtime requires internet.
+[Download KYNEM alpha.7 for Mac](https://github.com/AndreXes03/ae-agent-lab-alpha/releases/download/v0.1.0-alpha.7/KYNEM-Mac-0.1.0-alpha.7.zip). Extract the whole ZIP and double-click **Install KYNEM.command**. It includes the compiled bridge and dependencies; downloading a missing Node runtime requires internet.
 
 Open a new Codex chat, select **KYNEM** with `@` or invoke `$kynem`, and give it your saved project path plus one specific edit. The skill starts an isolated worker on a copied project. [Italian installation guide](docs/INSTALL.it.md).
 

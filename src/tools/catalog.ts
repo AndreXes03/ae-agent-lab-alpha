@@ -36,7 +36,7 @@ export const catalogTool = defineTool({
     "Discover available atomic operations for ae_do. Without args: all categories with their " +
     "operation names. With a category: detailed params per operation. Use detail: summary " +
     "to browse names and descriptions without params, or operations: [exact names] to " +
-    "fetch only the schemas needed. Reuse cacheKey via ifNoneMatch; query filters names/descriptions. Only operations this server will execute are listed.",
+    "fetch only the schemas needed. Opt into allowPartial to retain available schemas and report unavailable names. Reuse cacheKey via ifNoneMatch; query filters names/descriptions. Only operations this server will execute are listed.",
   group: "operations",
   blockedInReadOnly: false,
   effect: "read",
@@ -70,6 +70,12 @@ export const catalogTool = defineTool({
       .refine((names) => new Set(names).size === names.length, "Operation names must be unique")
       .optional()
       .describe("Fetch up to 12 exact operation names, with or without a category."),
+    allowPartial: z
+      .boolean()
+      .optional()
+      .describe(
+        "For exact-name lookups, return available operations plus per-name errors; default false rejects the entire lookup if any name is unavailable.",
+      ),
     detail: z
       .enum(["full", "summary"])
       .optional()
@@ -132,37 +138,52 @@ export const catalogTool = defineTool({
               .split(/\s+/)
               .every((term) => (op.name + " " + op.description).toLowerCase().includes(term)),
         );
-    if (selected.some((op) => !op)) {
+    if (!args.allowPartial && selected.some((op) => !op)) {
       return errorResult(
         "UNKNOWN_OPERATION",
         "one or more requested operations are unavailable; use ae_catalog to list available names",
       );
     }
-    const details = (selected as Operation[]).map((op) => ({
-      name: op.name,
-      description: op.description,
-      readOnly: op.readOnly === true,
-      // Changes the user's AE application configuration: runs only with
-      // confirm: true, which the caller may pass only on the user's explicit
-      // request. The injected `confirm` param carries the same contract.
-      ...(op.appConfig ? { appConfig: true } : {}),
-      ...(args.detail === "summary"
-        ? {}
-        : {
-            params: op.params.map((p) => ({
-              name: p.name,
-              type: p.type,
-              required: p.required ?? false,
-              description: p.description,
-              ...(p.nullable ? { nullable: true } : {}),
-              ...(p.default !== undefined ? { default: p.default } : {}),
-            })),
-          }),
-    }));
+    const errors = (args.operations ?? []).flatMap((name, index) =>
+      selected[index]
+        ? []
+        : [
+            {
+              name,
+              code: "UNKNOWN_OPERATION",
+              message: "operation is unavailable; use ae_catalog to list available names",
+              retryable: false,
+            },
+          ],
+    );
+    const details = selected
+      .filter((op): op is Operation => op !== undefined)
+      .map((op) => ({
+        name: op.name,
+        description: op.description,
+        readOnly: op.readOnly === true,
+        // Changes the user's AE application configuration: runs only with
+        // confirm: true, which the caller may pass only on the user's explicit
+        // request. The injected `confirm` param carries the same contract.
+        ...(op.appConfig ? { appConfig: true } : {}),
+        ...(args.detail === "summary"
+          ? {}
+          : {
+              params: op.params.map((p) => ({
+                name: p.name,
+                type: p.type,
+                required: p.required ?? false,
+                description: p.description,
+                ...(p.nullable ? { nullable: true } : {}),
+                ...(p.default !== undefined ? { default: p.default } : {}),
+              })),
+            }),
+      }));
     return catalogResult(
       {
         ...(args.category ? { category: args.category } : {}),
         operations: details,
+        ...(args.operations && args.allowPartial ? { errors } : {}),
       },
       args.ifNoneMatch,
     );

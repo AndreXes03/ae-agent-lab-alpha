@@ -5,6 +5,7 @@ import { resolveTarget } from "../transport/instances.js";
 import type { ToolGroup } from "./define-tool.js";
 import type { ToolResult } from "./types.js";
 
+import { deliveryCheckTool } from "./delivery-check.js";
 import { verifyTargetsTool } from "./verify-targets.js";
 import { editTool } from "./edit.js";
 import { sceneTool } from "./scene.js";
@@ -56,6 +57,7 @@ export const INSTANCE_PARAM = z
 /** Tools that never contact After Effects have no instance to pick. */
 const INSTANCE_FREE_TOOLS = new Set([
   "ae_catalog",
+  "ae_delivery_check",
   "ae_motion_plan",
   "ae_workflow_plan",
   "ae_scene_preview",
@@ -99,6 +101,7 @@ export const ALL_TOOLS: AnyTool[] = [
   projectImportTool,
   versionInfoTool,
   catalogTool,
+  deliveryCheckTool,
   motionPlanTool,
   workflowPlanTool,
   workflowTool,

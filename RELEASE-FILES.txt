@@ -39,6 +39,7 @@ demo/warm-glow/heavy-grain-preview.mp4
 docs/AGENT-WORKFLOW.md
 docs/ALPHA-QUICKSTART.md
 docs/CLIENT-DEMO-PROMPT.md
+docs/DELIVERY-CHECK.md
 docs/DEMO-SESSION.md
 docs/DEMO.md
 docs/DRAFT-MOTION-DIRECTION.md
@@ -46,6 +47,7 @@ docs/EFFICIENT-WORKFLOWS.md
 docs/EXAMPLE-PROMPTS.md
 docs/FIRST-TESTER.md
 docs/FRIENDS-TUTORIAL.it.md
+docs/HIERARCHY-INSPECT.md
 docs/INSTALL.it.md
 docs/LOCAL-REVIEW.md
 docs/MOTION-QUALITY.md
@@ -125,6 +127,7 @@ src/operations/eval.ts
 src/operations/expression.ts
 src/operations/font.ts
 src/operations/footage.ts
+src/operations/hierarchy.ts
 src/operations/index.ts
 src/operations/inspect.ts
 src/operations/instance.ts
@@ -168,6 +171,7 @@ src/tools/catalog.ts
 src/tools/comp-info.ts
 src/tools/context.ts
 src/tools/define-tool.ts
+src/tools/delivery-check.ts
 src/tools/do.ts
 src/tools/edit.ts
 src/tools/index.ts
@@ -192,6 +196,7 @@ src/transport/FileIpcTransport.ts
 src/transport/instances.ts
 src/transport/launcher.ts
 src/validate.ts
+src/workflows/delivery.ts
 src/workflows/fast-edit.ts
 src/workflows/jobs.ts
 src/workflows/plan.ts
@@ -204,6 +209,7 @@ tests/batch.test.ts
 tests/catalog-efficiency.test.ts
 tests/codex-feedback.test.ts
 tests/color.test.ts
+tests/delivery-check.test.ts
 tests/e2e/feedback-fixes.test.ts
 tests/e2e/field-ops.test.ts
 tests/e2e/harness.ts
@@ -225,6 +231,7 @@ tests/harness.ts
 tests/helpers/lint-codegen.ts
 tests/helpers/lint-jsx.ts
 tests/helpers/null-transport.ts
+tests/hierarchy.test.ts
 tests/inspect-ops.test.ts
 tests/installer-smoke.mjs
 tests/instance-launch-failure.test.ts
@@ -243,6 +250,7 @@ tests/optimization.test.ts
 tests/parity-ops.test.ts
 tests/policy.test.ts
 tests/property-adjust.test.ts
+tests/property-get.test.ts
 tests/registry.test.ts
 tests/render-preview.test.ts
 tests/review-session.test.ts

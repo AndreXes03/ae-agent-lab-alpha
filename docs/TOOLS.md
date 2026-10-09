@@ -4,21 +4,22 @@ Generated from `src/tools/**` via `npm run docs:tools` — do not edit by hand. 
 
 `ae_do`'s operation registry (`layer.*`, `keyframe.*`, …) is discoverable at runtime via `ae_catalog` and is **not** listed in this file.
 
-20 tools across 4 groups.
+21 tools across 4 groups.
 
 ## Inspect
 
 Read-only project/comp/layer introspection.
 
-| Tool                 | Description                                                                                          |
-| -------------------- | ---------------------------------------------------------------------------------------------------- |
-| `ae_project_info`    | Project-level info: file path, dirty flag, all items with type/summary, active item.                 |
-| `ae_comp_info`       | Detailed comp info: size, fps, duration, work area, motion blur, layer summaries.                    |
-| `ae_layer_info`      | Full layer info: transform, effects, masks, text, shape contents, keyframes (incl.                   |
-| `ae_version_info`    | AE version, build, capabilities (saveFrameToPng, app.effects, Socket).                               |
-| `ae_inspect_targets` | Inspect up to 16 explicit layer or property targets in one read.                                     |
-| `ae_verify_targets`  | Capture/compare explicit source, timing and property animation invariants in one AE read per action. |
-| `ae_context`         | Ambient context: project state, active comp, selected layers, and resident readiness.                |
+| Tool                 | Description                                                                                                                             |
+| -------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| `ae_project_info`    | Project-level info: file path, dirty flag, all items with type/summary, active item.                                                    |
+| `ae_comp_info`       | Detailed comp info: size, fps, duration, work area, motion blur, layer summaries.                                                       |
+| `ae_layer_info`      | Full layer info: transform, effects, masks, text, shape contents, keyframes (incl.                                                      |
+| `ae_version_info`    | AE version, build, capabilities (saveFrameToPng, app.effects, Socket).                                                                  |
+| `ae_delivery_check`  | Bounded offline preflight comparing a delivery manifest with supplied readback and artifact-specific frame, playback and audio reviews. |
+| `ae_inspect_targets` | Inspect up to 16 explicit layer or property targets in one read.                                                                        |
+| `ae_verify_targets`  | Capture/compare explicit source, timing and property animation invariants in one AE read per action.                                    |
+| `ae_context`         | Ambient context: project state, active comp, selected layers, and resident readiness.                                                   |
 
 ## Document
 

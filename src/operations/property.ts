@@ -60,7 +60,8 @@ registerOp({
   name: "property.get",
   category: "property",
   readOnly: true,
-  description: "Get the current value of any layer property by path.",
+  description:
+    "Get the current value of a leaf layer property by path. For groups, use property.list.",
   params: [
     { name: "comp", type: "any", description: "Comp name or id", required: true },
     {
@@ -82,6 +83,14 @@ registerOp({
             ${jsxCompLayerPreamble(args)}
             var _propPath = ${jsxVal(args.property)};
             ${jsxPropertyLookup()}
+            if (_node.propertyType !== PropertyType.PROPERTY) {
+                return {
+                    ok: false,
+                    errorCode: "INVALID_ARGS",
+                    error: "property.get requires a leaf property; the path resolves to a property group",
+                    hint: "Use property.list with the same comp, layer, and property path to discover child properties."
+                };
+            }
             var _val;
             if (${jsxVal(args.time ?? null)} !== null) {
                 _val = _node.valueAtTime(${jsxVal(args.time)}, false);

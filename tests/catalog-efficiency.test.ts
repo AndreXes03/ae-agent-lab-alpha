@@ -77,6 +77,83 @@ describe("bounded catalog lookup", () => {
     expect(payload(mixed)).toEqual(payload(unknown));
   });
 
+  it("opts into partial exact discovery without changing strict defaults", async () => {
+    const args = { operations: ["property.get", "property.missing"], allowPartial: true };
+    const result = await catalogTool.handler(args, transport);
+    const data = payload(result);
+    expect(result.isError).toBe(false);
+    expect(data.operations).toMatchObject([{ name: "property.get", params: expect.any(Array) }]);
+    expect(data.errors).toEqual([
+      {
+        name: "property.missing",
+        code: "UNKNOWN_OPERATION",
+        message: expect.any(String),
+        retryable: false,
+      },
+    ]);
+    expect((await catalogTool.handler({ ...args, allowPartial: false }, transport)).isError).toBe(
+      true,
+    );
+    expect(
+      payload(
+        await catalogTool.handler({ ...args, ifNoneMatch: data.cacheKey as string }, transport),
+      ),
+    ).toEqual({ ok: true, notModified: true, cacheKey: data.cacheKey });
+    const changed = payload(
+      await catalogTool.handler(
+        {
+          ...args,
+          operations: ["property.get", "other.missing"],
+          ifNoneMatch: data.cacheKey as string,
+        },
+        transport,
+      ),
+    );
+    expect(changed).not.toHaveProperty("notModified");
+  });
+
+  it("keeps partial errors identical for hidden and unknown names, and invalidates cached visibility", async () => {
+    const args = { operations: ["property.get", "layer.create_solid"], allowPartial: true };
+    const unrestricted = payload(await catalogTool.handler(args, transport));
+    process.env.AE_MCP_READONLY = "1";
+    const restricted = payload(
+      await catalogTool.handler(
+        { ...args, ifNoneMatch: unrestricted.cacheKey as string },
+        transport,
+      ),
+    );
+    expect(restricted).not.toHaveProperty("notModified");
+    expect(restricted.operations).toMatchObject([{ name: "property.get" }]);
+    const unknown = payload(
+      await catalogTool.handler(
+        { operations: ["layer.no_such_operation"], allowPartial: true },
+        transport,
+      ),
+    );
+    const hiddenError = (restricted.errors as Array<Record<string, unknown>>)[0];
+    const unknownError = (unknown.errors as Array<Record<string, unknown>>)[0];
+    expect({ ...hiddenError, name: "same" }).toEqual({ ...unknownError, name: "same" });
+    process.env.AE_MCP_ALLOW_CATEGORIES = "property";
+    const scoped = payload(
+      await catalogTool.handler(
+        { operations: ["property.get", "comp.list"], allowPartial: true },
+        transport,
+      ),
+    );
+    expect(scoped.operations).toMatchObject([{ name: "property.get" }]);
+    expect(scoped.errors).toMatchObject([{ name: "comp.list", code: "UNKNOWN_OPERATION" }]);
+    const wrongCategory = payload(
+      await catalogTool.handler(
+        { category: "layer", operations: ["property.get"], allowPartial: true },
+        transport,
+      ),
+    );
+    expect(wrongCategory.operations).toEqual([]);
+    expect(wrongCategory.errors).toMatchObject([
+      { name: "property.get", code: "UNKNOWN_OPERATION" },
+    ]);
+  });
+
   it("bounds the new input schema", () => {
     const schema = catalogTool.inputShape.operations;
     expect(schema.safeParse(["keyframe.add"]).success).toBe(true);

@@ -218,16 +218,22 @@ export const doTool = defineTool({
     // longer reach the model as a successful call.
     const reported = jsxReportedFailure(opResult);
     if (reported) {
-      return errorResult("OPERATION_FAILED", `${op.name}: ${reported.error}`, {
-        details: { operation: op.name, result: opResult, context },
-        logs: result.logs,
-        durationMs: result.durationMs,
-        ...(isBatchShaped(opResult)
-          ? {
-              hint: "Inspect details.result.results — each entry matches the input order and carries its own error.",
-            }
-          : {}),
-      });
+      const extra = opResult as { errorCode?: string; hint?: unknown };
+      return errorResult(
+        extra.errorCode === "INVALID_ARGS" ? "INVALID_ARGS" : "OPERATION_FAILED",
+        `${op.name}: ${reported.error}`,
+        {
+          details: { operation: op.name, result: opResult, context },
+          logs: result.logs,
+          durationMs: result.durationMs,
+          ...(typeof extra.hint === "string" ? { hint: extra.hint } : {}),
+          ...(isBatchShaped(opResult)
+            ? {
+                hint: "Inspect details.result.results — each entry matches the input order and carries its own error.",
+              }
+            : {}),
+        },
+      );
     }
 
     return jsonResult({

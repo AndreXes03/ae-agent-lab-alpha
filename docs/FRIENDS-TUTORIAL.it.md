@@ -8,7 +8,7 @@ Per installare KYNEM e usarlo sui tuoi progetti, segui la [guida installer](INST
 - [**Node.js 24 o successivo**](https://nodejs.org/en/download) e **Codex** installati e già configurati sul Mac.
 - Una connessione internet per il primo avvio e spazio libero per dipendenze, copie del progetto e render.
 
-Scarica lo **ZIP dei sorgenti** (`KYNEM-Source-0.1.0-alpha.6.zip`) da [questa release GitHub](https://github.com/AndreXes03/ae-agent-lab-alpha/releases/tag/v0.1.0-alpha.6) e decomprimilo in una cartella stabile, per esempio `Documenti/AE Agent Lab`. Non spostare o rinominare la cartella durante la prova: Codex la userà per collegarsi al worker.
+Scarica lo **ZIP dei sorgenti** (`KYNEM-Source-0.1.0-alpha.7.zip`) da [questa release GitHub](https://github.com/AndreXes03/ae-agent-lab-alpha/releases/tag/v0.1.0-alpha.7) e decomprimilo in una cartella stabile, per esempio `Documenti/AE Agent Lab`. Non spostare o rinominare la cartella durante la prova: Codex la userà per collegarsi al worker.
 
 ## Avvia la demo
 

@@ -115,6 +115,29 @@ describe("ae_render_frame", () => {
 });
 
 describe("ae_do failure propagation", () => {
+  it("exposes invalid property arguments and recovery hint at the MCP boundary", async () => {
+    const res = await doTool.handler(
+      { operation: "property.get", args: { comp: 1, layer: 1, property: ["Transform"] } },
+      nullTransport({
+        result: {
+          result: {
+            ok: false,
+            error: "path resolves to a group",
+            errorCode: "INVALID_ARGS",
+            hint: "Use property.list",
+          },
+          context: null,
+        },
+      }),
+    );
+    expect(res.isError).toBe(true);
+    expect(structured(res).error).toMatchObject({
+      code: "INVALID_ARGS",
+      retryable: false,
+      hint: "Use property.list",
+    });
+  });
+
   it("reports an operation-level failure with its own message", async () => {
     const transport = nullTransport({
       result: { result: { ok: false, error: "no layer at index 9" }, context: {} },

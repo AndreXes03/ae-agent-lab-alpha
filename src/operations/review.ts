@@ -74,7 +74,7 @@ try {
   _rq.render();
   var _done=_temporary.status===RQItemStatus.DONE;
   _reviewFile=new File(_rv.outputPath);
-  _reviewResult={ok:_done&&_reviewFile.exists,completed:_done,fileExists:_reviewFile.exists,outputPath:_rv.outputPath,startFrame:_rv.startFrame,endFrame:_rv.endFrame,compFps:_comp.frameRate,outputTemplate:_rv.outputTemplate,temporalReviewRequired:true};
+  _reviewResult={ok:_done&&_reviewFile.exists,completed:_done,fileExists:_reviewFile.exists,outputPath:_rv.outputPath,startFrame:_rv.startFrame,endFrame:_rv.endFrame,compId:_comp.id,compName:_comp.name,projectPath:app.project.file?app.project.file.fsName:null,playbackReviewed:false,audioReviewed:false,compFps:_comp.frameRate,outputTemplate:_rv.outputTemplate,temporalReviewRequired:true};
   if(!_reviewResult.ok) _reviewResult.error="review render did not complete with an output file";
 } catch(_reviewError) { _reviewResult={ok:false,error:AE.errText(_reviewError)}; }
 finally {

@@ -124,3 +124,9 @@ Retain a short shot-specific direction note in the conversation: approved moveme
 For necessary temporal review, use `ae_do` operation `render.review` with comp, startFrame, exclusive endFrame, a new absolute movie outputPath and exact outputTemplate (optional renderTemplate) from `render.list_templates`. It renders only that <=10-second interval, keeps existing queue items out of the render and restores their flags, then removes its temporary item. Never claim quality from the completed flag: inspect the actual movie and verify its output fps/resolution. This version does not retrieve cached RAM previews or guarantee draft-resolution savings. Do not invoke it automatically after each edit.
 
 Measure time to an approved movement as well as AE-side time, bridge call count and response bytes. Response bytes are not billed tokens. Report unverified native behavior separately from offline proof.
+
+### Focused discovery and delivery
+
+Use `comp.inspect_hierarchy` for bounded parent, matte and expression summaries before modifying an existing rig. Check truncation and unknown dependencies before deciding an edit is safe. For exploratory catalog lookups, opt into `allowPartial: true` to retain valid visible schemas alongside per-name errors; the default remains strict. A property group must be inspected with `property.list`, not read as a value with `property.get`.
+
+Use `ae_delivery_check` only to compare a supplied delivery contract with fresh observations and exact-artifact review records. It avoids overlooking duration, organization and audio requirements; it does not replace playback or independently validate evidence.
