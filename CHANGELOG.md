@@ -1,5 +1,6 @@
 ## 0.1.0-alpha.7
 
+- Fix macOS Codex discovery using native executable access checks instead of a nonportable test binary.
 - Add bounded hierarchy inspection for parents, mattes and expression flags.
 - Add an offline delivery evidence check for duration, text, organization and audio intent; it does not independently inspect AE or media.
 - Preserve valid catalog results with optional partial discovery, and expose actionable property-group errors.

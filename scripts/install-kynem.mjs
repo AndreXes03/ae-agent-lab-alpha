@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 // Installs a self-contained KYNEM runtime and a dedicated Codex plugin.
 // Deliberately does not launch After Effects or write its Startup folder.
+import { accessSync, constants } from "node:fs";
 import { spawnSync } from "node:child_process";
 import { access, cp, mkdir, readFile, rename, rm, writeFile } from "node:fs/promises";
 import { homedir } from "node:os";
@@ -48,7 +49,15 @@ function codexCli() {
   ];
   const pathCommand = spawnSync("/usr/bin/which", ["codex"], { encoding: "utf8" });
   if (pathCommand.status === 0) candidates.push(pathCommand.stdout.trim());
-  return candidates.find((path) => path && spawnSync("/usr/bin/test", ["-x", path]).status === 0);
+  return candidates.find((path) => {
+    if (!path) return false;
+    try {
+      accessSync(path, constants.X_OK);
+      return true;
+    } catch {
+      return false;
+    }
+  });
 }
 async function writeJson(path, value) {
   const temp = `${path}.tmp-${process.pid}`;
