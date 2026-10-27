@@ -399,7 +399,13 @@ export async function serveReview(dir: string, port = 0): Promise<{ server: Serv
       if (!["GET", "HEAD"].includes(req.method ?? ""))
         return json(405, { error: "Method refused" });
       const file = decodeURIComponent(url.pathname === "/" ? "index.html" : url.pathname.slice(1));
-      if (basename(file) !== file || file.startsWith(".") || !mime[extname(file)])
+      const frameAsset = /^frames\/frame-\d+\.png$/.test(file);
+      if (frameAsset) {
+        const frames = await lstat(resolve(root, "frames"));
+        if (!frames.isDirectory() || frames.isSymbolicLink())
+          return json(404, { error: "File not served" });
+      }
+      if ((!frameAsset && basename(file) !== file) || file.startsWith(".") || !mime[extname(file)])
         return json(404, { error: "File not served" });
       const path = resolve(root, file),
         stat = await lstat(path);

@@ -1,3 +1,4 @@
+import { sourceReplaceSpec } from "../workflows/source-replace.js";
 import { z } from "zod";
 
 import { errorResult } from "../errors.js";
@@ -9,12 +10,12 @@ import { defineTool, jsonResult } from "./define-tool.js";
 const prepare = z
   .object({
     action: z.literal("prepare"),
-    recipe: z.enum(["retime_properties", "variants"]),
+    recipe: z.enum(["retime_properties", "variants", "source_replace"]),
     copyPath: z
       .string()
       .min(1)
       .describe("Existing absolute path to the active managed copied .aep project."),
-    spec: z.union([retimeSpec, variantsSpec]),
+    spec: z.union([retimeSpec, variantsSpec, sourceReplaceSpec]),
   })
   .strict();
 const jobAction = (action: "apply" | "status") =>
@@ -35,7 +36,7 @@ export const workflowTool = defineTool({
   name: "ae_workflow",
   title: "Prepare, apply, or inspect an AE workflow",
   description:
-    "Prepare a typed retime or text/logo variants recipe against an existing active managed .aep copy and persist a guarded job. Apply only after reviewing the job, or read its status. Apply edits only that copy. No production render is started automatically.",
+    "Prepare a typed retime, selective still-image source_replace, or text/logo variants recipe against an existing active managed .aep copy and persist a guarded job. Apply only after reviewing the job, or read its status. Apply edits only that copy. No production render is started automatically.",
   group: "operations",
   blockedInReadOnly: false,
   effect: "destructive",

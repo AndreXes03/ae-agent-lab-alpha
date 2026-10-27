@@ -103,6 +103,7 @@ describe("fast edit", () => {
         name: "Opacity",
         matchName: "ADBE Opacity",
         numKeys: 0,
+        propertyType: 1,
         canSetExpression: false,
         get value() {
           return opacity;
@@ -142,6 +143,7 @@ describe("fast edit", () => {
         close() {}
       }
       const context = {
+        PropertyType: { PROPERTY: 1 },
         app: { project: { file: { fsName: f.copy }, save: () => {} } },
         File,
         CompItem,
@@ -182,7 +184,8 @@ describe("fast edit", () => {
       copyPath: f.copy,
       edits: [{ operation: "property.set", targetRef, args: { value: 55 } }],
     });
-    expect((await f.service.execute(request(id))).state).toBe("succeeded");
+    const firstStatus = await f.service.execute(request(id));
+    expect(firstStatus.state, JSON.stringify(firstStatus)).toBe("succeeded");
     expect(opacity).toBe(55);
     expect(writes).toBe(1);
     expect(f.calls[0].code).toContain("var _propPath = [1]");
@@ -206,6 +209,7 @@ describe("fast edit", () => {
             name,
             matchName: "ADBE Text Document",
             numKeys: 0,
+            propertyType: 1,
             canSetExpression: false,
             get value() {
               return { text: currentText, fontSize: 100 };
@@ -239,6 +243,7 @@ describe("fast edit", () => {
       const layer = new TextLayer();
       const comp = { numLayers: 2, layer: () => layer };
       const context = {
+        PropertyType: { PROPERTY: 1 },
         app: {
           project: {
             file: { fsName: f.copy },
@@ -261,7 +266,7 @@ describe("fast edit", () => {
         changed: string[];
         verifiedEditIndexes: number[];
       };
-      expect(result.ok).toBe(true);
+      expect(result.ok, JSON.stringify(result)).toBe(true);
       expect(result.verifiedEditIndexes).toEqual([0]);
       expect(saves).toBe(2);
       expect(currentText).toBe("Updated");
@@ -277,7 +282,7 @@ describe("fast edit", () => {
       };
     });
     const status = await f.service.execute({ ...edit(), copyPath: f.copy });
-    expect(status.state).toBe("succeeded");
+    expect(status.state, JSON.stringify(status)).toBe("succeeded");
     expect(f.calls).toHaveLength(1);
   });
 

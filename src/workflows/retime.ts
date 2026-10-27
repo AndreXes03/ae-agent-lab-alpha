@@ -7,6 +7,10 @@ import { planWorkflow, type RetimeRequest } from "./plan.js";
 const positiveInt = z.number().int().safe().positive();
 export const retimeSpec = z.strictObject({
   comp: positiveInt,
+  timeDomain: z.literal("composition").optional(),
+  curvePolicy: z.enum(["preserve-shape", "preserve-speed"]).optional(),
+  mediaTiming: z.enum(["preserve", "retime-selected-media"]).optional(),
+  protectedLayerIds: z.array(positiveInt).max(64).optional(),
   tracks: z
     .array(
       z.strictObject({
@@ -58,12 +62,18 @@ type Snapshot = {
   fps: number;
   durationFrames: number;
   tracks: TrackSnapshot[];
+  protectedLayers?: unknown[];
 };
 
 function parsedSpec(input: unknown): RetimeSpec {
   const spec = retimeSpec.parse(input);
   const seen = new Set<string>();
   for (const track of spec.tracks) {
+    if (
+      track.property.includes("ADBE Time Remapping") &&
+      spec.mediaTiming !== "retime-selected-media"
+    )
+      throw new Error("Retiming footage requires explicit mediaTiming: retime-selected-media");
     const id = JSON.stringify([track.layer, track.property]);
     if (seen.has(id)) throw new Error("duplicate retime target");
     seen.add(id);
@@ -112,6 +122,7 @@ for (var _ti = 0; _ti < _rs.tracks.length; _ti++) {
   var _layer = _comp.layer(_t.layer);
   if (!_layer) return { ok: false, error: "layer index not found: " + _t.layer };
   if (typeof _layer.id !== "number") return { ok: false, error: "layer has no stable id" };
+  if (_rs.protectedLayerIds) for(var _pl=0;_pl<_rs.protectedLayerIds.length;_pl++) if(_rs.protectedLayerIds[_pl]===_layer.id) return {ok:false,error:"A retime target is explicitly protected"};
   var _node = _layer;
   for (var _pi = 0; _pi < _t.property.length; _pi++) {
     _node = _node.property(_t.property[_pi]);
@@ -154,8 +165,14 @@ for (var _ti = 0; _ti < _rs.tracks.length; _ti++) {
     property: _t.property, expressionEnabled: !!_node.expressionEnabled,
     separated: _separated, keys: _keys });
 }
+var _protected=[];
+if(_rs.protectedLayerIds) for(var _pi=0;_pi<_rs.protectedLayerIds.length;_pi++) {
+ var _protectedLayer=AE.findLayerById(_comp,_rs.protectedLayerIds[_pi]);
+ if(!_protectedLayer)return {ok:false,error:"Protected layer missing"};
+ _protected.push({id:_protectedLayer.id,sourceId:_protectedLayer.source?_protectedLayer.source.id:null,timing:[_protectedLayer.inPoint,_protectedLayer.outPoint,_protectedLayer.startTime,_protectedLayer.stretch],audioEnabled:_protectedLayer.audioEnabled});
+}
 return { ok: true, projectPath: _projectPath, compId: _comp.id,
-  compName: _comp.name, fps: _fps, durationFrames: _durationFrames, tracks: _tracks };
+  compName: _comp.name, fps: _fps, durationFrames: _durationFrames, tracks: _tracks, protectedLayers:_protected };
 `;
 }
 
@@ -221,6 +238,12 @@ export function prepareRetime(
     throw new Error(plan.findings.map((f) => `${f.code}: ${f.message}`).join("; "));
   const shift = getOp("keyframe.shift");
   if (!shift) throw new Error("keyframe.shift is not registered");
+  const speedFactor = spec.curvePolicy !== "preserve-speed" ? 1 / (spec.timeScale ?? 1) : 1;
+  if (
+    speedFactor !== 1 &&
+    snap.tracks.some((t) => t.keys.some((k) => k.roving || k.temporalAutoBezier))
+  )
+    throw new Error("Shape-preserving retime requires explicit non-roving, non-auto-Bezier keys");
   const bodies = plan.batch.args.ops.map((op, i) => {
     const operationCode = shift.toJsx(op.args);
     return `
@@ -238,10 +261,26 @@ var _expected = ${jsxVal(expected)};
 var _before = _workflowSnapshot;
 if (!_before || !_before.ok || _before.tracks.length !== _expected.length) return { ok: false, error: "missing guarded retime snapshot" };
 ${bodies.join("\n")}
+var _speedFactor=${jsxVal(speedFactor)};
+if(_speedFactor!==1) {
+ for(var _ti=0;_ti<_before.tracks.length;_ti++) {
+  var _track=_before.tracks[_ti],_layer=AE.findItemById(_before.compId).layer(_track.layer),_prop=_layer;
+  for(var _pathIndex=0;_pathIndex<_track.property.length;_pathIndex++)_prop=_prop.property(_track.property[_pathIndex]);
+  for(var _ki=0;_ki<_track.keys.length;_ki++) {
+   var _old=_track.keys[_ki],_in=[],_out=[];
+   for(var _ei=0;_ei<_old.inEase.length;_ei++)_in.push(new KeyframeEase(_old.inEase[_ei][0]*_speedFactor,_old.inEase[_ei][1]));
+   for(var _eo=0;_eo<_old.outEase.length;_eo++)_out.push(new KeyframeEase(_old.outEase[_eo][0]*_speedFactor,_old.outEase[_eo][1]));
+   var _inType=_prop.keyInInterpolationType(_ki+1),_outType=_prop.keyOutInterpolationType(_ki+1);
+   _prop.setTemporalEaseAtKey(_ki+1,_in,_out);_prop.setInterpolationTypeAtKey(_ki+1,_inType,_outType);
+   _prop.setTemporalContinuousAtKey(_ki+1,_old.temporalContinuous);
+  }
+ }
+}
 var _after = (function () { ${captureRetime(spec)} })();
 if (!_after || !_after.ok) return { ok: false, error: "post-retime readback failed" };
 if (_after.projectPath !== _before.projectPath || _after.compId !== _before.compId || _after.fps !== _before.fps || _after.durationFrames !== _before.durationFrames) return { ok: false, error: "post-retime project or composition state changed" };
 if (_after.tracks.length !== _expected.length) return { ok: false, error: "post-retime track count changed" };
+if(JSON.stringify(_after.protectedLayers)!==JSON.stringify(_before.protectedLayers))return {ok:false,error:"Protected media timing/source changed"};
 var _checked = [];
 for (var _i = 0; _i < _expected.length; _i++) {
   var _a = _after.tracks[_i], _b = _before.tracks[_i], _e = _expected[_i];
@@ -251,7 +290,9 @@ for (var _i = 0; _i < _expected.length; _i++) {
     if (_a.keys[_j].frame !== _e.toFrames[_j]) return { ok: false, error: "post-retime key time differs on track " + (_i + 1) };
     var _av = _a.keys[_j], _bv = _b.keys[_j];
     for (var _field in _bv) {
-      if (_field !== "frame" && JSON.stringify(_av[_field]) !== JSON.stringify(_bv[_field])) return { ok: false, error: "post-retime key attribute differs on track " + (_i + 1) };
+      var _expectedValue=_bv[_field];
+      if((_field==="inEase"||_field==="outEase")&&_speedFactor!==1){_expectedValue=[];for(var _ed=0;_ed<_bv[_field].length;_ed++)_expectedValue.push([_bv[_field][_ed][0]*_speedFactor,_bv[_field][_ed][1]]);}
+      if (_field !== "frame" && JSON.stringify(_av[_field]) !== JSON.stringify(_expectedValue)) return { ok: false, error: "post-retime key attribute differs on track " + (_i + 1) };
     }
   }
   _checked.push({ layer: _a.layer, property: _a.property, keyCount: _a.keys.length, actualFrames: _e.toFrames });
@@ -264,6 +305,19 @@ return { ok: true, changedTracks: _checked.length, tracks: _checked };
       compName: snap.compName,
       fps: snap.fps,
       changedTracks: expected.length,
+      timeDomain: "composition",
+      curvePolicy: spec.curvePolicy ?? "preserve-shape",
+      mediaTiming: spec.mediaTiming ?? "preserve",
+      preserved: [
+        "layer in/out",
+        "startTime",
+        "stretch",
+        "source",
+        "key values",
+        "spatial tangents",
+      ],
+      easeSpeedMultiplier: speedFactor,
+      protectedLayerIds: spec.protectedLayerIds ?? [],
       tracks: expected.map((e) => ({
         layer: e.layer,
         property: e.property,

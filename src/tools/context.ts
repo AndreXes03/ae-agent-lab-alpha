@@ -14,6 +14,7 @@ const CODE = `
         project: {
             file: proj.file ? proj.file.fsName.replace(/\\\\/g, "/") : null,
             dirty: proj.dirty,
+            renderBusy: proj.renderQueue.rendering,
             numItems: proj.numItems,
             bitsPerChannel: proj.bitsPerChannel
         },

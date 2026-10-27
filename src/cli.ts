@@ -1,3 +1,6 @@
+import { preflightProject } from "./production/preflight.js";
+import { createMotionReview } from "./production/motion-review.js";
+import { readFile } from "node:fs/promises";
 import { runReviewSessionCli } from "./review-session.js";
 import { createStoryboard } from "./storyboard.js";
 import { createLocalReview } from "./local-review.js";
@@ -30,6 +33,8 @@ export const USAGE = `ae-agent-lab — local MCP bridge for Adobe After Effects
   ae-agent-lab review-serve --dir <review directory> [--port <number>]
   ae-agent-lab review-inbox --dir <review directory> [--limit <1–50>] [--id <receipt UUID>]
   ae-agent-lab review-ack --dir <review directory> --id <feedback UUID> --state <processing|completed|failed> [--message <text>] [--preview <local filename>]
+  ae-agent-lab media-preflight <absolute AEP> [dependency manifest]
+  ae-agent-lab motion-review <request JSON>
   ae-agent-lab help                    this text
 
 Options for install-agent / uninstall-agent / agent-status:
@@ -67,6 +72,19 @@ export async function runCli(
   argv: string[],
   out: (line: string) => void = (line) => process.stdout.write(`${line}\n`),
 ): Promise<number> {
+  if (argv[0] === "media-preflight" || argv[0] === "motion-review") {
+    try {
+      const result =
+        argv[0] === "media-preflight"
+          ? await preflightProject(argv[1], argv[2])
+          : await createMotionReview(JSON.parse(await readFile(argv[1], "utf8")));
+      out(JSON.stringify(result));
+      return 0;
+    } catch (error) {
+      out(String(error));
+      return 1;
+    }
+  }
   if (["review-serve", "review-inbox", "review-ack"].includes(argv[0])) {
     try {
       await runReviewSessionCli(argv[0], argv.slice(1), out);

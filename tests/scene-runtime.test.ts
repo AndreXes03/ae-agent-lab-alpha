@@ -112,6 +112,8 @@ function fixture() {
           text,
           font: "Arial",
           fontSize: 12,
+          resetCharStyle() {},
+          resetParagraphStyle() {},
           fillColor: [1, 1, 1],
         }),
       };
@@ -193,6 +195,7 @@ function fixture() {
       File: FakeFile,
       KeyframeInterpolationType: { LINEAR: "LINEAR", HOLD: "HOLD" },
       Shape,
+      ParagraphJustification: { LEFT_JUSTIFY: "LEFT" },
     });
   return { run, items };
 }

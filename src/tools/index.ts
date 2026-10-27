@@ -1,3 +1,14 @@
+import {
+  mediaPreflightTool,
+  dependencyManifestTool,
+  renderJobTool,
+  motionReviewTool,
+  mediaVerifyTool,
+  deliveryPublishTool,
+  sceneRecipeTool,
+  anchorMapTool,
+  audioMasterTool,
+} from "./production.js";
 import { z } from "zod";
 import type { ToolEffect } from "../policy.js";
 import type { AeTransport } from "../transport/AeTransport.js";
@@ -57,6 +68,13 @@ export const INSTANCE_PARAM = z
 /** Tools that never contact After Effects have no instance to pick. */
 const INSTANCE_FREE_TOOLS = new Set([
   "ae_catalog",
+  "ae_media_preflight",
+  "ae_motion_review",
+  "ae_media_verify",
+  "ae_delivery_publish",
+  "ae_scene_recipe",
+  "ae_anchor_map",
+  "ae_audio_master",
   "ae_delivery_check",
   "ae_motion_plan",
   "ae_workflow_plan",
@@ -92,6 +110,15 @@ function withInstanceParam(tool: AnyTool): AnyTool {
 
 /** Every MCP tool this server exposes, in registration order. */
 export const ALL_TOOLS: AnyTool[] = [
+  mediaPreflightTool,
+  dependencyManifestTool,
+  renderJobTool,
+  motionReviewTool,
+  mediaVerifyTool,
+  deliveryPublishTool,
+  sceneRecipeTool,
+  anchorMapTool,
+  audioMasterTool,
   projectInfoTool,
   compInfoTool,
   layerInfoTool,

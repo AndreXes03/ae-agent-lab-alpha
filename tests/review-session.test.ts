@@ -1,5 +1,5 @@
 import { test, expect } from "vitest";
-import { mkdtemp, writeFile, readFile, rm, symlink } from "node:fs/promises";
+import { mkdtemp, writeFile, readFile, rm, symlink, mkdir } from "node:fs/promises";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
 import {
@@ -27,6 +27,13 @@ test("loopback feedback validates identity, requires origin/token, persists rece
     await initializeReviewSession(dir, { kind: "video", review });
     const service = await serveReview(dir);
     server = service.server;
+    await mkdir(join(dir, "frames"));
+    await writeFile(join(dir, "frames/frame-5.png"), "image");
+    await writeFile(join(dir, "frames/private.txt"), "private");
+    expect((await fetch(service.url + "/frames/frame-5.png")).status).toBe(200);
+    expect((await fetch(service.url + "/frames/private.txt")).status).toBe(404);
+    await symlink(join(dir, "video.mp4"), join(dir, "frames/frame-6.png"));
+    expect((await fetch(service.url + "/frames/frame-6.png")).status).toBe(404);
     const session: any = await (await fetch(service.url + "/api/session")).json();
     const payload = {
       schemaVersion: 2,

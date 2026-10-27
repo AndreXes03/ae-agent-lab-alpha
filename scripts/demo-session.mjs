@@ -226,6 +226,15 @@ async function start(modules, requestedSource) {
   if (live.alive)
     throw new Error(`Worker name is already live; inspect it before proceeding: ${worker}`);
   const source = requestedSource ?? (await validatedSource(defaultSource));
+  const { preflightProject } = await import("../dist/production/preflight.js");
+  const preflight = await preflightProject(source);
+  if (!preflight.canOpenKnownFiles)
+    throw new Error(
+      "Media preflight blocked opening: " +
+        JSON.stringify(preflight.blocked) +
+        (preflight.manifestError || ""),
+    );
+  for (const warning of preflight.warnings) console.log("Media preflight: " + warning);
   await secureRuntime();
   const statuses = (await modules.agentInstallStatus()).filter((s) => s.version.startsWith("26."));
   if (!statuses.length)

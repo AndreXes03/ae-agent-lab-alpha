@@ -103,6 +103,34 @@ registerOp({
   description:
     "Create a text layer: point text by default, paragraph (box) text when boxSize is given, vertical when orientation='vertical' (AE 24.2+). Point<->box conversion is not scriptable, so pick the right kind here.",
   params: [
+    {
+      name: "font",
+      type: "string",
+      description: "Explicit PostScript font (default ArialMT)",
+      required: false,
+      default: "ArialMT",
+    },
+    {
+      name: "fontSize",
+      type: "number",
+      description: "Explicit size in pixels (default 48)",
+      required: false,
+      default: 48,
+    },
+    {
+      name: "justification",
+      type: "string",
+      description: "left|center|right (default left)",
+      required: false,
+      default: "left",
+    },
+    {
+      name: "fillColor",
+      type: "array",
+      description: "RGB 0..1 (default white)",
+      required: false,
+      default: [1, 1, 1],
+    },
     { name: "comp", type: "any", description: "Comp name or id", required: true },
     { name: "text", type: "string", description: "Text content", required: false, default: "" },
     { name: "name", type: "string", description: "Layer name", required: false },
@@ -127,6 +155,22 @@ registerOp({
     },
   ],
   toJsx(args) {
+    if (!["left", "center", "right"].includes(String(args.justification ?? "left")))
+      throw new Error("Invalid text justification");
+    if (
+      typeof args.fontSize === "number" &&
+      (!Number.isFinite(args.fontSize) || args.fontSize <= 0)
+    )
+      throw new Error("Invalid font size");
+    if (
+      args.fillColor !== undefined &&
+      (!Array.isArray(args.fillColor) ||
+        args.fillColor.length !== 3 ||
+        args.fillColor.some(
+          (v: unknown) => typeof v !== "number" || !Number.isFinite(v) || v < 0 || v > 1,
+        ))
+    )
+      throw new Error("Fill color must contain three numbers in [0, 1]");
     // Hoisted: the codegen lint's template scanner cannot see through raw
     // braces inside a `${…}` interpolation.
     const boxPosJsx = !args.boxPosition
@@ -157,6 +201,14 @@ registerOp({
                     _layer = _comp.layers.addText(${jsxVal(args.text ?? "")});
                 }
             }
+            var _textProp=_layer.property("Source Text"),_textDoc=_textProp.value;
+            _textDoc.resetCharStyle();_textDoc.resetParagraphStyle();
+            _textDoc.text=${jsxVal(args.text ?? "")};_textDoc.font=${jsxVal(args.font ?? "ArialMT")};_textDoc.fontSize=${jsxVal(args.fontSize ?? 48)};
+            _textDoc.applyFill=true;_textDoc.applyStroke=false;_textDoc.fillColor=${jsxVal(args.fillColor ?? [1, 1, 1])};
+            _textDoc.tracking=0;_textDoc.baselineShift=0;_textDoc.horizontalScale=100;_textDoc.verticalScale=100;
+            _textDoc.fauxBold=false;_textDoc.fauxItalic=false;_textDoc.autoLeading=true;
+            var _align={left:ParagraphJustification.LEFT_JUSTIFY,center:ParagraphJustification.CENTER_JUSTIFY,right:ParagraphJustification.RIGHT_JUSTIFY};
+            _textDoc.justification=_align[${jsxVal(args.justification ?? "left")}];_textProp.setValue(_textDoc);
             ${args.name ? `_layer.name = ${jsxVal(args.name)};` : ""}
             ${boxPosJsx}
             return { ok: true, index: _layer.index, name: _layer.name, boxText: _box !== null, vertical: _vertical };

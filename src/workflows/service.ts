@@ -1,3 +1,5 @@
+import { captureSourceReplace, prepareSourceReplace, sourceReplaceSpec } from "./source-replace.js";
+import { fileDigest, probeMedia } from "../production/media.js";
 /** Prepare and apply bounded recipes only in the managed disposable AE session. */
 import { promises as fs } from "node:fs";
 import path from "node:path";
@@ -15,7 +17,7 @@ import {
   type VariantsSnapshot,
 } from "./variants.js";
 
-export type WorkflowRecipe = "retime_properties" | "variants";
+export type WorkflowRecipe = "retime_properties" | "variants" | "source_replace";
 export interface WorkflowPublicStatus {
   id: string;
   state: WorkflowJobState;
@@ -54,6 +56,17 @@ function publicStatus(job: WorkflowJob): WorkflowPublicStatus {
     ? {
         ...(typeof raw.ok === "boolean" ? { ok: raw.ok } : {}),
         ...(typeof raw.error === "string" ? { error: raw.error.slice(0, 500) } : {}),
+        ...(Array.isArray(raw.changedUses) ? { changedUses: raw.changedUses.slice(0, 32) } : {}),
+        ...(Array.isArray(raw.annotationsToReview)
+          ? { annotationsToReview: raw.annotationsToReview.slice(0, 64) }
+          : {}),
+        ...(typeof raw.importedSourceId === "number"
+          ? { importedSourceId: raw.importedSourceId }
+          : {}),
+        ...(typeof raw.semanticReviewRequired === "boolean"
+          ? { semanticReviewRequired: raw.semanticReviewRequired }
+          : {}),
+        ...(raw.rollbackPerformed === false ? { rollbackPerformed: false } : {}),
         ...(typeof raw.changedTracks === "number" ? { changedTracks: raw.changedTracks } : {}),
         ...(Array.isArray(raw.variants)
           ? {
@@ -186,15 +199,34 @@ export class WorkflowService {
     specInput: unknown,
     copyPath: string,
   ): Promise<WorkflowPublicStatus> {
-    if (recipe !== "retime_properties" && recipe !== "variants")
+    if (recipe !== "retime_properties" && recipe !== "variants" && recipe !== "source_replace")
       throw new Error("Unsupported workflow recipe");
-    const spec =
-      recipe === "retime_properties" ? retimeSpec.parse(specInput) : variantsSpec.parse(specInput);
+    let spec =
+      recipe === "retime_properties"
+        ? retimeSpec.parse(specInput)
+        : recipe === "source_replace"
+          ? sourceReplaceSpec.parse(specInput)
+          : variantsSpec.parse(specInput);
+    if (recipe === "source_replace") {
+      const replacement = sourceReplaceSpec.parse(spec);
+      const probe = await probeMedia(replacement.newPath);
+      const video = probe.streams.find((s) => s.codec_type === "video");
+      if (!video?.width || !video.height)
+        throw new Error("Replacement image dimensions unavailable");
+      spec = {
+        ...replacement,
+        newWidth: video.width,
+        newHeight: video.height,
+        newSha256: await fileDigest(replacement.newPath),
+      };
+    }
     const { session, copy } = await this.session(copyPath);
     const captureCode =
       recipe === "retime_properties"
         ? captureRetime(spec as Parameters<typeof captureRetime>[0])
-        : captureVariants(spec as Parameters<typeof captureVariants>[0]);
+        : recipe === "source_replace"
+          ? captureSourceReplace(spec as Parameters<typeof captureSourceReplace>[0])
+          : captureVariants(spec as Parameters<typeof captureVariants>[0]);
     const capture = await this.transport.execute({
       code: captureCode,
       label: `workflow prepare ${recipe}`,
@@ -215,10 +247,12 @@ export class WorkflowService {
     const prepared =
       recipe === "retime_properties"
         ? prepareRetime(spec as Parameters<typeof prepareRetime>[0], capture.result)
-        : prepareVariants(
-            spec as Parameters<typeof prepareVariants>[0],
-            capture.result as unknown as VariantsSnapshot,
-          );
+        : recipe === "source_replace"
+          ? prepareSourceReplace(spec as Parameters<typeof prepareSourceReplace>[0], capture.result)
+          : prepareVariants(
+              spec as Parameters<typeof prepareVariants>[0],
+              capture.result as unknown as VariantsSnapshot,
+            );
     const job = await this.jobs.create({
       recipe,
       spec,
@@ -255,7 +289,9 @@ try {
   app.project.save();
   _workflowState = "succeeded";
 } catch (_workflowError) {
-  _workflowResult = {ok:false,error:(_workflowError && _workflowError.message) ? String(_workflowError.message) : "Workflow failed"};
+  if (!_workflowResult || _workflowResult.ok) _workflowResult={ok:false};
+  _workflowResult.ok=false;_workflowResult.rollbackPerformed=false;
+  _workflowResult.error=(_workflowError && _workflowError.message) ? String(_workflowError.message) : "Workflow failed";
 } finally {
   var _receipt = new File(${receipt});
   _receipt.encoding = "UTF-8";
@@ -272,6 +308,11 @@ return _workflowResult;
     if (!existing) throw new Error("Unknown workflow job");
     if (existing.state !== "prepared") return this.view(existing);
     this.policy(existing.payload.recipe as WorkflowRecipe);
+    if (existing.payload.recipe === "source_replace") {
+      const spec = sourceReplaceSpec.parse(existing.payload.spec);
+      if (spec.newSha256 !== (await fileDigest(spec.newPath)))
+        throw new Error("Replacement changed after prepare");
+    }
     const { session } = await this.session(existing.payload.copyPath);
     if (session.worker !== existing.payload.instance) throw new Error("Managed worker changed");
     const claim = await this.jobs.claim(id);

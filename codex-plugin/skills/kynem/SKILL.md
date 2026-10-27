@@ -88,3 +88,15 @@ Organization is part of every edit and delivery. Inspect the existing Project-pa
 - Rename newly created items freely; preserve existing names that expressions or scripts may reference unless dependencies are checked. Do not reorganize unrelated client material, delete alternatives or merge folders without a reason within the brief.
 - Name new layers by role and group related new layers sensibly without changing compositing order. Keep backups distinguishable and outside final-delivery folders.
 - Before handing off, read back the final comp IDs/names/folders and confirm that final comps reference the intended sources. Report the exact final comp and saved copy; do not leave the user to guess which study or duplicate is the deliverable.
+
+## Production reliability tools (development branch)
+
+Read `docs/PRODUCTION-WORKFLOWS.md` in the configured checkout when the matching tools are available. Run `ae_media_preflight` before opening/copying a project; unknown AEP dependencies are not a clean bill of health. Export a current dependency sidecar from a saved managed copy when needed. Never hash, probe or deliberately hydrate a known cloud placeholder.
+
+Prefer `ae_render_job` for production movies. Use one UUID for each intended job and reuse it for retry/status; a stale/unknown heartbeat never authorizes replay with a new UUID. Inspect exact local templates and audio intent. A completed job means independently verified media, not watched/listened approval. Keep the editing instance intact; background rendering uses separate aerender without reuse.
+
+Use `ae_motion_review` for real playback/audio and measured variable-density frame grids. Bind Main/precomp times only from inspected mappings. Review the whole sequence before declaring ready. `ae_media_verify` measures decoding/PTS/audio continuity. `ae_audio_master` copies a supplied verified reference with zero offset, and needs new artifact-bound review. Do not invent a universal codec offset.
+
+Use `ae_workflow` with `source_replace` for explicit still-source usages and `retime_properties` with stated curve/media invariants. Inspect semantic annotations after face changes even at equal dimensions. Respect refused masks, 3D and expression cases; use separate scoped edits if needed. Persistent fingerprints exclude sampled animated values. Read partial-operation results; checkpoints do not mean automatic rollback.
+
+Use `ae_delivery_publish` only after actual frame/playback/audio review of the exact artifact hash. Never manufacture the required review attestations. Preserve versions and provisional notes; unowned WIP movies need explicit organization. Collected source copies are not automatically relinked. Native recipe JSON is an editable scaffold with external material slots, not proof of creative quality or native playback. Report remaining native acceptance boundaries from `docs/PRODUCTION-VALIDATION.md`.

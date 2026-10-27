@@ -100,7 +100,7 @@ for(var _vi=0;_vi<_vs.targets.length;_vi++) {
       if(_vn.isSpatial) { _vk.inTangent=AE.valueToJson(_vn.keyInSpatialTangent(_vki));_vk.outTangent=AE.valueToJson(_vn.keyOutSpatialTangent(_vki));_vk.spatialContinuous=_vn.keySpatialContinuous(_vki);_vk.spatialAutoBezier=_vn.keySpatialAutoBezier(_vki);_vk.roving=_vn.keyRoving(_vki); }
       _vkeys.push(_vk);
     }
-    _vp.push({path:_vpath,animation:{keys:_vkeys,expression:_vn.canSetExpression?_vn.expression:null,expressionEnabled:_vn.canSetExpression?_vn.expressionEnabled:false},sample:AE.valueToJson(_vn.valueAtTime(_vs.sampleTime,false))});
+    _vp.push({path:_vpath,animation:{staticValue:_vn.numKeys===0?AE.valueToJson(_vn.valueAtTime(_vs.sampleTime,true)):null,keys:_vkeys,expression:_vn.canSetExpression?_vn.expression:null,expressionEnabled:_vn.canSetExpression?_vn.expressionEnabled:false},sample:AE.valueToJson(_vn.valueAtTime(_vs.sampleTime,false))});
   }
   _vt.push({layerId:_vl.id,layerIndex:_vtarget.layerIndex,source:_vsource,timing:{inPoint:_vl.inPoint,outPoint:_vl.outPoint,startTime:_vl.startTime,stretch:_vl.stretch},properties:_vp});
 }
@@ -224,6 +224,13 @@ export const verifyTargetsTool = defineTool({
       sampleTime: spec.sampleTime,
       targetCount: spec.targets.length,
       fingerprint: digest(parsed.data),
+      persistentFingerprint: digest({
+        ...parsed.data,
+        targets: parsed.data.targets.map((t) => ({
+          ...t,
+          properties: t.properties.map(({ sample: _sample, ...p }) => p),
+        })),
+      }),
     });
   },
 });
