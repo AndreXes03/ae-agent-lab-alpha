@@ -13,6 +13,8 @@ function fixture(fps = 25) {
     { time: 20 / fps, value: 20 },
     { time: 40 / fps, value: 80 },
   ];
+  const inEase = [{ speed: 40, influence: 33 }],
+    outEase = [{ speed: 60, influence: 45 }];
   const prop = {
     matchName: "ADBE Opacity",
     propertyType: 1,
@@ -36,10 +38,10 @@ function fixture(fps = 25) {
       return "linear";
     },
     keyInTemporalEase() {
-      return [{ speed: 0, influence: 33 }];
+      return inEase;
     },
     keyOutTemporalEase() {
-      return [{ speed: 0, influence: 33 }];
+      return outEase;
     },
     keyTemporalContinuous() {
       return false;
@@ -61,7 +63,10 @@ function fixture(fps = 25) {
     nearestKeyIndex(time: number) {
       return keys.findIndex((k) => k.time === time) + 1;
     },
-    setTemporalEaseAtKey() {},
+    setTemporalEaseAtKey(_i: number, a: typeof inEase, b: typeof outEase) {
+      inEase.splice(0, inEase.length, ...a);
+      outEase.splice(0, outEase.length, ...b);
+    },
     setInterpolationTypeAtKey() {},
     setTemporalContinuousAtKey() {},
     setTemporalAutoBezierAtKey() {},
@@ -123,6 +128,12 @@ function fixture(fps = 25) {
     AE,
     CompItem,
     PropertyType: { PROPERTY: 1 },
+    KeyframeEase: class {
+      constructor(
+        public speed: number,
+        public influence: number,
+      ) {}
+    },
     JSON,
     Math,
     isFinite,
@@ -130,7 +141,7 @@ function fixture(fps = 25) {
   function run(body: string, extras: Record<string, unknown> = {}) {
     return vm.runInNewContext(`(function () { ${body} })()`, { ...context, ...extras });
   }
-  return { keys, run };
+  return { keys, run, inEase, outEase };
 }
 
 describe("workflow retime engine", () => {
@@ -178,5 +189,30 @@ describe("workflow retime engine", () => {
     expect(() => captureRetime({ ...spec, tracks: [spec.tracks[0], spec.tracks[0]] })).toThrow(
       /duplicate/,
     );
+  });
+});
+
+describe("retime invariants", () => {
+  it("scales nonzero tangent speeds inversely with duration and preserves influences", () => {
+    const ae = fixture(),
+      request = { ...spec, offsetFrames: 0, timeScale: 2 };
+    const snapshot = ae.run(captureRetime(request));
+    const result = ae.run(prepareRetime(request, snapshot).mutationCode, {
+      _workflowSnapshot: snapshot,
+    });
+    expect(result.ok).toBe(true);
+    expect(ae.inEase).toEqual([{ speed: 20, influence: 33 }]);
+    expect(ae.outEase).toEqual([{ speed: 30, influence: 45 }]);
+    expect(ae.keys.map((k) => k.time)).toEqual([40 / 25, 80 / 25]);
+  });
+  it("refuses an explicitly protected layer and implicit source-time retiming", () => {
+    const ae = fixture();
+    expect(ae.run(captureRetime({ ...spec, protectedLayerIds: [99] }))).toMatchObject({
+      ok: false,
+      error: "A retime target is explicitly protected",
+    });
+    expect(() =>
+      captureRetime({ ...spec, tracks: [{ layer: 1, property: ["ADBE Time Remapping"] }] }),
+    ).toThrow(/media/);
   });
 });

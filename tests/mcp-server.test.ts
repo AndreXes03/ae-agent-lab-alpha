@@ -8,6 +8,16 @@ import { McpTestClient } from "./harness.js";
 
 const EXPECTED_TOOLS = [
   "ae_catalog",
+  "ae_delivery_check",
+  "ae_media_preflight",
+  "ae_dependency_manifest",
+  "ae_render_job",
+  "ae_motion_review",
+  "ae_media_verify",
+  "ae_delivery_publish",
+  "ae_scene_recipe",
+  "ae_anchor_map",
+  "ae_audio_master",
   "ae_comp_info",
   "ae_context",
   "ae_do",

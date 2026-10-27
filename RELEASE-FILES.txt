@@ -52,8 +52,11 @@ docs/INSTALL.it.md
 docs/LOCAL-REVIEW.md
 docs/MOTION-QUALITY.md
 docs/NATIVE-SCENES-VALIDATION.md
+docs/PRODUCTION-VALIDATION.md
+docs/PRODUCTION-WORKFLOWS.md
 docs/RELEASE-CANDIDATE.md
 docs/SCENE-WORKFLOW.md
+docs/SESSION-RECOVERY.md
 docs/STORYBOARD-CAPABILITIES.md
 docs/STORYBOARD.md
 docs/STUDIO-TEST.it.md
@@ -154,6 +157,15 @@ src/operations/transform.ts
 src/operations/viewer.ts
 src/opschema.ts
 src/policy.ts
+src/production/anchors.ts
+src/production/delivery.ts
+src/production/media.ts
+src/production/motion-review.ts
+src/production/preflight.ts
+src/production/recipes.ts
+src/production/render-jobs.ts
+src/production/render-worker.ts
+src/production/storage.ts
 src/registry.ts
 src/review-session.ts
 src/scenes/cache.ts
@@ -178,6 +190,7 @@ src/tools/index.ts
 src/tools/inspect-targets.ts
 src/tools/layer-info.ts
 src/tools/motion-plan.ts
+src/tools/production.ts
 src/tools/project-export.ts
 src/tools/project-import.ts
 src/tools/project-info.ts
@@ -193,6 +206,7 @@ src/tools/workflow-plan.ts
 src/tools/workflow.ts
 src/transport/AeTransport.ts
 src/transport/FileIpcTransport.ts
+src/transport/health.ts
 src/transport/instances.ts
 src/transport/launcher.ts
 src/validate.ts
@@ -202,6 +216,8 @@ src/workflows/jobs.ts
 src/workflows/plan.ts
 src/workflows/retime.ts
 src/workflows/service.ts
+src/workflows/session-recovery.ts
+src/workflows/source-replace.ts
 src/workflows/targets.ts
 src/workflows/variants.ts
 tests/agent-install.test.ts
@@ -249,10 +265,13 @@ tests/opschema.test.ts
 tests/optimization.test.ts
 tests/parity-ops.test.ts
 tests/policy.test.ts
+tests/production-media.test.ts
+tests/production.test.ts
 tests/property-adjust.test.ts
 tests/property-get.test.ts
 tests/registry.test.ts
 tests/render-preview.test.ts
+tests/resident-health.test.ts
 tests/review-session.test.ts
 tests/review-ui-state.test.ts
 tests/scene-compose.test.ts
@@ -262,6 +281,7 @@ tests/scene-integration.test.ts
 tests/scene-preview.test.ts
 tests/scene-runtime.test.ts
 tests/sheet.test.ts
+tests/source-replace.test.ts
 tests/storyboard.test.ts
 tests/synthetic.test.ts
 tests/target-refs.test.ts

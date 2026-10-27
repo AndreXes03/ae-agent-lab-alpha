@@ -38,27 +38,48 @@ registerOp({
   name: "render.start",
   category: "render",
   description:
-    "Start rendering the render queue. Blocks until complete. Missing output directories are created first (AE itself fails with 'Directory does not exist').",
+    "Render the queue synchronously and report before/after state per item. rendered counts only newly completed selected items, not prior completions. File existence is not media verification. Prefer ae_render_job for persistent background rendering.",
   params: [],
   toJsx() {
     return `
             var rq = app.project.renderQueue;
-            if (rq.numItems === 0) return { ok: false, error: "render queue is empty" };
-            // AE does not create output folders — rq.render() dies with
-            // "Directory does not exist" — so create them for every item that
-            // is going to render. ae_render_frame already behaved this way.
-            for (var _ri = 1; _ri <= rq.numItems; _ri++) {
-                try {
-                    var _it = rq.item(_ri);
-                    if (!_it.render) continue;
-                    for (var _oi = 1; _oi <= _it.numOutputModules; _oi++) {
-                        var _f = _it.outputModule(_oi).file;
-                        if (_f) AE.ensureParentDir(_f);
-                    }
-                } catch (eDir) { /* creation failures surface from render() itself */ }
+            if (rq.rendering) return {ok:false,error:"render queue already running"};
+            if (rq.numItems === 0) return {ok:false,error:"render queue is empty"};
+            function _status(item) {
+                var names=["QUEUED","RENDERING","DONE","ERR_STOPPED","USER_STOPPED","UNQUEUED","NEEDS_OUTPUT","WILL_CONTINUE"];
+                for(var n=0;n<names.length;n++) if(item.status===RQItemStatus[names[n]]) return names[n];
+                return "UNKNOWN";
             }
-            rq.render();
-            return { ok: true, rendered: rq.numItems };
+            var before=[], results=[], renderError=null, completed=0, previous=0, selected=0, failed=0;
+            for(var i=1;i<=rq.numItems;i++) {
+                var it=rq.item(i), st=_status(it), active=it.render && st!=="DONE";
+                before.push({item:it,queueIndex:i,status:st,selected:active});
+                if(active) {
+                    selected++;
+                    for(var o=1;o<=it.numOutputModules;o++) {
+                        var f=it.outputModule(o).file;
+                        if(f) AE.ensureParentDir(f);
+                    }
+                }
+            }
+            try { if(selected) rq.render(); } catch(e) { renderError=AE.errText(e); }
+            for(var j=0;j<before.length;j++) {
+                var b=before[j], after=_status(b.item), state="skipped", outputs=[];
+                if(b.status==="DONE") {state="previouslyCompleted";previous++;}
+                else if(b.selected) {
+                    if(after==="DONE") {state="completed";completed++;}
+                    else if(after==="ERR_STOPPED") state="failed";
+                    else if(after==="USER_STOPPED") state="cancelled";
+                    else state="unknown";
+                    if(state!=="completed") failed++;
+                }
+                for(var k=1;k<=b.item.numOutputModules;k++) {
+                    var out=b.item.outputModule(k).file;
+                    outputs.push({path:out?out.fsName:null,exists:out?out.exists:false,bytes:out&&out.exists?out.length:null});
+                }
+                results.push({queueIndex:b.queueIndex,compId:b.item.comp.id,compName:b.item.comp.name,before:b.status,after:after,selected:b.selected,state:state,outputs:outputs,mediaVerified:false});
+            }
+            return {ok:!renderError&&failed===0,error:renderError||(failed?"Some selected render items did not complete":null),rendered:completed,completed:completed,previouslyCompleted:previous,selected:selected,total:before.length,items:results,mediaVerified:false,playbackReviewed:false,audioReviewed:false};
         `;
   },
 });

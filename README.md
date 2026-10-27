@@ -25,6 +25,8 @@ Storyboard and review tools are experimental supporting workflows. Native annota
 
 **Best fits:** retime or restyle existing compositions, make text/layout variants, and build small UI/title animations.
 
+Development branch: [Production workflows](docs/PRODUCTION-WORKFLOWS.md) adds measured motion review, persistent render jobs, non-hydrating preflight, guarded source replacement and versioned delivery. [Validation and remaining native checks](docs/PRODUCTION-VALIDATION.md). These changes are not in the alpha.7 download linked below.
+
 ## Prerequisites
 
 Recorded native checks cover one Mac with **After Effects 2026 (26.5)**. Other versions, hosts and fresh-machine installation need separate validation.

@@ -174,19 +174,41 @@ function codeFor(
   const changes = edits
     .map(
       ({ op, args }, i) => `
+    _operationResults[${i}].state = "started";
     var _e${i} = ${jsxCallCode(op, args)};
     if (!_e${i} || _e${i}.ok === false) throw new Error("Edit ${i + 1} failed: " + (_e${i} && _e${i}.error || "unknown"));
     if (_e${i}.layers && _e${i}.layers.length) for (var _j${i}=0; _j${i}<_e${i}.layers.length; _j${i}++) {
       if (_e${i}.layers[_j${i}].ok === false || (_e${i}.layers[_j${i}].warnings && _e${i}.layers[_j${i}].warnings.length)) throw new Error("Edit ${i + 1} reported a layer failure");
     }
-    _changed.push(${jsxVal(op.name)});`,
+    _changed.push(${jsxVal(op.name)});
+    _operationResults[${i}].state = "applied";`,
     )
     .join("\n");
   const assertions = reads.map(({ op, args }, i) => {
-    if (op.name !== "property.get") return "";
-    const matching = request.edits
+    const sameLayer = request.edits
       .map((edit, index) => ({ edit, index }))
       .filter(({ edit }) => edit.args.comp === args.comp && edit.args.layer === args.layer);
+    if (op.name === "layer.info") {
+      const lastEnabled = sameLayer
+        .filter(
+          ({ edit }) =>
+            edit.operation === "layer.set_enabled" ||
+            (edit.operation === "layer.set_props" &&
+              (edit.args.props as Record<string, unknown> | undefined)?.enabled !== undefined),
+        )
+        .at(-1);
+      if (lastEnabled?.edit.operation === "layer.set_enabled")
+        return `if (_a${i}.enabled !== ${jsxVal(lastEnabled.edit.args.enabled)}) throw new Error("Layer enabled readback differs from requested value"); _verified.push(${lastEnabled.index});`;
+      return "";
+    }
+    if (op.name !== "property.get") return "";
+    const matching = sameLayer.filter(
+      ({ edit }) =>
+        (edit.operation === "property.set" &&
+          safeJson(edit.args.property) === safeJson(args.property)) ||
+        (edit.operation === "text.set_content" &&
+          safeJson(args.property) === safeJson(["Source Text"])),
+    );
     const last = matching.at(-1);
     if (
       last?.edit.operation === "property.set" &&
@@ -212,16 +234,17 @@ function codeFor(
   return `
 var _fastResult = {ok:false,error:"Fast edit did not complete"}, _fastState = "failed";
 var _fastStart = new Date().getTime(), _fastCheckpoint = false;
+var _operationResults = ${jsxVal(request.edits.map((e, index) => ({ index, operation: e.operation, state: "not_started" })))};
+var _before = [], _after = [], _changed = [], _verified = [];
 function _compactRead(_r) {
   if (_r && _r.layers && _r.layers.length) { _r.numLayers = _r.layers.length; delete _r.layers; }
-  if (JSON.stringify(_r).length > 2048) return {ok:true,name:_r.name || null,numKeys:_r.numKeys || 0,valueTruncated:true};
+  if (JSON.stringify(_r).length > 2048) return {ok:true,name:_r.name || null,enabled:typeof _r.enabled==="boolean"?_r.enabled:null,numKeys:_r.numKeys || 0,valueTruncated:true};
   return _r;
 }
 try {
   if (!app.project.file || app.project.file.fsName.replace(/\\\\/g,"/") !== ${jsxVal(request.copyPath.replace(/\\/g, "/"))}) throw new Error("Active project is not the managed copy");
   ${runTargetGuards}
   ${runGuards}
-  var _before = [], _after = [], _changed = [], _verified = [];
   ${before}
   app.project.save();
   var _source = new File(${jsxVal(request.copyPath)}), _checkpoint = new File(${jsxVal(checkpoint)});
@@ -230,10 +253,11 @@ try {
   ${changes}
   ${after}
   app.project.save();
-  _fastResult = {ok:true,changed:_changed,verifiedEditIndexes:_verified,before:_before,after:_after,checkpointCreated:true,aeMs:new Date().getTime()-_fastStart};
+  _fastResult = {ok:true,operationResults:_operationResults,rollbackPerformed:false,changed:_changed,verifiedEditIndexes:_verified,before:_before,after:_after,checkpointCreated:true,aeMs:new Date().getTime()-_fastStart};
   _fastState = "succeeded";
 } catch (_fastError) {
-  _fastResult = {ok:false,error:AE.errText(_fastError).substring(0,500),checkpointCreated:_fastCheckpoint,aeMs:new Date().getTime()-_fastStart};
+  for(var _oi=0;_oi<_operationResults.length;_oi++) if(_operationResults[_oi].state==="started") _operationResults[_oi].state="failed_may_have_changed";
+  _fastResult = {ok:false,operationResults:_operationResults,rollbackPerformed:false,changed:_changed,verifiedEditIndexes:_verified,before:_before,after:_after,error:AE.errText(_fastError).substring(0,500),checkpointCreated:_fastCheckpoint,aeMs:new Date().getTime()-_fastStart};
 } finally {
   var _receipt = new File(${jsxVal(receipt)}); _receipt.encoding = "UTF-8";
   if (!_receipt.open("w")) throw new Error("Could not write fast edit receipt");
@@ -298,6 +322,7 @@ export class FastEditService {
       };
       return {
         ...(typeof r.name === "string" ? { name: r.name.slice(0, 100) } : {}),
+        ...(typeof r.enabled === "boolean" ? { enabled: r.enabled } : {}),
         ...(typeof r.numKeys === "number" ? { numKeys: r.numKeys } : {}),
         ...(r.valueTruncated === true ? { valueTruncated: true } : {}),
         ...(item?.__kind === "TextDocument"
@@ -313,9 +338,15 @@ export class FastEditService {
           ...(typeof raw.ok === "boolean" ? { ok: raw.ok } : {}),
           ...(typeof raw.error === "string" ? { error: raw.error } : {}),
           ...(Array.isArray(raw.changed) ? { changed: raw.changed } : {}),
+          ...(Array.isArray(raw.operationResults)
+            ? { operationResults: raw.operationResults, rollbackPerformed: false }
+            : {}),
           ...(Array.isArray(raw.verifiedEditIndexes)
             ? {
                 verifiedEditIndexes: raw.verifiedEditIndexes,
+                unverifiedEditIndexes: ((job.payload.spec as FastEditRequest).edits ?? [])
+                  .map((_, index) => index)
+                  .filter((index) => !(raw.verifiedEditIndexes as unknown[]).includes(index)),
                 verification:
                   new Set(raw.verifiedEditIndexes).size ===
                   (raw.changed as unknown[] | undefined)?.length

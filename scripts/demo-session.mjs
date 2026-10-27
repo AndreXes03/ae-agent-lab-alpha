@@ -115,7 +115,12 @@ async function validatedSource(file) {
 
 function show(session, live) {
   console.log(`Session: ${session?.phase || "none"}`);
-  console.log(`Worker: ${worker} (${live.alive ? "live" : "not live"})`);
+  console.log(
+    `Worker: ${worker} (${live.alive ? "heartbeat fresh" : "heartbeat missing/stale; process state not inferred"})`,
+  );
+  console.log(
+    `Heartbeat: ticks=${live.heartbeat?.ticks ?? "unknown"}, served=${live.heartbeat?.served ?? "unknown"}, busy=${live.heartbeat?.busy ?? "unknown"}, lastError=${live.heartbeat?.lastError ?? "none"}`,
+  );
   const binding =
     !session || session.phase === "stopped"
       ? live.alive
@@ -207,6 +212,11 @@ async function start(modules, requestedSource) {
         `Worker project resolves outside this session's run folder: ${workerProject}`,
       );
     }
+    const readiness = await withClient((call) =>
+      call("ae_do", { operation: "instance.probe", args: { name: worker } }),
+    );
+    if (resolve(readiness.project || "") !== workerProject)
+      throw new Error("Resident project changed during readiness check");
     await secureRuntime();
     if (workerProject !== previous.project) {
       const info = await withClient((call) => call("ae_project_info"));
@@ -226,6 +236,15 @@ async function start(modules, requestedSource) {
   if (live.alive)
     throw new Error(`Worker name is already live; inspect it before proceeding: ${worker}`);
   const source = requestedSource ?? (await validatedSource(defaultSource));
+  const { preflightProject } = await import("../dist/production/preflight.js");
+  const preflight = await preflightProject(source);
+  if (!preflight.canOpenKnownFiles)
+    throw new Error(
+      "Media preflight blocked opening: " +
+        JSON.stringify(preflight.blocked) +
+        (preflight.manifestError || ""),
+    );
+  for (const warning of preflight.warnings) console.log("Media preflight: " + warning);
   await secureRuntime();
   const statuses = (await modules.agentInstallStatus()).filter((s) => s.version.startsWith("26."));
   if (!statuses.length)
@@ -258,27 +277,40 @@ async function start(modules, requestedSource) {
     createdAt: new Date().toISOString(),
   };
   await saveSession(session, !previous);
-  await withClient(async (call) => {
-    await call(
-      "ae_do",
-      { operation: "instance.start", args: { name: worker, timeoutMs: 90000 } },
-      110000,
-    );
-    session.phase = "worker-started";
+  try {
+    session.phase = "launching";
     await saveSession(session);
-    const empty = await call("ae_project_info");
-    if (empty.file || empty.numItems !== 0 || empty.dirty) {
-      throw new Error(
-        `New worker is not empty: ${JSON.stringify({ file: empty.file, numItems: empty.numItems, dirty: empty.dirty })}`,
+    await withClient(async (call) => {
+      await call(
+        "ae_do",
+        { operation: "instance.start", args: { name: worker, timeoutMs: 90000 } },
+        110000,
       );
-    }
-    await call("ae_do", { operation: "project.open", args: { path: project, save: false } });
-    const opened = await call("ae_project_info");
-    if (resolve(opened.file || "") !== project)
-      throw new Error(`Worker opened unexpected project: ${opened.file}`);
-    session.phase = "ready";
+      session.phase = "worker-started";
+      await saveSession(session);
+      const empty = await call("ae_project_info");
+      if (empty.file || empty.numItems !== 0 || empty.dirty) {
+        throw new Error(
+          `New worker is not empty: ${JSON.stringify({ file: empty.file, numItems: empty.numItems, dirty: empty.dirty })}`,
+        );
+      }
+      await call("ae_do", { operation: "project.open", args: { path: project, save: false } });
+      const opened = await call("ae_project_info");
+      if (resolve(opened.file || "") !== project)
+        throw new Error(`Worker opened unexpected project: ${opened.file}`);
+      const ready = await call("ae_do", { operation: "instance.probe", args: { name: worker } });
+      if (resolve(ready.project || "") !== project)
+        throw new Error("Project changed during final readiness check");
+      session.phase = "ready";
+      await saveSession(session);
+    });
+  } catch (error) {
+    session.failedPhase = session.phase;
+    session.phase = "startup-unconfirmed";
+    session.lastError = String(error).slice(0, 1500);
     await saveSession(session);
-  });
+    throw error;
+  }
   show(session, await workerState(modules));
   showReadyPrompt(session);
 }
@@ -323,13 +355,13 @@ async function stop(modules) {
 
 const [command, ...args] = process.argv.slice(2);
 const valid =
-  new Set(["start", "status", "stop"]).has(command) &&
+  new Set(["start", "status", "stop", "reconcile"]).has(command) &&
   (command === "start"
     ? args.length === 0 || (args.length === 2 && args[0] === "--project" && Boolean(args[1]))
     : args.length === 0);
 if (!valid) {
   console.error(
-    "Usage: node scripts/demo-session.mjs start [--project /absolute/file.aep]|status|stop",
+    "Usage: node scripts/demo-session.mjs start [--project /absolute/file.aep]|status|stop|reconcile",
   );
   process.exitCode = 2;
 } else {
@@ -342,6 +374,16 @@ if (!valid) {
       await start(modules, requestedSource);
     } else if (command === "status") {
       show(await readSession(), await workerState(modules));
+      const { observeAeProcesses } = await import("../dist/transport/health.js");
+      console.log("OS observation: " + JSON.stringify(await observeAeProcesses()));
+    } else if (command === "reconcile") {
+      const { reconcileSession } = await import("../dist/workflows/session-recovery.js");
+      const reconciled = await reconcileSession(runtime, worker, () =>
+        withClient((call) =>
+          call("ae_do", { operation: "instance.probe", args: { name: worker } }),
+        ),
+      );
+      console.log(JSON.stringify(reconciled));
     } else {
       await stop(modules);
     }

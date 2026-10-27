@@ -22,6 +22,14 @@ describe("instance argument", () => {
       expect(declared, `${t.name} instance param`).toBe(
         ![
           "ae_catalog",
+          "ae_delivery_check",
+          "ae_media_preflight",
+          "ae_motion_review",
+          "ae_media_verify",
+          "ae_delivery_publish",
+          "ae_scene_recipe",
+          "ae_anchor_map",
+          "ae_audio_master",
           "ae_motion_plan",
           "ae_workflow_plan",
           "ae_scene_preview",

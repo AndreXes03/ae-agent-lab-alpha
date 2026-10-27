@@ -255,3 +255,31 @@ describe("managed workflow coordinator", () => {
     });
   });
 });
+
+it("retains partial source-replacement evidence in public status", async () => {
+  const f = await fixture(async () => {
+    throw new Error("status must not contact AE");
+  });
+  const job = await f.jobs.create({
+    recipe: "source_replace",
+    spec: {},
+    snapshot: {},
+    summary: {},
+    copyPath: f.copy,
+    instance: "worker-1",
+    captureCode: "",
+    mutationCode: "",
+  });
+  await f.jobs.claim(job.id);
+  await f.jobs.finish(job.id, "failed", {
+    ok: false,
+    changedUses: [{ compId: 10, layerId: 88, verification: "pending" }],
+    importedSourceId: 123,
+    rollbackPerformed: false,
+  });
+  expect((await f.service.status(job.id)).result).toMatchObject({
+    changedUses: [{ layerId: 88, verification: "pending" }],
+    importedSourceId: 123,
+    rollbackPerformed: false,
+  });
+});

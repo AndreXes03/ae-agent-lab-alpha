@@ -103,6 +103,7 @@ describe("fast edit", () => {
         name: "Opacity",
         matchName: "ADBE Opacity",
         numKeys: 0,
+        propertyType: 1,
         canSetExpression: false,
         get value() {
           return opacity;
@@ -142,6 +143,7 @@ describe("fast edit", () => {
         close() {}
       }
       const context = {
+        PropertyType: { PROPERTY: 1 },
         app: { project: { file: { fsName: f.copy }, save: () => {} } },
         File,
         CompItem,
@@ -182,7 +184,8 @@ describe("fast edit", () => {
       copyPath: f.copy,
       edits: [{ operation: "property.set", targetRef, args: { value: 55 } }],
     });
-    expect((await f.service.execute(request(id))).state).toBe("succeeded");
+    const firstStatus = await f.service.execute(request(id));
+    expect(firstStatus.state, JSON.stringify(firstStatus)).toBe("succeeded");
     expect(opacity).toBe(55);
     expect(writes).toBe(1);
     expect(f.calls[0].code).toContain("var _propPath = [1]");
@@ -206,6 +209,7 @@ describe("fast edit", () => {
             name,
             matchName: "ADBE Text Document",
             numKeys: 0,
+            propertyType: 1,
             canSetExpression: false,
             get value() {
               return { text: currentText, fontSize: 100 };
@@ -239,6 +243,7 @@ describe("fast edit", () => {
       const layer = new TextLayer();
       const comp = { numLayers: 2, layer: () => layer };
       const context = {
+        PropertyType: { PROPERTY: 1 },
         app: {
           project: {
             file: { fsName: f.copy },
@@ -261,7 +266,7 @@ describe("fast edit", () => {
         changed: string[];
         verifiedEditIndexes: number[];
       };
-      expect(result.ok).toBe(true);
+      expect(result.ok, JSON.stringify(result)).toBe(true);
       expect(result.verifiedEditIndexes).toEqual([0]);
       expect(saves).toBe(2);
       expect(currentText).toBe("Updated");
@@ -277,7 +282,7 @@ describe("fast edit", () => {
       };
     });
     const status = await f.service.execute({ ...edit(), copyPath: f.copy });
-    expect(status.state).toBe("succeeded");
+    expect(status.state, JSON.stringify(status)).toBe("succeeded");
     expect(f.calls).toHaveLength(1);
   });
 
@@ -362,3 +367,100 @@ describe("fast edit", () => {
     expect(f.calls).toHaveLength(1);
   });
 });
+
+it.each([false, true])(
+  "asserts enabled for mixed edits and exposes failures (ignored write=%s)",
+  async (ignoreWrite) => {
+    let receipt = "";
+    const f = await fixture(async (request, jobs) => {
+      class TextLayer {
+        name = "fixture";
+        text = "Before";
+        visible = true;
+        get enabled() {
+          return this.visible;
+        }
+        set enabled(v: boolean) {
+          if (!ignoreWrite) this.visible = v;
+        }
+        property() {
+          const layer = this;
+          return {
+            name: "Source Text",
+            matchName: "ADBE Text Document",
+            numKeys: 0,
+            propertyType: 1,
+            get value() {
+              return { text: layer.text };
+            },
+            setValue(doc: { text: string }) {
+              layer.text = doc.text;
+            },
+          };
+        }
+      }
+      const layers = Array.from({ length: 4 }, () => new TextLayer());
+      const comp = { numLayers: 4, layer: (i: number) => layers[i - 1] };
+      class File {
+        fsName: string;
+        encoding = "";
+        constructor(name: string) {
+          this.fsName = name;
+        }
+        get exists() {
+          return this.fsName === f.copy;
+        }
+        copy() {
+          return true;
+        }
+        open() {
+          return true;
+        }
+        write(text: string) {
+          receipt = text;
+        }
+        close() {}
+      }
+      const result = vm.runInNewContext(`(function(){${request.code}})()`, {
+        File,
+        TextLayer,
+        PropertyType: { PROPERTY: 1 },
+        app: { project: { file: { fsName: f.copy }, save() {} } },
+        AE: {
+          findComps: () => [comp],
+          findCompByNameOrId: () => comp,
+          findLayerInComp: (_c: unknown, i: number) => layers[i - 1],
+          serializeLayerFull: (l: TextLayer) => ({ name: l.name, enabled: l.enabled }),
+          valueToJson: (v: unknown) => v,
+          errText: (e: Error) => e.message,
+        },
+      });
+      await fs.writeFile(jobs.receiptPath(id), receipt);
+      return {
+        ok: true,
+        result,
+        error: null,
+        errorCode: null,
+        stack: null,
+        logs: [],
+        durationMs: 1,
+      };
+    });
+    const edits = Array.from({ length: 4 }, (_, i) => [
+      { operation: "text.set_content", args: { comp: 11, layer: i + 1, text: "After" } },
+      { operation: "layer.set_enabled", args: { comp: 11, layer: i + 1, enabled: false } },
+    ]).flat();
+    const status = await f.service.execute({ requestId: id, copyPath: f.copy, edits });
+    expect(status.state).toBe(ignoreWrite ? "failed" : "succeeded");
+    const result = status.result as Record<string, any>;
+    if (!ignoreWrite) {
+      expect(result.verifiedEditIndexes).toEqual([0, 1, 2, 3, 4, 5, 6, 7]);
+      expect(result.unverifiedEditIndexes).toEqual([]);
+      expect(result.before[1].enabled).toBe(true);
+      expect(result.after[1].enabled).toBe(false);
+    } else {
+      expect(result.error).toContain("enabled readback");
+      expect(result.unverifiedEditIndexes).toContain(1);
+    }
+  },
+);

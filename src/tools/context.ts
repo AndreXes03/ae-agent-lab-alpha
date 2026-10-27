@@ -1,3 +1,5 @@
+import { heartbeatHealth, observeAeProcesses } from "../transport/health.js";
+import { errorResult } from "../errors.js";
 import { z } from "zod";
 
 import { instanceLabel, listInstances } from "../transport/instances.js";
@@ -14,6 +16,7 @@ const CODE = `
         project: {
             file: proj.file ? proj.file.fsName.replace(/\\\\/g, "/") : null,
             dirty: proj.dirty,
+            renderBusy: proj.renderQueue.rendering,
             numItems: proj.numItems,
             bitsPerChannel: proj.bitsPerChannel
         },
@@ -161,14 +164,17 @@ export const contextTool = defineTool({
         target?.mode === "error"
           ? target.message
           : "No resident After Effects agent is available for this transport.";
-      return toMcpResult({
-        ok: false,
-        result: null,
-        error: message,
-        errorCode: "NO_INSTANCE",
-        stack: null,
-        logs: [],
-        durationMs: 0,
+      return errorResult("NO_INSTANCE", message, {
+        details: {
+          residentReady: false,
+          processObservation: await observeAeProcesses(),
+          instances: (await listInstances()).map((i) => ({
+            id: i.id,
+            alive: i.alive,
+            lastKnownProject: i.heartbeat?.project ?? null,
+            ...heartbeatHealth(i),
+          })),
+        },
       });
     }
     const result = await transport.execute({
@@ -209,6 +215,7 @@ export const contextTool = defineTool({
               : { mode: "error", message: target.message },
       residentReady,
       instances: instances.map((i) => ({
+        ...heartbeatHealth(i),
         label: instanceLabel(i),
         id: i.id,
         alive: i.alive,

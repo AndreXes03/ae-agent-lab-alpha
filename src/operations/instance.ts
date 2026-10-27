@@ -13,13 +13,13 @@
 // must be installed (`ae-agent-lab install-agent`); the operations say so
 // when it is not rather than starting an AE nothing can talk to.
 
+import { confirmResidentReady, heartbeatHealth, observeAeProcesses } from "../transport/health.js";
 import { spawn } from "node:child_process";
 import { promises as fs } from "node:fs";
 import * as path from "node:path";
 
 import { agentInstallStatus } from "../agent-install.js";
 import {
-  HEARTBEAT_STALE_MS,
   instanceDirFor,
   rejectedOutputPath,
   resolveAfterFxPath,
@@ -54,6 +54,7 @@ const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 function summarizeInstance(i: InstanceInfo) {
   return {
+    ...heartbeatHealth(i),
     label: instanceLabel(i),
     id: i.id,
     alive: i.alive,
@@ -88,7 +89,7 @@ registerOp({
     "List the After Effects instances whose resident agent is live — id, open project, busy state — " +
     "and which one this call would address. Instances are separate After Effects processes " +
     "(AfterFX.exe -m), each with its own project; address one on any tool with `instance: <id or project name>`. " +
-    "Stale entries are instances that quit or stopped ticking (a modal dialog blocks scripting).",
+    "Stale heartbeats do not prove a terminated process or a modal dialog. OS process observations are separate and not automatically associated with registered instances.",
   params: [],
   readOnly: true,
   toJsx: () => nodeOnly("instance.list"),
@@ -97,9 +98,46 @@ registerOp({
     return {
       ok: true,
       instances: instances.map(summarizeInstance),
+      processObservation: await observeAeProcesses(),
       live: instances.filter((i) => i.alive).map((i) => i.id),
       target: await describeTargetOf(transport),
     };
+  },
+});
+
+registerOp({
+  name: "instance.probe",
+  category: "instance",
+  readOnly: true,
+  description:
+    "Verify an existing named resident with a nonce round-trip and a subsequent advancing heartbeat. Never launch, reconnect, open or save a project. Unconfirmed status may mean startup or a modal dialog; inspect actual observations.",
+  params: [
+    { name: "name", type: "string", required: true, description: "Exact registered instance id" },
+    {
+      name: "timeoutMs",
+      type: "number",
+      required: false,
+      description: "Probe deadline, up to 30000 ms",
+    },
+  ],
+  toJsx: () => nodeOnly("instance.probe"),
+  async run(args, transport) {
+    const name = typeof args.name === "string" ? args.name : "";
+    if (!name || name !== sanitizeInstanceId(name)) return fail("Exact instance id required");
+    try {
+      return await confirmResidentReady(
+        name,
+        transport,
+        Math.min(30000, Math.max(1, Number(args.timeoutMs) || 10000)),
+      );
+    } catch (error) {
+      return {
+        ...fail(String(error), { errorCode: "NO_INSTANCE" }),
+        readiness: "unconfirmed",
+        processObservation: await observeAeProcesses(),
+        heartbeat: heartbeatHealth(await readInstance(instanceDirFor(name))),
+      };
+    }
   },
 });
 
@@ -190,7 +228,16 @@ registerOp({
         return fail(`project not found: ${projectToOpen}`, { errorCode: "IO" });
     }
 
-    const clash = (await listInstances()).find((i) => i.alive && i.id === name);
+    const sameName = (await listInstances()).find((i) => i.id === name);
+    const clash = sameName?.alive ? sameName : undefined;
+    if (sameName && !sameName.alive) {
+      const observed = await observeAeProcesses();
+      if (!observed.observed || observed.processes.length)
+        return fail(
+          "Stale worker identity with running or unknown AE processes; reconcile before launching another copy",
+          { errorCode: "NO_INSTANCE" },
+        );
+    }
     if (clash) {
       return fail(
         `instance '${name}' is already live (${describeInstance(clash)}) — address it directly, or pick another name`,
@@ -253,6 +300,7 @@ registerOp({
         : DEFAULT_START_TIMEOUT_MS;
     const deadline = launchedAt + timeoutMs;
     let registered: InstanceInfo | null = null;
+    let lastObserved: InstanceInfo | null = null;
     while (Date.now() < deadline) {
       if (spawnError !== null) {
         return fail(`could not launch After Effects (${exe}): ${(spawnError as Error).message}`, {
@@ -266,9 +314,14 @@ registerOp({
         );
       }
       const info = await readInstance(instanceDirFor(name));
+      lastObserved = info;
       // A heartbeat older than the launch belongs to a previous instance of
       // the same name that has since died; wait for the new one's.
-      if (info.alive && (info.heartbeat?.startedAt ?? 0) >= launchedAt - HEARTBEAT_STALE_MS) {
+      if (
+        info.alive &&
+        (info.heartbeat?.ticks ?? 0) >= 2 &&
+        (info.heartbeat?.startedAt ?? 0) >= launchedAt
+      ) {
         registered = info;
         break;
       }
@@ -276,16 +329,27 @@ registerOp({
     }
     if (registered === null) {
       return fail(
-        `instance '${name}' did not register within ${timeoutMs} ms (launcher pid ${child.pid ?? "?"}, exit ${launcherExit ?? "not observed"})`,
+        `instance '${name}' did not establish recurring heartbeats within ${timeoutMs} ms (launcher pid ${child.pid ?? "?"}, exit ${launcherExit ?? "not observed"})`,
         {
           errorCode: "NO_INSTANCE",
           hint:
             "Is the agent installed for THIS After Effects version (`ae-agent-lab agent-status`)? Did After Effects " +
             "stop at a dialog while starting? After a force-killed or crashed session, every launch waits at the " +
             "'We detected a crash' Safe Mode dialog until someone dismisses it on screen. Raise timeoutMs for a slow machine. " +
-            "Check the process list and AE windows before assuming a worker is running or trying again.",
+            "Check the process list and AE windows before assuming a worker is running or trying again. " +
+            "Last heartbeat: " +
+            JSON.stringify(lastObserved ? heartbeatHealth(lastObserved) : null),
         },
       );
+    }
+
+    try {
+      await confirmResidentReady(name, transport, Math.max(1, deadline - Date.now()));
+    } catch (error) {
+      return fail(String(error), {
+        errorCode: "NO_INSTANCE",
+        hint: "Startup not confirmed. Inspect the existing worker; do not launch another instance.",
+      });
     }
 
     let opened: { file: string; numItems: number } | null = null;
@@ -316,7 +380,9 @@ registerOp({
     return {
       ok: true,
       instance: name,
-      pid: child.pid ?? null,
+      pid: process.platform === "darwin" ? null : (child.pid ?? null),
+      launcherPid: child.pid ?? null,
+      readiness: "round-trip-and-subsequent-heartbeat",
       startupMs: Date.now() - launchedAt,
       project: opened,
       // Forward slashes, like every other path this server reports.
