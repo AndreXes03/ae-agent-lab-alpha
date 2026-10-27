@@ -17,10 +17,10 @@ try {
 const [action, project, ...extra] = process.argv.slice(2);
 if (
   extra.length ||
-  !["info", "status", "start"].includes(action) ||
+  !["info", "status", "start", "reconcile"].includes(action) ||
   (action !== "start" && project)
 ) {
-  console.error("Usage: bridge.mjs info|status|start /absolute/project.aep");
+  console.error("Usage: bridge.mjs info|status|reconcile|start /absolute/project.aep");
   process.exit(2);
 }
 if (

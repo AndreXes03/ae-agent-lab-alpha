@@ -48,7 +48,7 @@
 #include "serve.jsx"
 
 (function agentEntry() {
-    var AGENT_VERSION = 1;
+    var AGENT_VERSION = 2;
     var TICK_MS = 250;
     var HEARTBEAT_MS = 1000;
 
@@ -202,6 +202,8 @@
                 busy: state.busy,
                 busySince: state.busySince,
                 lastError: state.lastError,
+                engineName: typeof $.engineName === "string" ? $.engineName : null,
+                schedulerArmed: state.taskId !== null,
                 ts: now
             };
             writeAtomic(state.dir + "/heartbeat.json", JSON.stringify(hb));
@@ -236,7 +238,7 @@
             } catch (eTick) {
                 state.lastError = describeError(eTick);
                 try {
-                    if (state.dir !== null) AE_MCP.appendLog(state.dir + "/agent.log", "tick failed: " + state.lastError);
+                    if (state.dir !== null) { AE_MCP.appendLog(state.dir + "/agent.log", "tick failed: " + state.lastError); heartbeat(true); }
                 } catch (eLog) { /* ignore */ }
             }
         }
@@ -254,8 +256,8 @@
         };
         // Run once now so the instance is registered before the first
         // scheduled tick, then keep going for the life of the process.
-        tick();
         state.taskId = app.scheduleTask("$.global.AE_MCP_AGENT.tick()", TICK_MS, true);
+        tick();
     }
 
     // --- Top-level guard ---------------------------------------------------

@@ -35,6 +35,8 @@ export interface Heartbeat {
   busy?: boolean;
   busySince?: number | null;
   lastError?: string | null;
+  engineName?: string | null;
+  schedulerArmed?: boolean;
   /** Epoch milliseconds, AE's clock — same machine as ours. */
   ts: number;
 }
